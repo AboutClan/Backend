@@ -10,9 +10,7 @@ router.get("/", (req: Request, res: Response) => {
 
 router
   .route("/point")
-  .get((req: Request, res: Response) => {
-    console.log("hello");
-
+  .get(async (req: Request, res: Response) => {
     res.send("okay");
   })
   .post((req: Request, res: Response) => {

@@ -1,16 +1,45 @@
-import { MongoClient } from "mongodb";
+import mongoose from "mongoose";
+import * as dotenv from "dotenv";
 
-const connectionString = process.env.ATLAS_URI || "";
+dotenv.config();
 
-const client = new MongoClient(connectionString);
+const MONGODB_URI: string = process.env.MONGODB_URI || "";
 
-let conn;
-try {
-  conn = await client.connect();
-} catch (e) {
-  console.error(e);
+if (!MONGODB_URI) {
+  throw new Error(
+    "Please define the MONGODB_URI environment variable inside .env.local"
+  );
 }
 
-let db = conn.db("sample_training");
+/**
+ * Global is used here to maintain a cached connection across hot reloads
+ * in development. This prevents connections growing exponentially
+ * during API Route usage.
+ */
+let cached = global.mongoose;
 
-export default db;
+if (!cached) {
+  cached = global.mongoose = {};
+}
+
+async function dbConnect() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
+    });
+
+    // require("../models/place");
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+export default dbConnect;
