@@ -20,7 +20,7 @@ export interface IPlaceStatus {
 
 export interface IParticipation extends IPlaceStatus, ITimeStartToEndHM {
   place?: IPlace;
-  attendences?: IAttendence[];
+  attendances?: IAttendance[];
   absences?: IAbsence[];
   startTime?: Date;
   endTime?: Date;
@@ -36,7 +36,7 @@ export interface IVote extends Document {
   participations: IParticipation[];
 }
 
-export interface IAttendence {
+export interface IAttendance {
   user: string | IUser;
   time: ITimeStartToEnd;
   created: Date;
@@ -66,7 +66,7 @@ const ParticipantTimeSchema: Schema<ITimeStartToEnd> = new Schema(
   { _id: false }
 );
 
-const AttendenceSchema: Schema<IAttendence> = new Schema(
+const AttendanceSchema: Schema<IAttendance> = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -107,7 +107,7 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
       ref: "Place",
     },
 
-    attendences: [AttendenceSchema],
+    attendances: [AttendanceSchema],
     absences: [AbsenceSchema],
     startTime: Date,
     endTime: Date,

@@ -2,7 +2,7 @@ import mongoose, { model, Schema, Document, Model } from "mongoose";
 import { IUser } from "./user";
 import { IPlace } from "./place";
 
-export interface IAttendence extends Document {
+export interface IAttendance extends Document {
   date: Date;
   participants: IParticipant[];
   meetingTime: string;
@@ -32,7 +32,7 @@ const ParticipantSchema: Schema<IParticipant> = new Schema(
   },
   { _id: false }
 );
-export const AttendenceSchema: Schema<IAttendence> = new Schema(
+export const AttendanceSchema: Schema<IAttendance> = new Schema(
   {
     date: Date,
     participants: [ParticipantSchema],
@@ -54,6 +54,6 @@ export const AttendenceSchema: Schema<IAttendence> = new Schema(
     timestamps: true,
   }
 );
-export const Attendence =
-  (mongoose.models.Attendence as Model<IAttendence, {}, {}, {}>) ||
-  model<IAttendence>("Attendence", AttendenceSchema);
+export const Attendance =
+  (mongoose.models.Attendance as Model<IAttendance, {}, {}, {}>) ||
+  model<IAttendance>("Attendance", AttendanceSchema);
