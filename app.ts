@@ -14,6 +14,7 @@ const vote = require("./routes/vote");
 //port
 const port = 3001;
 
+//cors
 const whitelist = [
   "http://localhost:3000",
   "https://votehelper.herokuapp.com/",

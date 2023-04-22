@@ -22,11 +22,14 @@
   },
   "homepage": "https://github.com/VoteHelper/about-back#readme",
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.1",
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongoose": "^7.0.3"
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
+    "next-auth": "^4.22.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
