@@ -23,6 +23,7 @@
   "homepage": "https://github.com/VoteHelper/about-back#readme",
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.1",
+    "axios": "^1.3.6",
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
