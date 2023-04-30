@@ -7,6 +7,11 @@ export interface restType {
   content: string;
 }
 
+export interface avatarType {
+  type: number;
+  bg: number;
+}
+
 export interface IUser extends Document {
   uid: string;
   registerDate: string;
@@ -22,6 +27,7 @@ export interface IUser extends Document {
   comment: string;
   rest: restType;
   location: string;
+  avatar: avatarType;
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -29,6 +35,17 @@ export const restSchema: Schema<restType> = new Schema({
   startDate: Schema.Types.Date,
   endDate: Schema.Types.Date,
   content: Schema.Types.String,
+});
+
+export const avatarSchema: Schema<avatarType> = new Schema({
+  type: {
+    type: Schema.Types.Number,
+    default: 1,
+  },
+  bg: {
+    type: Schema.Types.Number,
+    default: 1,
+  },
 });
 
 export const UserSchema: Schema<IUser> = new Schema({
@@ -85,6 +102,7 @@ export const UserSchema: Schema<IUser> = new Schema({
     enum: ["수원", "양천"],
     default: "수원",
   },
+  avatar: avatarSchema,
 });
 
 export const User =

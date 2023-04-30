@@ -4,6 +4,7 @@ dotenv.config();
 import express, { Express, NextFunction, Request, Response } from "express";
 import dbConnect from "./db/conn";
 import cors from "cors";
+import ErrorHandler from "./middlewares/ErrorHandler";
 
 const app: Express = express();
 
@@ -43,6 +44,8 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/user", user);
 app.use("/vote", vote);
+
+app.use(ErrorHandler);
 
 app.listen(port, async () => {
   await dbConnect();
