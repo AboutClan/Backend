@@ -31,7 +31,7 @@ router
 
     try {
       const isActive = await User.findOne({ uid: token.uid }, "isActive");
-      res.status(200).json({ isActive });
+      return res.status(200).json({ isActive });
     } catch (err) {
       next(err);
     }
@@ -47,7 +47,7 @@ router
     try {
       const avatar = await User.findOne({ uid: token.uid }, "avatar");
 
-      res.status(200).json(avatar);
+      return res.status(200).json(avatar);
     } catch (err) {
       next(err);
     }
@@ -70,7 +70,7 @@ router
 
     try {
       await User.updateOne({ uid: token.uid }, { $set: { comment } });
-      res.status(200).send({});
+      return res.status(200).send({});
     } catch (err) {
       next(err);
     }
@@ -149,7 +149,7 @@ router
         attendForm[idx].cnt = obj.cnt;
       });
 
-      res.status(200).json(attendForm);
+      return res.status(200).json(attendForm);
     } catch (err) {
       next(err);
     }
@@ -226,7 +226,7 @@ router
         attendForm[idx].cnt = obj.cnt;
       });
 
-      res.status(200).json(attendForm);
+      return res.status(200).json(attendForm);
     } catch (err) {
       next(err);
     }
@@ -240,7 +240,7 @@ router
       if (!token) return res.status(401).send("Unauthorized");
 
       const targetUser = await User.findOne({ uid: token.uid });
-      res.status(200).json(targetUser);
+      return res.status(200).json(targetUser);
     } catch (err) {
       next(err);
     }
@@ -253,7 +253,7 @@ router
     try {
       await User.updateOne({ uid: token.uid }, { $set: registerForm });
       const undatedUser = await User.findOne({ uid: token.uid });
-      res.status(200).json(undatedUser);
+      return res.status(200).json(undatedUser);
     } catch (err) {
       next(err);
     }
@@ -269,13 +269,12 @@ router
       );
 
       if (!profile) {
-        res.status(500).end();
-        return;
+        return res.status(500).end();
       }
 
       await User.updateOne({ uid: token.uid }, { $set: profile });
 
-      res.status(200).json(await User.findOne({ uid: token.uid }));
+      return res.status(200).json(await User.findOne({ uid: token.uid }));
     } catch (err) {
       next(err);
     }
@@ -289,7 +288,7 @@ router
 
     try {
       const userPoint = await User.findOne({ uid: token.uid }, "point");
-      res.status(200).send(userPoint);
+      return res.status(200).send(userPoint);
     } catch (err) {
       next(err);
     }
@@ -307,7 +306,7 @@ router
       await user.save();
       res.send("okay");
 
-      res.status(200).send({});
+      return res.status(200).send({});
     } catch (err) {
       next(err);
     }
@@ -320,7 +319,7 @@ router
     if (!token) return res.status(401).send("Unauthorized");
     try {
       const targetUser = await User.findOne({ uid: token.uid });
-      res.status(200).json(targetUser);
+      return res.status(200).json(targetUser);
     } catch (err) {
       next(err);
     }
@@ -333,7 +332,7 @@ router
       const registerForm = req.body;
       await User.updateOne({ uid: token.uid }, { $set: registerForm });
       const undatedUser = await User.findOne({ uid: token.uid });
-      res.status(200).json(undatedUser);
+      return res.status(200).json(undatedUser);
     } catch (err) {
       next(err);
     }
@@ -349,13 +348,13 @@ router
       );
 
       if (!profile) {
-        res.status(500).end();
+        return res.status(500).end();
         return;
       }
 
       await User.updateOne({ uid: token.uid }, { $set: profile });
 
-      res.status(200).json(await User.findOne({ uid: token.uid }));
+      return res.status(200).json(await User.findOne({ uid: token.uid }));
     } catch (err) {
       next(err);
     }
@@ -370,7 +369,7 @@ router
     try {
       const { info } = req.body;
       await User.updateOne({ uid: token.uid }, { $set: { rest: info } });
-      res.status(200).send({});
+      return res.status(200).send({});
     } catch (err) {
       next(err);
     }
@@ -396,7 +395,7 @@ router
         ])
         .toArray();
 
-      res.status(200).send(userScore);
+      return res.status(200).send(userScore);
     } catch (err) {
       next(err);
     }
@@ -411,7 +410,7 @@ router
       if (!user) throw new Error();
       user.score += score;
       await user.save();
-      res.status(200).send({});
+      return res.status(200).send({});
     } catch (err) {
       next(err);
     }
@@ -437,7 +436,7 @@ router
       ])
       .toArray();
 
-    res.status(200).send(userScore);
+    return res.status(200).send(userScore);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { score, message } = req.body;
@@ -450,7 +449,7 @@ router
 
       user.score += score;
       await user?.save();
-      res.status(200).send({});
+      return res.status(200).send({});
     } catch (err) {
       next(err);
     }
@@ -464,7 +463,7 @@ router
 
     try {
       await withdrawal(token.accessToken as string);
-      res.status(204).end();
+      return res.status(204).end();
     } catch (err) {
       next(err);
     }
