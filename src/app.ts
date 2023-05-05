@@ -2,48 +2,50 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 import express, { Express, NextFunction, Request, Response } from "express";
-import dbConnect from "./db/conn";
 import cors from "cors";
 import ErrorHandler from "./middlewares/ErrorHandler";
 import helmet from "helmet";
 import compression from "compression";
 
-const app: Express = express();
-
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");
 
-//port
-const port = 3001;
+class App {
+  private app: express.Application;
+  private port: number;
 
-//cors
-const whitelist = [
-  "http://localhost:3000",
-  "https://votehelper.herokuapp.com/",
-  "http://localhost:80",
-];
-app.use(cors({}));
-app.use(helmet());
-app.use(compression());
+  constructor() {
+    this.port = 3001;
+    this.app = express();
+    this.setupMiddlewares();
+    this.setupRoutes();
+  }
 
-app.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  await dbConnect();
-  next();
-});
+  setupMiddlewares() {
+    // middleware 설정
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cors({}));
+    this.app.use(helmet());
+    this.app.use(compression());
+  }
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Ts express");
-});
+  setupRoutes() {
+    // 라우터 설정
+    this.app.use("/user", user);
+    this.app.use("/vote", vote);
 
-app.use("/user", user);
-app.use("/vote", vote);
+    this.app.use(ErrorHandler);
+  }
 
-app.use(ErrorHandler);
+  listen() {
+    // 서버 실행
+    this.app.listen(this.port, () => {
+      console.log(`Server is listening on port ${this.port}`);
+    });
+  }
+}
 
-app.listen(port, async () => {
-  await dbConnect();
-  console.log("hello world");
-});
-
-//mongodb
+const app = new App();
+app.listen();
