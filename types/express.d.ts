@@ -10,6 +10,7 @@ declare global {
   namespace Express {
     export interface Request {
       token?: JWT;
+      date?: Date;
     }
   }
 }
