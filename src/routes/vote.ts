@@ -13,6 +13,7 @@ import {
 import { IPlace, Place } from "../db/models/place";
 import { IVoteStudyInfo } from "../types/vote";
 import dayjs from "dayjs";
+import VoteService from "../services/voteService";
 
 const router = express.Router();
 
@@ -27,6 +28,8 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   if (!decodedToken) {
     return res.status(401).send("Unauthorized");
   } else {
+    const voteServiceInstance = new VoteService(decodedToken);
+    req.voteServiceInstance = voteServiceInstance;
     req.token = decodedToken;
     next();
   }

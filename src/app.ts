@@ -6,6 +6,7 @@ import cors from "cors";
 import ErrorHandler from "./middlewares/ErrorHandler";
 import helmet from "helmet";
 import compression from "compression";
+import dbConnect from "./db/conn";
 
 //router
 const user = require("./routes/user");
@@ -41,7 +42,8 @@ class App {
 
   listen() {
     // 서버 실행
-    this.app.listen(this.port, () => {
+    this.app.listen(this.port, async () => {
+      await dbConnect();
       console.log(`Server is listening on port ${this.port}`);
     });
   }

@@ -4,12 +4,12 @@ import { IUser, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
 import dayjs from "dayjs";
 import { getProfile, withdrawal } from "../utils/oAuthUtils";
+import UserService from "../services/userService";
 
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(" ")[1];
-
   const decodedToken = await decode({
     token,
     secret: "klajsdflksjdflkdvdssdq231e1w",
@@ -18,7 +18,8 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   if (!decodedToken) {
     return res.status(401).send("Unauthorized");
   } else {
-    req.token = decodedToken;
+    const userServiceInstance = new UserService(decodedToken);
+    req.userServiceInstance = userServiceInstance;
     next();
   }
 });
@@ -26,11 +27,11 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 router
   .route("/active")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const isActive = await User.findOne({ uid: token.uid }, "isActive");
+      const isActive = await userServiceInstance.getUserInfo(["isActive"]);
       return res.status(200).json({ isActive });
     } catch (err) {
       next(err);
@@ -41,12 +42,11 @@ router
 router
   .route("/avatar")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const avatar = await User.findOne({ uid: token.uid }, "avatar");
-
+      const avatar = await userServiceInstance.getUserInfo(["avatar"]);
       return res.status(200).json(avatar);
     } catch (err) {
       next(err);
@@ -56,8 +56,11 @@ router
 router
   .route("/comment")
   .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
     try {
-      const comments = await User.find({}, "comment");
+      const comments = await userServiceInstance.getAllUserInfo(["comment"]);
       res.status(200).json({ comments });
     } catch (err) {
       next(err);
@@ -65,11 +68,11 @@ router
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { comment = "" } = req.body;
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      await User.updateOne({ uid: token.uid }, { $set: { comment } });
+      await userServiceInstance.updateUser({ comment });
       return res.status(200).send({});
     } catch (err) {
       next(err);
@@ -79,77 +82,17 @@ router
 router
   .route("/participationrate")
   .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
     const { startDay, endDay }: { startDay: string; endDay: string } =
       req.query as any;
 
     try {
-      const allUser = await User.find({ isActive: true });
-      const attendForm = allUser.reduce((accumulator: any[], user) => {
-        return [...accumulator, { uid: user.uid, cnt: 0 }];
-      }, []);
+      const participationResult =
+        await userServiceInstance.getParticipationRate(startDay, endDay);
 
-      const forParticipation = await Vote.collection
-        .aggregate([
-          {
-            $match: {
-              date: {
-                $gte: dayjs(startDay).toDate(),
-                $lt: dayjs(endDay).toDate(),
-              },
-            },
-          },
-          {
-            $unwind: "$participations",
-          },
-          {
-            $project: {
-              status: "$participations.status",
-              attendences: "$participations.attendences",
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "attendences.user",
-              foreignField: "_id",
-              as: "attendences.user",
-            },
-          },
-          {
-            $match: {
-              status: "open",
-            },
-          },
-          {
-            $unwind: "$attendences.user",
-          },
-          {
-            $replaceRoot: {
-              newRoot: "$attendences.user",
-            },
-          },
-          {
-            $group: {
-              _id: "$uid",
-              cnt: { $sum: 1 },
-            },
-          },
-          {
-            $project: {
-              _id: false,
-              uid: "$_id",
-              cnt: "$cnt",
-            },
-          },
-        ])
-        .toArray();
-
-      forParticipation.forEach((obj) => {
-        const idx = attendForm.findIndex((user) => user.uid === obj.uid);
-        attendForm[idx].cnt = obj.cnt;
-      });
-
-      return res.status(200).json(attendForm);
+      return res.status(200).json(participationResult);
     } catch (err) {
       next(err);
     }
@@ -158,75 +101,19 @@ router
 router
   .route("/voterate")
   .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
     const { startDay, endDay }: { startDay: string; endDay: string } =
       req.query as any;
 
     try {
-      const allUser = await User.find({ isActive: true });
-      const attendForm = allUser.reduce((accumulator: any[], user) => {
-        return [...accumulator, { uid: user.uid, cnt: 0 }];
-      }, []);
+      const voteResult = await userServiceInstance.getParticipationRate(
+        startDay,
+        endDay
+      );
 
-      const forVote = await Vote.collection
-        .aggregate([
-          {
-            $match: {
-              date: {
-                $gte: dayjs(startDay).toDate(),
-                $lt: dayjs(endDay).toDate(),
-              },
-            },
-          },
-          { $unwind: "$participations" },
-          { $unwind: "$participations.attendences" },
-          {
-            $project: {
-              attendences: "$participations.attendences",
-            },
-          },
-          {
-            $match: {
-              "attendences.firstChoice": true,
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "attendences.user",
-              foreignField: "_id",
-              as: "attendences.user",
-            },
-          },
-          {
-            $unwind: "$attendences.user",
-          },
-          {
-            $replaceRoot: {
-              newRoot: "$attendences.user",
-            },
-          },
-          {
-            $group: {
-              _id: "$uid",
-              cnt: { $sum: 1 },
-            },
-          },
-          {
-            $project: {
-              _id: false,
-              uid: "$_id",
-              cnt: "$cnt",
-            },
-          },
-        ])
-        .toArray();
-
-      forVote.forEach((obj) => {
-        const idx = attendForm.findIndex((user) => user.uid === obj.uid);
-        attendForm[idx].cnt = obj.cnt;
-      });
-
-      return res.status(200).json(attendForm);
+      return res.status(200).json(voteResult);
     } catch (err) {
       next(err);
     }
@@ -235,46 +122,35 @@ router
 router
   .route("/profile")
   .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
     try {
-      const { token } = req;
-      if (!token) return res.status(401).send("Unauthorized");
-
-      const targetUser = await User.findOne({ uid: token.uid });
+      const targetUser = await userServiceInstance.getUserInfo([]);
       return res.status(200).json(targetUser);
     } catch (err) {
       next(err);
     }
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
     const registerForm = req.body || {};
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
 
     try {
-      await User.updateOne({ uid: token.uid }, { $set: registerForm });
-      const undatedUser = await User.findOne({ uid: token.uid });
+      await userServiceInstance.updateUser(registerForm);
+      const undatedUser = await userServiceInstance.getUserInfo([]);
       return res.status(200).json(undatedUser);
     } catch (err) {
       next(err);
     }
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const profile = await getProfile(
-        token.accessToken as string,
-        token.uid as string
-      );
-
-      if (!profile) {
-        return res.status(500).end();
-      }
-
-      await User.updateOne({ uid: token.uid }, { $set: profile });
-
-      return res.status(200).json(await User.findOne({ uid: token.uid }));
+      const updatedUser = await userServiceInstance.patchProfile();
+      return res.status(200).json(updatedUser);
     } catch (err) {
       next(err);
     }
@@ -283,11 +159,12 @@ router
 router
   .route("/point")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const userPoint = await User.findOne({ uid: token.uid }, "point");
+      const userPoint = await userServiceInstance.getUserInfo(["point"]);
+
       return res.status(200).send(userPoint);
     } catch (err) {
       next(err);
@@ -295,66 +172,14 @@ router
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { point } = req.body;
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const user = await User.findOne({ uid: token.uid });
-      if (!user) throw new Error();
+      await userServiceInstance.updatePoint(point);
 
-      user.point += point;
-      await user.save();
-      res.send("okay");
-
-      return res.status(200).send({});
-    } catch (err) {
-      next(err);
-    }
-  });
-
-router
-  .route("/profile")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
-    try {
-      const targetUser = await User.findOne({ uid: token.uid });
-      return res.status(200).json(targetUser);
-    } catch (err) {
-      next(err);
-    }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
-
-    try {
-      const registerForm = req.body;
-      await User.updateOne({ uid: token.uid }, { $set: registerForm });
-      const undatedUser = await User.findOne({ uid: token.uid });
-      return res.status(200).json(undatedUser);
-    } catch (err) {
-      next(err);
-    }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
-
-    try {
-      const profile = await getProfile(
-        token.accessToken as string,
-        token.uid as string
-      );
-
-      if (!profile) {
-        return res.status(500).end();
-        return;
-      }
-
-      await User.updateOne({ uid: token.uid }, { $set: profile });
-
-      return res.status(200).json(await User.findOne({ uid: token.uid }));
+      return res.status(200).json({});
     } catch (err) {
       next(err);
     }
@@ -363,12 +188,13 @@ router
 router
   .route("/rest")
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+    const { info } = req.body;
+
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const { info } = req.body;
-      await User.updateOne({ uid: token.uid }, { $set: { rest: info } });
+      await userServiceInstance.updateUser({ rest: info });
       return res.status(200).send({});
     } catch (err) {
       next(err);
@@ -376,25 +202,16 @@ router
   });
 
 router
-  .route("/rest")
+  .route("/score")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userScore = await User.collection
-        .aggregate([
-          {
-            $match: {
-              isActive: true,
-            },
-          },
-          {
-            $project: {
-              name: 1,
-              score: 1,
-            },
-          },
-        ])
-        .toArray();
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
+    try {
+      const userScore = await userServiceInstance.getUserInfo([
+        "name",
+        "score",
+      ]);
       return res.status(200).send(userScore);
     } catch (err) {
       next(err);
@@ -402,14 +219,12 @@ router
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { score, message } = req.body;
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const user = await User.findOne({ uid: token.uid });
-      if (!user) throw new Error();
-      user.score += score;
-      await user.save();
+      await userServiceInstance.updateScore(score);
       return res.status(200).send({});
     } catch (err) {
       next(err);
@@ -418,54 +233,30 @@ router
   .patch(async (req: Request, res: Response, next: NextFunction) => {});
 
 router
-  .route("/rest")
+  .route("/score/all")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const userScore = await User.collection
-      .aggregate([
-        {
-          $match: {
-            isActive: true,
-          },
-        },
-        {
-          $project: {
-            name: 1,
-            score: 1,
-          },
-        },
-      ])
-      .toArray();
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    const userScore = await userServiceInstance.getAllUserInfo([
+      "name",
+      "score",
+    ]);
 
     return res.status(200).send(userScore);
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { score, message } = req.body;
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
-
-    try {
-      const user = await User.findOne({ uid: token.uid });
-      if (!user) throw new Error();
-
-      user.score += score;
-      await user?.save();
-      return res.status(200).send({});
-    } catch (err) {
-      next(err);
-    }
   });
 
-router
-  .route("/withdrawal")
-  .delete(async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req;
-    if (!token) return res.status(401).send("Unauthorized");
+// router
+//   .route("/withdrawal")
+//   .delete(async (req: Request, res: Response, next: NextFunction) => {
+//     const { token } = req;
+//     if (!token) return res.status(401).send("Unauthorized");
 
-    try {
-      await withdrawal(token.accessToken as string);
-      return res.status(204).end();
-    } catch (err) {
-      next(err);
-    }
-  });
+//     try {
+//       await withdrawal(token.accessToken as string);
+//       return res.status(204).end();
+//     } catch (err) {
+//       next(err);
+//     }
+//   });
 module.exports = router;
