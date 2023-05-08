@@ -64,10 +64,9 @@ router
   .route("/:date")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
-    let { location } = req.query as { location: string };
+    let { location = "수원" } = req.query as { location: string };
     const { date } = req;
     if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    if (!location) location = "수원";
     if (!date) return res.status(400).send("no data");
 
     try {
@@ -157,7 +156,7 @@ router
     if (!date) return res.status(400).send("no data");
 
     try {
-      const arriveInfo = voteServiceInstance.getArrived(date);
+      const arriveInfo = await voteServiceInstance.getArrived(date);
       return res.status(200).json(arriveInfo);
     } catch (err) {
       next(err);

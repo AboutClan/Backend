@@ -58,11 +58,15 @@ Content-Type: application/json; charset=UTF-8
 ###
 POST http://localhost:3001/user/rest
 Authorization: Bearer {{jwt}}
-
 Content-Type: application/json; charset=UTF-8
 
 {
-  "info": {}
+  "info": {
+    "type": "일반휴식",
+    "startDate": "2023-04-04",
+    "endDate": "2023-04-05",
+    "content": "test"
+  }
 }
 ###
 GET http://localhost:3001/user/score
@@ -80,5 +84,43 @@ Content-Type: application/json; charset=UTF-8
 ###
 GET http://localhost:3001/user/score/all
 Authorization: Bearer {{jwt}}
+
 ###
+GET http://localhost:3001/vote/arrived?startDay=2023-05-06&endDay=2023-05-07
+Authorization: Bearer {{jwt}}
 ###
+
+GET http://localhost:3001/vote/2023-05-28
+Authorization: Bearer {{jwt}}
+
+###
+# POST http://localhost:3001/vote/2023-05-28
+# Authorization: Bearer {{jwt}}
+# Content-Type: application/json; charset=UTF-8
+
+# {
+#   place,
+#   subPlace,
+#   start,
+#   end
+# }
+
+###
+GET http://localhost:3001/vote/2023-05-07/absence
+Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3001/vote/2023-05-07/arrived
+Authorization: Bearer {{jwt}}
+
+###
+PATCH http://localhost:3001/vote/2023-05-07/confirm
+Authorization: Bearer {{jwt}}
+
+###
+PATCH http://localhost:3001/vote/2023-05-07/dismiss
+Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3001/vote/2023-05-07/start
+Authorization: Bearer {{jwt}}

@@ -153,8 +153,8 @@ export default class VoteService {
 
     const isVoting = vote.participations
       .flatMap((participation) =>
-        participation.attendances?.map((attendence) => {
-          return (attendence.user as IUser)?._id;
+        participation.attendences?.map((attendance) => {
+          return (attendance.user as IUser)?._id;
         })
       )
       .find((ObjId) => String(ObjId) === this.token.id);
@@ -180,7 +180,7 @@ export default class VoteService {
     if (isVoting) {
       vote.participations = vote.participations.map((participation) => ({
         ...participation,
-        attendences: participation.attendances?.filter((attandence) => {
+        attendences: participation.attendences?.filter((attandence) => {
           return (
             (attandence.user as IUser)?.uid.toString() !==
             this.token.uid?.toString()
@@ -204,7 +204,7 @@ export default class VoteService {
           return {
             ...participation,
             attendences: [
-              ...(participation.attendances || []),
+              ...(participation.attendences || []),
               { ...attendance, firstChoice: true },
             ],
           };
@@ -212,7 +212,7 @@ export default class VoteService {
           return {
             ...participation,
             attendences: [
-              ...(participation.attendances || []),
+              ...(participation.attendences || []),
               { ...attendance, firstChoice: false },
             ],
           };
@@ -230,7 +230,7 @@ export default class VoteService {
 
     if (start && end) {
       vote.participations.map((participation) => {
-        participation.attendances?.map((attendance) => {
+        participation.attendences?.map((attendance) => {
           if (
             (attendance.user as IUser)?.uid.toString() ===
             this.token.uid?.toString()
@@ -253,7 +253,7 @@ export default class VoteService {
 
     const isVoting = vote.participations
       .flatMap((participation) =>
-        participation.attendances?.map((attendence) => {
+        participation.attendences?.map((attendence) => {
           return (attendence.user as IUser)?._id;
         })
       )
@@ -265,7 +265,7 @@ export default class VoteService {
 
     vote.participations = vote.participations.map((participation) => ({
       ...participation,
-      attendences: participation.attendances?.filter((attendance) => {
+      attendences: participation.attendences?.filter((attendance) => {
         return (
           (attendance.user as IUser)?.uid.toString() !==
           this.token.uid?.toString()
@@ -304,7 +304,7 @@ export default class VoteService {
       const arriveForm: any = {};
       arriveForm[participation.place.fullname] = [];
       if (participation.status === "open") {
-        participation.attendences.forEach((att: any) => {
+        participation.attendences?.forEach((att: any) => {
           if (att.arrived) {
             arriveForm[participation.place.fullname].push({
               location: participation.place.fullname,
@@ -326,7 +326,7 @@ export default class VoteService {
     if (!vote) throw new Error();
 
     vote.participations.forEach((participation) => {
-      participation.attendances?.forEach((attendance) => {
+      participation.attendences?.forEach((attendance) => {
         if (
           (attendance.user as IUser).uid.toString() ===
           this.token.uid?.toString()
@@ -342,12 +342,12 @@ export default class VoteService {
     if (!vote) throw new Error();
 
     vote.participations.forEach((participation) => {
-      const isTargetParticipation = !!participation.attendances?.find(
+      const isTargetParticipation = !!participation.attendences?.find(
         (att) =>
           (att.user as IUser)?.uid.toString() === this.token.uid?.toString()
       );
       if (isTargetParticipation) {
-        participation.attendances = participation.attendances?.filter(
+        participation.attendences = participation.attendences?.filter(
           (att) =>
             (att.user as IUser)?.uid.toString() !== this.token.uid?.toString()
         );
