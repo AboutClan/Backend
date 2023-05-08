@@ -1,9 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import { JWT, decode } from "next-auth/jwt";
-import { IUser, User } from "../db/models/user";
-import { Vote } from "../db/models/vote";
-import dayjs from "dayjs";
-import { getProfile, withdrawal } from "../utils/oAuthUtils";
+import { decode } from "next-auth/jwt";
 import UserService from "../services/userService";
 
 const router = express.Router();
@@ -32,7 +28,7 @@ router
 
     try {
       const isActive = await userServiceInstance.getUserInfo(["isActive"]);
-      return res.status(200).json({ isActive });
+      return res.status(200).json(isActive);
     } catch (err) {
       next(err);
     }
@@ -60,7 +56,10 @@ router
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const comments = await userServiceInstance.getAllUserInfo(["comment"]);
+      const comments = await userServiceInstance.getAllUserInfo([
+        "comment",
+        "name",
+      ]);
       res.status(200).json({ comments });
     } catch (err) {
       next(err);

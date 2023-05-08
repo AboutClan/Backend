@@ -2,17 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { decode } from "next-auth/jwt";
 import { strToDate } from "../utils/dateUtils";
 import { findOneVote } from "../utils/voteUtils";
-import { IUser } from "../db/models/user";
-import {
-  IAbsence,
-  IAttendance,
-  IParticipation,
-  IVote,
-  Vote,
-} from "../db/models/vote";
-import { IPlace, Place } from "../db/models/place";
 import { IVoteStudyInfo } from "../types/vote";
-import dayjs from "dayjs";
 import VoteService from "../services/voteService";
 
 const router = express.Router();

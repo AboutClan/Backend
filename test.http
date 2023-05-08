@@ -1,3 +1,84 @@
 @jwt = eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..Fn_OIMIXbGc_ZZgD.jt8DTBJ9l_sBaqIf8_ged7ewcMXOrWKk5LTgO6_ri2xpBTBRia--8LDkUFg1gcdhAg93uGChjEz3iTAj7psg9mfrZGxbXwKo1gqLNDMZPYjtKp-EK7r--4CtmI48X995qeqhV_fSwrXX5dAzRhc7mlMehowrniqL9Y6t7QBRnFYo1RipdK5ineadmRgk2Ype4c3e-enOcff4usafQMtAeVwKWLuBosIvwra_MdIJJYBciC3JvH7IxBXvq6LTtvC4PzwoT_mRcBO9B5ELyPqxvPm9lCnhT-vpKLJ1RV7kjQkLbVpQpmGsjhbibb9iSYkLEtkBdGn7BOTNskb-CS6rPaXPqYKwIV-cAq06Zx3DOD0M5S6QN_btvWLN-oNgN2uvqEY7bTsN6Dul-JvwWuWYdAy2jDzPKvHvY0HaLPCMylPOBtf_wsSYRsCsWB6h-4FSrcvWmJwknzJ5tIwISsQK2yrrVoYcKgKOYer8PzN-9j7-BO5f6HfW4TOdazFxYyGhtLC6-LjicvWqLJUjYrW-CBU7arHXWUuJSzI_iukgzgEsA8t9SKtKfRl5D6azXsAYou3wwpaK6hBxpc7bfZ48YIvbaKHhs8exvtsVL20.rx-kBl6WHS8hsoU871mQOg
+
+GET http://localhost:3001/user/active
+Authorization: Bearer {{jwt}}
+### 
+GET http://localhost:3001/user/avatar
+Authorization: Bearer {{jwt}}
+###
+GET http://localhost:3001/user/comment
+Authorization: Bearer {{jwt}}
+###
+POST http://localhost:3001/user/comment HTTP/1.1
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{jwt}}
+
+{
+  "comment": "안녕하세요!"
+}
+###
+GET http://localhost:3001/user/participationrate
+Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3001/user/voterate
+Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3001/user/profile
+Authorization: Bearer {{jwt}}
+
+###
+POST http://localhost:3001/user/profile
+Authorization: Bearer {{jwt}}
+Content-Type: application/json; charset=UTF-8
+
+{
+  "comment": "안녕하세요! 잘 부탁드려요~"
+}
+
+###
+PATCH http://localhost:3001/user/profile
+Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3001/user/point
+Authorization: Bearer {{jwt}}
+
+###
+POST http://localhost:3001/user/point
+Authorization: Bearer {{jwt}}
+Content-Type: application/json; charset=UTF-8
+
+{
+  "point": 5
+}
+
+
+###
+POST http://localhost:3001/user/rest
+Authorization: Bearer {{jwt}}
+
+Content-Type: application/json; charset=UTF-8
+
+{
+  "info": {}
+}
+###
+GET http://localhost:3001/user/score
+Authorization: Bearer {{jwt}}
+
+###
+POST http://localhost:3001/user/score
+Authorization: Bearer {{jwt}}
+Content-Type: application/json; charset=UTF-8
+
+{
+  "score": 5
+}
+
+###
 GET http://localhost:3001/user/score/all
 Authorization: Bearer {{jwt}}
+###
+###
