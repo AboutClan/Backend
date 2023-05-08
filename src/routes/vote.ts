@@ -36,16 +36,12 @@ router
       endDay: string;
     };
 
-    try {
-      const results = await voteServiceInstance.getArrivedPeriod(
-        startDay,
-        endDay
-      );
+    const results = await voteServiceInstance.getArrivedPeriod(
+      startDay,
+      endDay
+    );
 
-      return res.status(200).json(results);
-    } catch (err) {
-      next(err);
-    }
+    return res.status(200).json(results);
   });
 
 router.use(
@@ -69,16 +65,12 @@ router
     if (!voteServiceInstance) return res.status(401).send("Unauthorized");
     if (!date) return res.status(400).send("no data");
 
-    try {
-      const filteredVote = await voteServiceInstance.getFilteredVote(
-        date,
-        location
-      );
+    const filteredVote = await voteServiceInstance.getFilteredVote(
+      date,
+      location
+    );
 
-      return res.status(200).json(filteredVote);
-    } catch (err) {
-      next(err);
-    }
+    return res.status(200).json(filteredVote);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { place, subPlace, start, end }: IVoteStudyInfo = req.body;
@@ -92,12 +84,8 @@ router
     const vote = await findOneVote(date);
     if (!vote) throw new Error();
 
-    try {
-      voteServiceInstance.setVote(date, { place, subPlace, start, end });
-      return res.status(204).end();
-    } catch (err) {
-      next(err);
-    }
+    voteServiceInstance.setVote(date, { place, subPlace, start, end });
+    return res.status(204).end();
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
@@ -107,12 +95,8 @@ router
 
     const { start, end }: IVoteStudyInfo = req.body;
 
-    try {
-      voteServiceInstance.patchVote(date, start, end);
-      return res.status(200).json();
-    } catch (err) {
-      next(err);
-    }
+    voteServiceInstance.patchVote(date, start, end);
+    return res.status(200).end();
   })
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
@@ -120,13 +104,8 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    try {
-      await voteServiceInstance.deleteVote(date);
-
-      return res.status(204).end();
-    } catch (err) {
-      next(err);
-    }
+    await voteServiceInstance.deleteVote(date);
+    return res.status(204).end();
   });
 
 //Todo: aggregate와 속도 비교
@@ -138,13 +117,8 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    try {
-      const result = await voteServiceInstance.getAbsence(date);
-
-      return res.status(200).json(result);
-    } catch (err) {
-      next(err);
-    }
+    const result = await voteServiceInstance.getAbsence(date);
+    return res.status(200).json(result);
   });
 
 router
@@ -155,12 +129,8 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    try {
-      const arriveInfo = await voteServiceInstance.getArrived(date);
-      return res.status(200).json(arriveInfo);
-    } catch (err) {
-      next(err);
-    }
+    const arriveInfo = await voteServiceInstance.getArrived(date);
+    return res.status(200).json(arriveInfo);
   });
 
 router
@@ -171,12 +141,8 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    try {
-      await voteServiceInstance.patchConfirm(date);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
-    }
+    await voteServiceInstance.patchConfirm(date);
+    return res.status(200).end();
   });
 
 router
@@ -187,12 +153,8 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    try {
-      voteServiceInstance.patchDismiss(date);
-      return res.status(204).end();
-    } catch (err) {
-      next(err);
-    }
+    voteServiceInstance.patchDismiss(date);
+    return res.status(204).end();
   });
 
 router
@@ -203,12 +165,8 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    try {
-      const result = await voteServiceInstance.getStart(date);
-      res.status(200).json(result);
-    } catch (err) {
-      next(err);
-    }
+    const result = await voteServiceInstance.getStart(date);
+    res.status(200).json(result);
   });
 
 module.exports = router;

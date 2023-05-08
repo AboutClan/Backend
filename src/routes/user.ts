@@ -26,13 +26,8 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      const isActive = await userServiceInstance.getUserInfo(["isActive"]);
-      return res.status(200).json(isActive);
-    } catch (err) {
-      next(err);
-    }
-    res.send("okay");
+    const isActive = await userServiceInstance.getUserInfo(["isActive"]);
+    return res.status(200).json(isActive);
   });
 
 router
@@ -41,12 +36,8 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      const avatar = await userServiceInstance.getUserInfo(["avatar"]);
-      return res.status(200).json(avatar);
-    } catch (err) {
-      next(err);
-    }
+    const avatar = await userServiceInstance.getUserInfo(["avatar"]);
+    return res.status(200).json(avatar);
   });
 
 router
@@ -55,27 +46,19 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      const comments = await userServiceInstance.getAllUserInfo([
-        "comment",
-        "name",
-      ]);
-      res.status(200).json({ comments });
-    } catch (err) {
-      next(err);
-    }
+    const comments = await userServiceInstance.getAllUserInfo([
+      "comment",
+      "name",
+    ]);
+    res.status(200).json({ comments });
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { comment = "" } = req.body;
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      await userServiceInstance.updateUser({ comment });
-      return res.status(200).send({});
-    } catch (err) {
-      next(err);
-    }
+    await userServiceInstance.updateUser({ comment });
+    return res.status(200).end();
   });
 
 router
@@ -87,14 +70,12 @@ router
     const { startDay, endDay }: { startDay: string; endDay: string } =
       req.query as any;
 
-    try {
-      const participationResult =
-        await userServiceInstance.getParticipationRate(startDay, endDay);
+    const participationResult = await userServiceInstance.getParticipationRate(
+      startDay,
+      endDay
+    );
 
-      return res.status(200).json(participationResult);
-    } catch (err) {
-      next(err);
-    }
+    return res.status(200).json(participationResult);
   });
 
 router
@@ -106,16 +87,12 @@ router
     const { startDay, endDay }: { startDay: string; endDay: string } =
       req.query as any;
 
-    try {
-      const voteResult = await userServiceInstance.getParticipationRate(
-        startDay,
-        endDay
-      );
+    const voteResult = await userServiceInstance.getParticipationRate(
+      startDay,
+      endDay
+    );
 
-      return res.status(200).json(voteResult);
-    } catch (err) {
-      next(err);
-    }
+    return res.status(200).json(voteResult);
   });
 
 router
@@ -123,36 +100,25 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
-    try {
-      const targetUser = await userServiceInstance.getUserInfo([]);
-      return res.status(200).json(targetUser);
-    } catch (err) {
-      next(err);
-    }
+
+    const targetUser = await userServiceInstance.getUserInfo([]);
+    return res.status(200).json(targetUser);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
     const registerForm = req.body || {};
 
-    try {
-      await userServiceInstance.updateUser(registerForm);
-      const undatedUser = await userServiceInstance.getUserInfo([]);
-      return res.status(200).json(undatedUser);
-    } catch (err) {
-      next(err);
-    }
+    await userServiceInstance.updateUser(registerForm);
+    const undatedUser = await userServiceInstance.getUserInfo([]);
+    return res.status(200).json(undatedUser);
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      const updatedUser = await userServiceInstance.patchProfile();
-      return res.status(200).json(updatedUser);
-    } catch (err) {
-      next(err);
-    }
+    const updatedUser = await userServiceInstance.patchProfile();
+    return res.status(200).json(updatedUser);
   });
 
 router
@@ -161,13 +127,8 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      const userPoint = await userServiceInstance.getUserInfo(["point"]);
-
-      return res.status(200).send(userPoint);
-    } catch (err) {
-      next(err);
-    }
+    const userPoint = await userServiceInstance.getUserInfo(["point"]);
+    return res.status(200).send(userPoint);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { point } = req.body;
@@ -175,13 +136,8 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      await userServiceInstance.updatePoint(point);
-
-      return res.status(200).json({});
-    } catch (err) {
-      next(err);
-    }
+    await userServiceInstance.updatePoint(point);
+    return res.status(200).end();
   });
 
 router
@@ -192,12 +148,8 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      await userServiceInstance.updateUser({ rest: info });
-      return res.status(200).send({});
-    } catch (err) {
-      next(err);
-    }
+    await userServiceInstance.updateUser({ rest: info });
+    return res.status(200).end();
   });
 
 router
@@ -206,15 +158,8 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      const userScore = await userServiceInstance.getUserInfo([
-        "name",
-        "score",
-      ]);
-      return res.status(200).send(userScore);
-    } catch (err) {
-      next(err);
-    }
+    const userScore = await userServiceInstance.getUserInfo(["name", "score"]);
+    return res.status(200).send(userScore);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { score, message } = req.body;
@@ -222,12 +167,8 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    try {
-      await userServiceInstance.updateScore(score);
-      return res.status(200).send({});
-    } catch (err) {
-      next(err);
-    }
+    await userServiceInstance.updateScore(score);
+    return res.status(200).end();
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {});
 
