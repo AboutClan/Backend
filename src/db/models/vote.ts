@@ -21,6 +21,7 @@ export interface IPlaceStatus {
 export interface IParticipation extends IPlaceStatus, ITimeStartToEndHM {
   place?: IPlace;
   attendances?: IAttendance[];
+  attendences?: IAttendance[];
   absences?: IAbsence[];
   startTime?: Date;
   endTime?: Date;
@@ -108,6 +109,7 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
     },
 
     attendances: [AttendanceSchema],
+    attendences: [AttendanceSchema],
     absences: [AbsenceSchema],
     startTime: Date,
     endTime: Date,
