@@ -4,11 +4,8 @@
   "description": "This app is backend of About service",
   "main": "src/app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc --watch",
     "start": "nodemon -q dist/src/app.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\"",
-    "tsnode-dev": "nodemon --watch \"*.ts\" --exec \"ts-node\" app.ts"
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\""
   },
   "repository": {
     "type": "git",
