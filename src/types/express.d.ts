@@ -3,6 +3,9 @@ import { Request } from "express";
 import { JWT } from "next-auth/jwt";
 import UserService from "../services/userService";
 import VoteService from "../services/voteService";
+import BookService from "../services/bookService";
+import PlazaService from "../services/plazaService";
+import PlaceService from "../services/placeService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -15,6 +18,9 @@ declare global {
       date?: Date;
       userServiceInstance?: UserService;
       voteServiceInstance?: VoteService;
+      placeServiceInstance?: PlaceService;
+      plazaServiceInstance?: PlazaService;
+      bookServiceInstance?: BookService;
     }
   }
 }
