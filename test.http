@@ -4,6 +4,10 @@ GET https://forbacktest.herokuapp.com/user/active
 Authorization: Bearer {{jwt}}
 
 ###
+GET https://forbacktest.herokuapp.com:3001/user/active
+Authorization: Bearer {{jwt}}
+
+###
 GET http://localhost:3001/user/active
 Authorization: Bearer {{jwt}}
 ### 

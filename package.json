@@ -4,7 +4,7 @@
   "description": "This app is backend of About service",
   "main": "src/app.ts",
   "scripts": {
-    "start": "node dist/src/app.js",
+    "start": "npx tsc && node dist/src/app.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\""
   },
   "repository": {
