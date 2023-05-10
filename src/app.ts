@@ -7,17 +7,21 @@ import ErrorHandler from "./middlewares/ErrorHandler";
 import helmet from "helmet";
 import compression from "compression";
 import dbConnect from "./db/conn";
+import { config } from "./config/config";
 
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");
+const plaza = require("./routes/plaza");
+const place = require("./routes/place");
+const book = require("./routes/book");
 
 class App {
   private app: express.Application;
   private port: number;
 
   constructor() {
-    this.port = 3001;
+    this.port = parseInt(config.server.port.toString());
     this.app = express();
     this.setupMiddlewares();
     this.setupRoutes();
@@ -34,8 +38,12 @@ class App {
 
   setupRoutes() {
     // 라우터 설정
+    this.app.get("/", (req, res, next) => res.send("hello world"));
     this.app.use("/user", user);
     this.app.use("/vote", vote);
+    this.app.use("/plaza", plaza);
+    this.app.use("/place", place);
+    this.app.use("/book", book);
 
     this.app.use(ErrorHandler);
   }
