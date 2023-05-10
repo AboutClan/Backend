@@ -7,6 +7,7 @@ import ErrorHandler from "./middlewares/ErrorHandler";
 import helmet from "helmet";
 import compression from "compression";
 import dbConnect from "./db/conn";
+import { config } from "./config/config";
 
 //router
 const user = require("./routes/user");
@@ -17,7 +18,7 @@ class App {
   private port: number;
 
   constructor() {
-    this.port = 3001;
+    this.port = parseInt(config.server.port.toString());
     this.app = express();
     this.setupMiddlewares();
     this.setupRoutes();
