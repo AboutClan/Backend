@@ -132,3 +132,15 @@ Authorization: Bearer {{jwt}}
 ###
 GET http://localhost:3001/vote/2023-05-07/start
 Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3000/book
+Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3000/place
+Authorization: Bearer {{jwt}}
+
+###
+GET http://localhost:3000/plaza
+Authorization: Bearer {{jwt}}

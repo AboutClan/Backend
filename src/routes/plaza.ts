@@ -10,4 +10,12 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-export default router;
+router.route("/").get((req, res, next) => {
+  const { plazaServiceInstance } = req;
+  if (!plazaServiceInstance) throw new Error();
+
+  const plazaData = plazaServiceInstance.getPlaza();
+  res.status(200).json(plazaData);
+});
+
+module.exports = router;

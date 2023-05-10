@@ -9,4 +9,14 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+router
+  .route("/")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { bookServiceInstance } = req;
+    if (!bookServiceInstance) throw new Error();
+
+    const bookList = await bookServiceInstance.getBookList();
+    res.status(200).send(bookList);
+  });
+
 module.exports = router;

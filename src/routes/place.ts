@@ -10,4 +10,13 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+router.route("/").get(async (req, res, next) => {
+  const { placeServiceInstance } = req;
+  if (!placeServiceInstance) throw new Error();
+
+  const places = await placeServiceInstance.getActivePlace();
+
+  return res.status(200).json(places);
+});
+
 module.exports = router;
