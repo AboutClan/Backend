@@ -34,6 +34,7 @@ class App {
 
   setupRoutes() {
     // 라우터 설정
+    this.app.get("/", (req, res, next) => res.send("hello world"));
     this.app.use("/user", user);
     this.app.use("/vote", vote);
 
