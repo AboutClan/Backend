@@ -11,7 +11,7 @@ const TZ_SEOUL = "Asia/Seoul";
 export const now = () => dayjs().tz(TZ_SEOUL);
 
 export const strToDate = (dateStr: string) => {
-  return dayjs(dateStr, "YYYY-MM-DD").startOf("day");
+  return dayjs(dateStr, "YYYY-MM-DD").startOf("day").utc();
 };
 
 const dateParser = (dateStr: string) => {
