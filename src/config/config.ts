@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3001;
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-dayjs.tz("2023-05-14 15:00", "Asia/Seoul");
+dayjs.tz("2023-05-14 00:00", "Asia/Seoul");
 dayjs.tz.setDefault();
 
 export const config = {
