@@ -9,10 +9,8 @@ const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return;
 
-  if (token?.toString() == "undefined" || !token)
-    return res.status(401).send("Unauthorized");
+  if (token?.toString() == "undefined" || !token) return;
 
   const decodedToken = await decode({
     token,
@@ -64,7 +62,8 @@ router
   .route("/:date")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
-    let { location = "수원" } = req.query as { location: string };
+    let { location } = req.query as { location: string };
+    if (!location || location.toString() == "undefined") location = "수원";
     const { date } = req;
     if (!voteServiceInstance) return res.status(401).send("Unauthorized");
     if (!date) return res.status(400).send("no data");
