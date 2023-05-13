@@ -34,7 +34,6 @@ class App {
     this.app.use(
       cors({
         origin: "*",
-        credentials: true,
       })
     );
     this.app.use(helmet());
