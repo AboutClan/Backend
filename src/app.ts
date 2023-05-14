@@ -16,6 +16,7 @@ const vote = require("./routes/vote");
 const plaza = require("./routes/plaza");
 const place = require("./routes/place");
 const book = require("./routes/book");
+const admin = require("./routes/admin/admin");
 
 class App {
   private app: express.Application;
@@ -50,6 +51,7 @@ class App {
     this.app.use("/plaza", plaza);
     this.app.use("/place", place);
     this.app.use("/book", book);
+    this.app.use("/admin", admin);
 
     this.app.use(ErrorHandler);
   }
