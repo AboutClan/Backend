@@ -7,11 +7,11 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3001;
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
 
-dayjs.tz("2023-05-14 00:00", "Asia/Seoul");
-dayjs.tz.setDefault();
+// dayjs.tz("2023-05-14 00:00", "Asia/Seoul");
+// dayjs.tz.setDefault();
 
 export const config = {
   server: {
