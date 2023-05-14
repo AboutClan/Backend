@@ -51,7 +51,9 @@ router.use(
   async (req: Request, res: Response, next: NextFunction) => {
     const { date: dateStr } = req.params;
     const dayjsDate = strToDate(dateStr);
+    console.log(1, dayjsDate);
     const date = dayjsDate.toDate();
+    console.log(2, date);
 
     req.date = date;
     next();
