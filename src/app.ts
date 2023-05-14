@@ -8,6 +8,7 @@ import helmet from "helmet";
 import compression from "compression";
 import dbConnect from "./db/conn";
 import { config } from "./config/config";
+import { dbSet } from "./middlewares/dbSet";
 
 //router
 const user = require("./routes/user");
@@ -38,6 +39,7 @@ class App {
     );
     this.app.use(helmet());
     this.app.use(compression());
+    this.app.use(dbSet);
   }
 
   setupRoutes() {
