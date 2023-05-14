@@ -169,7 +169,6 @@ export default class VoteService {
       (participation) => participation.place?.location === location
     );
 
-    console.log(date, location, filteredVote);
     return filteredVote;
   }
 
