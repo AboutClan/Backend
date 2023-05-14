@@ -12,7 +12,7 @@ export const now = () => dayjs().tz(TZ_SEOUL);
 
 export const strToDate = (dateStr: string) => {
   dayjs().tz(TZ_SEOUL);
-  return dayjs(dateStr, "YYYY-MM-DD");
+  return dayjs(dateStr, "YYYY-MM-DD").tz(TZ_SEOUL);
 };
 
 const dateParser = (dateStr: string) => {
