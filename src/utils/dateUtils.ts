@@ -12,7 +12,7 @@ dayjs.tz.setDefault(TZ_SEOUL);
 export const now = () => dayjs().tz(TZ_SEOUL);
 
 export const strToDate = (dateStr: string) => {
-  return dayjs(dateStr, "YYYY-MM-DD").tz(TZ_SEOUL);
+  return dayjs(dateStr, "YYYY-MM-DD").tz(TZ_SEOUL).startOf("day");
 };
 
 // const dateParser = (dateStr: string) => {
