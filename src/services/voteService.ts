@@ -294,6 +294,40 @@ export default class VoteService {
     return result;
   }
 
+  async setAbsence(date: any, message: string) {
+    const vote = await this.getVote(date);
+
+    await vote?.participations.map((participation) => {
+      participation.attendences?.map((attendence) => {
+        if (
+          (attendence.user as IUser)?.uid.toString() ===
+            this.token.uid?.toString() &&
+          attendence.firstChoice
+        ) {
+          if (
+            !participation.absences?.some(
+              (absence) =>
+                (absence.user as IUser)?.uid.toString() ===
+                this.token.uid?.toString()
+            )
+          )
+            participation.absences = [
+              ...(participation.absences || []),
+              {
+                user: this.token.id as string,
+                noShow: true,
+                message,
+              },
+            ];
+        }
+      });
+    });
+
+    await vote?.save();
+
+    return;
+  }
+
   async getArrived(date: any) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
