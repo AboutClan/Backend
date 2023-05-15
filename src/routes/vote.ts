@@ -124,6 +124,16 @@ router
 
     const result = await voteServiceInstance.getAbsence(date);
     return res.status(200).json(result);
+  })
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
+    const { date } = req;
+    if (!date) return res.status(400).send("no data");
+    const { message = "" } = req.body;
+
+    const result = await voteServiceInstance.setAbsence(date, message);
+    return res.status(200).json(result);
   });
 
 router
