@@ -11,35 +11,39 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router
   .route("/")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
+  .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { adminVoteServiceInstance } = req;
     if (!adminVoteServiceInstance) throw new Error();
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminVoteServiceInstance } = req;
-    if (!adminVoteServiceInstance) throw new Error();
+
+    await adminVoteServiceInstance.deleteVote();
+
+    res.status(200).end();
   });
 
 router
   .route("/:date/status/confirm")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { adminVoteServiceInstance } = req;
     if (!adminVoteServiceInstance) throw new Error();
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminVoteServiceInstance } = req;
-    if (!adminVoteServiceInstance) throw new Error();
+
+    const { date: dateStr } = req.params;
+
+    await adminVoteServiceInstance.confirm(dateStr);
+
+    res.status(200).end();
   });
 
 router
   .route("/:date/status/waitingConfirm")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { adminVoteServiceInstance } = req;
     if (!adminVoteServiceInstance) throw new Error();
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminVoteServiceInstance } = req;
-    if (!adminVoteServiceInstance) throw new Error();
+
+    const { date: dateStr } = req.params;
+
+    await adminVoteServiceInstance.waitingConfirm(dateStr);
+
+    res.status(200).end();
   });
 
 module.exports = router;
