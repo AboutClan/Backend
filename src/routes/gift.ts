@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import { decode } from "next-auth/jwt";
-import StoreService from "../services/storeService";
-import { GiftModel } from "../db/models/gift";
+import GiftService from "../services/giftService";
 
 const router = express.Router();
 
@@ -18,8 +17,8 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   if (!decodedToken) {
     return res.status(401).send("Unauthorized");
   } else {
-    const storeService = new StoreService(decodedToken);
-    req.storeServiceInstance = storeService;
+    const giftService = new GiftService(decodedToken);
+    req.giftServiceInstance = giftService;
     next();
   }
 });
@@ -27,27 +26,29 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 router
   .route("/")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { storeServiceInstance } = req;
-    if (!storeServiceInstance) return res.status(401).send("Unauthorized");
+    const { giftServiceInstance } = req;
+    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
-    await storeServiceInstance.getAllGift();
+    await giftServiceInstance.getGift();
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { name, cnt, giftId } = req.body;
 
-    const { storeServiceInstance } = req;
-    if (!storeServiceInstance) return res.status(401).send("Unauthorized");
+    const { giftServiceInstance } = req;
+    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
-    const user = await storeServiceInstance.setGift(name, cnt, giftId);
+    const user = await giftServiceInstance.setGift(name, cnt, giftId);
 
     res.status(200).json({ user });
   });
 
 router
-  .route("/gift/:id")
+  .route("/all")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { storeServiceInstance } = req;
-    if (!storeServiceInstance) return res.status(401).send("Unauthorized");
+    const { giftServiceInstance } = req;
+    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
-    await storeServiceInstance.getGift();
+    await giftServiceInstance.getAllGift();
   });
+
+module.exports = router;
