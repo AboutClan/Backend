@@ -15,8 +15,8 @@ export default class GiftService {
     return giftUsers;
   }
 
-  async getGift() {
-    const giftUser = await GiftModel.find({ giftId: this.token.uid }).select(
+  async getGift(id: number) {
+    const giftUser = await GiftModel.find({ giftId: id }).select(
       "-_id -createdAt -updatedAt -__v"
     );
 

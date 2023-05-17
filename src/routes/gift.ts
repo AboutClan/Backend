@@ -25,16 +25,6 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router
   .route("/")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { giftServiceInstance } = req;
-    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
-
-    const user = await giftServiceInstance.getGift();
-
-    res.status(200).json({ user });
-
-    res;
-  })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { name, cnt, giftId } = req.body;
 
@@ -44,6 +34,20 @@ router
     const user = await giftServiceInstance.setGift(name, cnt, giftId);
 
     res.status(200).json({ user });
+  });
+
+router
+  .route("/:id")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { giftServiceInstance } = req;
+    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
+
+    const { id } = req.params;
+    const user = await giftServiceInstance.getGift(parseInt(id));
+
+    res.status(200).json({ user });
+
+    res;
   });
 
 router
