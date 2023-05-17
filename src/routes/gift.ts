@@ -29,7 +29,11 @@ router
     const { giftServiceInstance } = req;
     if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
-    await giftServiceInstance.getGift();
+    const user = await giftServiceInstance.getGift();
+
+    res.status(200).json({ user });
+
+    res;
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { name, cnt, giftId } = req.body;
@@ -48,7 +52,8 @@ router
     const { giftServiceInstance } = req;
     if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
-    await giftServiceInstance.getAllGift();
+    const user = await giftServiceInstance.getAllGift();
+    res.status(200).json({ user });
   });
 
 module.exports = router;

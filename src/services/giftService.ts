@@ -31,6 +31,7 @@ export default class GiftService {
     });
 
     if (existingUser) {
+      console.log(1);
       const user = await GiftModel.findOneAndUpdate(
         { uid: this.token.uid },
         { name, uid, cnt: existingUser.cnt + cnt, giftId },
@@ -50,6 +51,7 @@ export default class GiftService {
       return resUser;
     }
     const newUser = await GiftModel.create({ name, uid, cnt, giftId });
+    console.log(2, newUser);
     const user = {
       name: newUser.name,
       uid: newUser.uid,
