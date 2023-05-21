@@ -17,6 +17,7 @@ const plaza = require("./routes/plaza");
 const place = require("./routes/place");
 const book = require("./routes/book");
 const gift = require("./routes/gift");
+const register = require("./routes/register");
 const admin = require("./routes/admin/admin");
 
 class App {
@@ -50,6 +51,7 @@ class App {
     this.app.use("/book", book);
     this.app.use("/admin", admin);
     this.app.use("/gift", gift);
+    this.app.use("/register", register);
 
     this.app.use(ErrorHandler);
   }
