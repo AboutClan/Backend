@@ -9,6 +9,7 @@ import PlaceService from "../services/placeService";
 import AdminUserService from "../services/adminUserServices";
 import AdminVoteService from "../services/adminVoteServices";
 import StoreService from "../services/giftService";
+import RegisterService from "../services/registerService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -25,6 +26,7 @@ declare global {
       plazaServiceInstance?: PlazaService;
       bookServiceInstance?: BookService;
       giftServiceInstance?: StoreService;
+      registerServiceInstance?: RegisterService;
       adminUserServiceInstance?: AdminUserService;
       adminVoteServiceInstance?: AdminVoteService;
     }

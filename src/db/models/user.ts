@@ -1,4 +1,5 @@
 import mongoose, { model, Schema, Model, Document } from "mongoose";
+import { IRegistered, InterestSchema } from "./registered";
 
 export interface restType {
   type: string;
@@ -12,21 +13,14 @@ export interface avatarType {
   bg: number;
 }
 
-export interface IUser extends Document {
-  uid: string;
+export interface IUser extends Document, IRegistered {
   registerDate: string;
   isActive?: boolean;
-  birth: string;
-  mbti: string;
-  gender: string;
-  name: string;
   point: number;
-  profileImage: string;
   role?: string;
   score: number;
   comment: string;
   rest: restType;
-  location: string;
   avatar: avatarType;
 }
 
@@ -57,6 +51,24 @@ export const UserSchema: Schema<IUser> = new Schema({
     type: String,
     required: true,
   },
+  location: {
+    type: String,
+    enum: ["수원", "양천", "안양"],
+    default: "수원",
+  },
+  mbti: {
+    type: String,
+    default: "",
+  },
+  gender: {
+    type: String,
+    default: "",
+  },
+  profileImage: {
+    type: String,
+    default:
+      "https://user-images.githubusercontent.com/48513798/173180642-8fc5948e-a437-45f3-91d0-3f0098a38195.png",
+  },
   registerDate: {
     type: String,
     default: "",
@@ -68,20 +80,6 @@ export const UserSchema: Schema<IUser> = new Schema({
   birth: {
     type: String,
     default: "",
-  },
-  mbti: {
-    type: String,
-    default: "",
-  },
-  gender: {
-    type: String,
-    default: "",
-  },
-
-  profileImage: {
-    type: String,
-    default:
-      "https://user-images.githubusercontent.com/48513798/173180642-8fc5948e-a437-45f3-91d0-3f0098a38195.png",
   },
   role: String,
   score: {
@@ -97,12 +95,21 @@ export const UserSchema: Schema<IUser> = new Schema({
     default: "안녕하세요! 잘 부탁드립니다~!",
   },
   rest: restSchema,
-  location: {
-    type: String,
-    enum: ["수원", "양천"],
-    default: "수원",
-  },
   avatar: avatarSchema,
+  message: {
+    type: String,
+    default: "",
+  },
+  major: {
+    type: [String],
+  },
+  interests: {
+    type: InterestSchema,
+  },
+  telephone: {
+    type: String,
+    default: "",
+  },
 });
 
 export const User =

@@ -17,6 +17,7 @@ const plaza = require("./routes/plaza");
 const place = require("./routes/place");
 const book = require("./routes/book");
 const gift = require("./routes/gift");
+const register = require("./routes/register");
 const admin = require("./routes/admin/admin");
 
 class App {
@@ -44,6 +45,7 @@ class App {
     // 라우터 설정
     this.app.get("/", (req, res, next) => res.send("hello world"));
     this.app.use("/user", user);
+    this.app.use("/register", register);
     this.app.use("/vote", vote);
     this.app.use("/plaza", plaza);
     this.app.use("/place", place);
