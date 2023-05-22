@@ -26,6 +26,14 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router
   .route("/")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { registerServiceInstance } = req;
+    if (!registerServiceInstance) return res.status(401).send("Unauthorized");
+
+    const registeredUsers = await registerServiceInstance.getRegister();
+
+    return res.status(200).json(registeredUsers);
+  })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const registerForm = req.body;
 
