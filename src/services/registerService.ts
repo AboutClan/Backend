@@ -13,28 +13,16 @@ export default class RegisterService {
     const key = process.env.cryptoKey;
     if (!key) return tel;
 
-    const cipher = CryptoJS.AES.encrypt(tel, CryptoJS.enc.Utf8.parse(key), {
-      iv: CryptoJS.enc.Utf8.parse(""),
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-    return cipher.toString();
+    return CryptoJS.AES.encrypt(tel, key).toString();
   }
 
   async decodeByAES256(encodedTel: string) {
     const key = process.env.cryptoKey;
     if (!key) return encodedTel;
 
-    const cipher = CryptoJS.AES.decrypt(
-      encodedTel,
-      CryptoJS.enc.Utf8.parse(key),
-      {
-        iv: CryptoJS.enc.Utf8.parse(""),
-        padding: CryptoJS.pad.Pkcs7,
-        mode: CryptoJS.mode.CBC,
-      }
-    );
-    return cipher.toString(CryptoJS.enc.Utf8);
+    const bytes = CryptoJS.AES.decrypt(encodedTel, key);
+    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+    return originalText;
   }
 
   async register(subRegisterForm: Omit<IRegistered, "uid" | "profileImage">) {
@@ -78,5 +66,15 @@ export default class RegisterService {
 
   async deleteRegisterUser(uid: string) {
     await Registered.deleteOne({ uid });
+  }
+
+  async getRegister() {
+    const users = await Registered.find({});
+
+    users.forEach(async (user) => {
+      user.telephone = await this.decodeByAES256(user.telephone);
+    });
+
+    return users;
   }
 }
