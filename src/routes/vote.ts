@@ -10,7 +10,8 @@ const router = express.Router();
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(" ")[1];
 
-  if (token?.toString() == "undefined" || !token) return;
+  if (token?.toString() == "undefined" || !token)
+    return res.status(401).send("Unauthorized");
 
   const decodedToken = await decode({
     token,

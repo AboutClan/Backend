@@ -45,13 +45,13 @@ class App {
     // 라우터 설정
     this.app.get("/", (req, res, next) => res.send("hello world"));
     this.app.use("/user", user);
+    this.app.use("/register", register);
     this.app.use("/vote", vote);
     this.app.use("/plaza", plaza);
     this.app.use("/place", place);
     this.app.use("/book", book);
     this.app.use("/admin", admin);
     this.app.use("/gift", gift);
-    this.app.use("/register", register);
 
     this.app.use(ErrorHandler);
   }

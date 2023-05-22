@@ -5,17 +5,33 @@ export interface IMajor {
   detail: string;
 }
 
+export interface IInterest {
+  first: string;
+  second: string;
+}
+
 export interface IRegistered extends Document {
   uid: string;
   name: string;
-  major: string[];
-  interests: { first: string; second: string };
-  telephone: string;
   location: string;
   mbti?: string;
   gender: string;
-  profileImg: string;
+  profileImage: string;
+  birth: string;
+
+  message: string;
+  major: string[];
+  interests: IInterest;
+  telephone: string;
 }
+
+export const InterestSchema: Schema<IInterest> = new Schema(
+  {
+    first: String,
+    second: String,
+  },
+  { _id: false, timestamps: true, strict: false }
+);
 
 export const RegisteredSchema: Schema<IRegistered> = new Schema({
   uid: {
@@ -31,7 +47,7 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     required: true,
   },
   interests: {
-    type: { first: String, second: String },
+    type: InterestSchema,
     required: true,
   },
   telephone: {
@@ -39,6 +55,10 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     required: true,
   },
   location: {
+    type: String,
+    required: true,
+  },
+  message: {
     type: String,
     required: true,
   },
@@ -50,7 +70,7 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     type: String,
     required: true,
   },
-  profileImg: {
+  profileImage: {
     type: String,
     required: true,
   },
