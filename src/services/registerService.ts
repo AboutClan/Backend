@@ -28,6 +28,7 @@ export default class RegisterService {
   async register(subRegisterForm: Omit<IRegistered, "uid" | "profileImage">) {
     const { telephone } = subRegisterForm;
     const encodedTel = await this.encodeByAES56(telephone);
+    console.log(encodedTel);
     if (encodedTel === telephone) throw new Error();
 
     const registerForm = {
@@ -36,6 +37,7 @@ export default class RegisterService {
       ...subRegisterForm,
       telephone: encodedTel,
     };
+
     await Registered.findOneAndUpdate({ uid: this.token.uid }, registerForm, {
       upsert: true,
       new: true,
@@ -51,11 +53,8 @@ export default class RegisterService {
     const userForm = {
       ...user.toObject(),
       registerDate: new Date(),
-      isActive: false,
-      point: 0,
+      isActive: true,
       role: "member",
-      score: 0,
-      comment: "",
     };
 
     await User.create(userForm);

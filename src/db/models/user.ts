@@ -22,6 +22,7 @@ export interface IUser extends Document, IRegistered {
   comment: string;
   rest: restType;
   avatar: avatarType;
+  deposit: number;
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -109,6 +110,10 @@ export const UserSchema: Schema<IUser> = new Schema({
   telephone: {
     type: String,
     default: "",
+  },
+  deposit: {
+    type: Number,
+    default: 2000,
   },
 });
 
