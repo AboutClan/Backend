@@ -10,11 +10,11 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-router.route("/").get((req, res, next) => {
+router.route("/").get(async (req, res, next) => {
   const { plazaServiceInstance } = req;
   if (!plazaServiceInstance) throw new Error();
 
-  const plazaData = plazaServiceInstance.getPlaza();
+  const plazaData = await plazaServiceInstance.getPlaza();
   res.status(200).json(plazaData);
 });
 
