@@ -54,10 +54,12 @@ export default class RegisterService {
       ...user.toObject(),
       registerDate: new Date(),
       isActive: true,
-      role: "member",
     };
 
-    await User.create(userForm);
+    await User.findOneAndUpdate({ uid }, userForm, {
+      upsert: true,
+      new: true,
+    });
     await this.deleteRegisterUser(uid);
 
     return;
