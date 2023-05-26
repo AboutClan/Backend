@@ -82,7 +82,10 @@ export const UserSchema: Schema<IUser> = new Schema({
     type: String,
     default: "",
   },
-  role: String,
+  role: {
+    type: String,
+    default: "member",
+  },
   score: {
     type: Number,
     default: 0,
