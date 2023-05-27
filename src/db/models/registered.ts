@@ -20,7 +20,7 @@ export interface IRegistered extends Document {
   birth: string;
 
   message: string;
-  major: string[];
+  majors: string[];
   interests: IInterest;
   telephone: string;
 }
@@ -42,7 +42,7 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     type: String,
     required: true,
   },
-  major: {
+  majors: {
     type: [String],
     required: true,
   },

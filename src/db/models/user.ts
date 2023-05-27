@@ -104,7 +104,7 @@ export const UserSchema: Schema<IUser> = new Schema({
     type: String,
     default: "",
   },
-  major: {
+  majors: {
     type: [String],
   },
   interests: {
