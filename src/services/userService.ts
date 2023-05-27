@@ -3,11 +3,21 @@ import { IUser, User } from "../db/models/user";
 import dayjs from "dayjs";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
+import * as CryptoJS from "crypto-js";
 
 export default class UserService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
+  }
+
+  async decodeByAES256(encodedTel: string) {
+    const key = process.env.cryptoKey;
+    if (!key) return encodedTel;
+
+    const bytes = CryptoJS.AES.decrypt(encodedTel, key);
+    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+    return originalText;
   }
 
   createQueryString(strArr: string[]) {
@@ -26,14 +36,22 @@ export default class UserService {
       "-_id" + queryString
     );
 
+    if (!result) return;
+
+    result.telephone = await this.decodeByAES256(result.telephone);
+
     return result;
   }
 
   async getAllUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
-    const result = await User.find({}, "-_id" + queryString);
+    const users = await User.find({}, "-_id" + queryString);
 
-    return result;
+    users.forEach(async (user) => {
+      user.telephone = await this.decodeByAES256(user.telephone);
+    });
+
+    return users;
   }
 
   async updateUser(updateInfo: Partial<IUser>) {
