@@ -12,6 +12,7 @@ export default class UserService {
   }
 
   async decodeByAES256(encodedTel: string) {
+    console.log(1);
     const key = process.env.cryptoKey;
     if (!key) return encodedTel;
 
@@ -38,7 +39,8 @@ export default class UserService {
 
     if (!result) return;
 
-    result.telephone = await this.decodeByAES256(result.telephone);
+    if (result.telephone)
+      result.telephone = await this.decodeByAES256(result.telephone);
 
     return result;
   }
@@ -48,7 +50,8 @@ export default class UserService {
     const users = await User.find({}, "-_id" + queryString);
 
     users.forEach(async (user) => {
-      user.telephone = await this.decodeByAES256(user.telephone);
+      if (user.telephone)
+        user.telephone = await this.decodeByAES256(user.telephone);
     });
 
     return users;
