@@ -18,8 +18,8 @@ export interface IRegistered extends Document {
   gender: string;
   profileImage: string;
   birth: string;
+  comment: string;
 
-  message: string;
   majors: string[];
   interests: IInterest;
   telephone: string;
@@ -58,7 +58,7 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     type: String,
     required: true,
   },
-  message: {
+  comment: {
     type: String,
     required: true,
   },

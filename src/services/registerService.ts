@@ -28,7 +28,6 @@ export default class RegisterService {
   async register(subRegisterForm: Omit<IRegistered, "uid" | "profileImage">) {
     const { telephone } = subRegisterForm;
     const encodedTel = await this.encodeByAES56(telephone);
-    console.log(encodedTel);
     if (encodedTel === telephone) throw new Error();
 
     const registerForm = {
