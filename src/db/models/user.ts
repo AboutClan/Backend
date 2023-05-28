@@ -100,10 +100,6 @@ export const UserSchema: Schema<IUser> = new Schema({
   },
   rest: restSchema,
   avatar: avatarSchema,
-  message: {
-    type: String,
-    default: "",
-  },
   majors: {
     type: [String],
   },
