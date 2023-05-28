@@ -82,6 +82,10 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     type: String,
     required: true,
   },
+  birth: {
+    type: String,
+    required: true,
+  },
 });
 
 InterestSchema.set("timestamps", false);
