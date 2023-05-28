@@ -12,7 +12,6 @@ export default class UserService {
   }
 
   async decodeByAES256(encodedTel: string) {
-    console.log(1);
     const key = process.env.cryptoKey;
     if (!key) return encodedTel;
 

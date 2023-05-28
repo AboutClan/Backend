@@ -26,6 +26,7 @@ export default class RegisterService {
   }
 
   async register(subRegisterForm: Omit<IRegistered, "uid" | "profileImage">) {
+    console.log(321, subRegisterForm);
     const { telephone } = subRegisterForm;
     const encodedTel = await this.encodeByAES56(telephone);
     if (encodedTel === telephone) throw new Error();
@@ -54,6 +55,8 @@ export default class RegisterService {
       registerDate: new Date(),
       isActive: true,
     };
+
+    console.log(123, userForm);
 
     await User.findOneAndUpdate({ uid }, userForm, {
       upsert: true,
