@@ -1,5 +1,5 @@
 import mongoose, { model, Schema, Model, Document } from "mongoose";
-import { IRegistered, InterestSchema } from "./registered";
+import { IRegistered, InterestSchema, MajorSchema } from "./registered";
 
 export interface restType {
   type: string;
@@ -101,7 +101,7 @@ export const UserSchema: Schema<IUser> = new Schema({
   rest: restSchema,
   avatar: avatarSchema,
   majors: {
-    type: [String],
+    type: [MajorSchema],
     default: [],
   },
   interests: {

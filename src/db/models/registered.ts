@@ -20,7 +20,7 @@ export interface IRegistered extends Document {
   birth: string;
   comment: string;
 
-  majors: string[];
+  majors: IMajor[];
   interests: IInterest;
   telephone: string;
 }
@@ -29,6 +29,14 @@ export const InterestSchema: Schema<IInterest> = new Schema(
   {
     first: String,
     second: String,
+  },
+  { _id: false, timestamps: true, strict: false }
+);
+
+export const MajorSchema: Schema<IMajor> = new Schema(
+  {
+    department: String,
+    detail: String,
   },
   { _id: false, timestamps: true, strict: false }
 );
@@ -43,7 +51,7 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     required: true,
   },
   majors: {
-    type: [String],
+    type: [MajorSchema],
     required: true,
   },
   interests: {
@@ -75,6 +83,10 @@ export const RegisteredSchema: Schema<IRegistered> = new Schema({
     required: true,
   },
 });
+
+InterestSchema.set("timestamps", false);
+MajorSchema.set("timestamps", false);
+RegisteredSchema.set("timestamps", false);
 
 export const Registered =
   (mongoose.models.REgistered as Model<IRegistered, {}, {}, {}>) ||
