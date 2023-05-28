@@ -102,9 +102,11 @@ export const UserSchema: Schema<IUser> = new Schema({
   avatar: avatarSchema,
   majors: {
     type: [String],
+    default: [],
   },
   interests: {
     type: InterestSchema,
+    default: { first: "", second: "" },
   },
   telephone: {
     type: String,
