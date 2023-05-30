@@ -145,6 +145,22 @@ router
 
     const arriveInfo = await voteServiceInstance.getArrived(date);
     return res.status(200).json(arriveInfo);
+  })
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
+    const { date } = req;
+    if (!date) return res.status(400).send("no data");
+
+    const {
+      body: { memo },
+    } = req;
+
+    if (await voteServiceInstance.patchArrive(date, memo)) {
+      return res.status(204).end();
+    } else {
+      return res.status(400).end();
+    }
   });
 
 router

@@ -2,10 +2,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { now, strToDate } from "../utils/dateUtils";
 import { Vote } from "../db/models/vote";
 
-type voteTime = {
-  start: Date;
-  end: Date;
-};
+type voteTime = { start: Dayjs | Date; end: Dayjs | Date };
 
 export default class AdminVoteService {
   constructor() {}
@@ -40,7 +37,7 @@ export default class AdminVoteService {
     return null;
   };
 
-  confirm = async (dateStr: string) => {
+  async confirm(dateStr: string) {
     const date = strToDate(dateStr).toDate();
     const vote = await Vote.findOne({ date });
     const failure = new Set();
@@ -51,27 +48,27 @@ export default class AdminVoteService {
 
         participation.attendences?.map((attendance) => {
           if (attendance.firstChoice) {
-            if (attendance.time.end && attendance.time.start) {
+            if (attendance.time.start && attendance.time.end) {
               timeObj.push({
-                start: attendance.time.start.toDate(),
-                end: attendance.time.end.toDate(),
+                start: attendance.time.start,
+                end: attendance.time.end,
               });
             } else {
               timeObj.push({
-                start: dayjs(attendance.time.start).toDate(),
+                start: now(),
                 end: dayjs(attendance.time.start).add(3, "hours").toDate(),
               });
             }
           }
         });
 
-        let result: voteTime | null = null;
+        let result;
         if (timeObj.length) result = this.checkTimeOverlap(timeObj);
 
         if (result) {
           participation.status = "open";
-          participation.startTime = result.start;
-          participation.endTime = result.end;
+          participation.startTime = result.start as Date;
+          participation.endTime = result.end as Date;
         } else {
           participation.status = "dismissed";
         }
@@ -112,12 +109,12 @@ export default class AdminVoteService {
           participation.attendences?.map((attendance) => {
             if (attendance.time.end && attendance.time.start) {
               timeObj.push({
-                start: attendance.time.start.toDate(),
-                end: attendance.time.end.toDate(),
+                start: attendance.time.start,
+                end: attendance.time.end,
               });
             } else {
               timeObj.push({
-                start: dayjs(attendance.time.start).toDate(),
+                start: now(),
                 end: dayjs(attendance.time.start).add(3, "hours").toDate(),
               });
             }
@@ -127,8 +124,8 @@ export default class AdminVoteService {
           if (timeObj.length) result = this.checkTimeOverlap(timeObj);
           if (timeObj.length && result) {
             participation.status = "open";
-            participation.startTime = result.start;
-            participation.endTime = result.end;
+            participation.startTime = result.start as Date;
+            participation.endTime = result.end as Date;
             participation.attendences?.forEach((attendance) => {
               attendance.firstChoice = true;
               failure.delete(attendance.user.toString());
@@ -138,7 +135,7 @@ export default class AdminVoteService {
       });
       await vote?.save();
     }
-  };
+  }
 
   async waitingConfirm(dateStr: string) {
     const date = strToDate(dateStr).toDate();
