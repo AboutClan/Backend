@@ -11,6 +11,7 @@ import { findOneVote } from "../utils/voteUtils";
 import { IPlace, Place } from "../db/models/place";
 import { IUser } from "../db/models/user";
 import { IVoteStudyInfo } from "../types/vote";
+import { now } from "../utils/dateUtils";
 
 export default class VoteService {
   private token: JWT;
@@ -353,6 +354,35 @@ export default class VoteService {
     });
 
     return arriveInfo;
+  }
+
+  async patchArrive(date: any, memo: any) {
+    const vote = await this.getVote(date);
+    if (!vote) throw new Error();
+
+    const currentTime = now().add(9, "hour");
+
+    vote.participations.forEach((participation: any) => {
+      participation.attendences.forEach((att: any) => {
+        if (
+          (att.user as IUser)._id.toString() === this.token.id?.toString() &&
+          att.firstChoice
+        ) {
+          const { start, end } = att.time;
+          const startable = dayjs(start).add(8, "hour");
+          const endable = dayjs(end).add(9, "hour");
+          if (startable <= currentTime && currentTime <= endable) {
+            att.arrived = currentTime.toDate();
+            att.memo = memo;
+          } else {
+            return false;
+          }
+        }
+      });
+    });
+
+    await vote.save();
+    return true;
   }
 
   async patchConfirm(date: any) {
