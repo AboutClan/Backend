@@ -1,0 +1,6 @@
+2023-06-02 23:13:27 [Winston 연습 어플리케이션] error: uncaughtException: "exp" claim timestamp check failed
+JWTExpired: "exp" claim timestamp check failed
+    at exports.default (C:\Users\alsrh\desktop\github project\about-back\node_modules\jose\dist\node\cjs\lib\jwt_claims_set.js:90:19)
+    at jwtDecrypt (C:\Users\alsrh\desktop\github project\about-back\node_modules\jose\dist\node\cjs\jwt\decrypt.js:9:53)
+    at async decode (C:\Users\alsrh\desktop\github project\about-back\node_modules\next-auth\jwt\index.js:64:7)
+    at async C:\Users\alsrh\desktop\github project\about-back\dist\src\routes\user.js:15:26

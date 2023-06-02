@@ -166,6 +166,7 @@ router
     return res.status(200).send(userScore);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(1);
     const { score, message } = req.body;
 
     const { userServiceInstance } = req;
