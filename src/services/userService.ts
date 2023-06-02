@@ -5,6 +5,8 @@ import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
 import * as CryptoJS from "crypto-js";
 
+const logger = require("../../logger");
+
 export default class UserService {
   private token: JWT;
   constructor(token?: JWT) {
@@ -212,6 +214,8 @@ export default class UserService {
 
     user.point += point;
     await user.save();
+
+    logger.info(`${user.name}님 ${point} score 기록`);
   }
 
   async updateScore(score: number) {
@@ -220,5 +224,7 @@ export default class UserService {
 
     user.score += score;
     await user.save();
+
+    logger.info(`${user.name}님 ${score} score 기록`);
   }
 }
