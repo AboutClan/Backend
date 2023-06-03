@@ -215,7 +215,7 @@ export default class UserService {
     user.point += point;
     await user.save();
 
-    logger.info(`${user.name}님 ${point} score 기록`);
+    logger.info(`${user.name}님 ${point} point 기록`);
   }
 
   async updateScore(score: number) {
