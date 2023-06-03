@@ -20,8 +20,8 @@ const logFormat = printf(({ level, message, label, timestamp }: any) => {
  */
 
 const papertrail = new winston.transports.Syslog({
-  host: "logs2.papertrailapp.com",
-  port: "15339",
+  host: "logs5.papertrailapp.com",
+  port: "29998",
   protocol: "tls4",
   localhost: os.hostname(),
   eol: "\n",
