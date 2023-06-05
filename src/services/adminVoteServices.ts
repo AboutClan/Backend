@@ -56,7 +56,7 @@ export default class AdminVoteService {
             } else {
               timeObj.push({
                 start: now(),
-                end: now().add(1, "hours"),,
+                end: now().add(1, "hours"),
               });
             }
           }
