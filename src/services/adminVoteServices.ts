@@ -56,7 +56,7 @@ export default class AdminVoteService {
             } else {
               timeObj.push({
                 start: now(),
-                end: dayjs(attendance.time.start).add(3, "hours").toDate(),
+                end: now().add(1, "hours"),,
               });
             }
           }
@@ -115,7 +115,7 @@ export default class AdminVoteService {
             } else {
               timeObj.push({
                 start: now(),
-                end: dayjs(attendance.time.start).add(3, "hours").toDate(),
+                end: now().add(1, "hours"),
               });
             }
           });
