@@ -1,10 +1,11 @@
+import { JWT } from "next-auth/jwt";
 import { Log } from "../db/models/log";
 
-const logger = require("../../logger");
-const winston = require("winston");
-
 export default class LogService {
-  constructor() {}
+  private token: JWT;
+  constructor(token?: JWT) {
+    this.token = token as JWT;
+  }
 
   async getLog(type: string) {
     // try {
@@ -27,12 +28,16 @@ export default class LogService {
     const logs = await Log.collection
       .aggregate([
         {
-          $unwind: "$meta",
+          $match: {
+            meta: {
+              type,
+              uid: this.token.uid,
+            },
+          },
         },
       ])
       .toArray();
 
-    console.log(logs);
     return logs;
   }
 }
