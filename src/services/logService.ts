@@ -22,7 +22,17 @@ export default class LogService {
 
     // const logs = winston.loggers.get();
 
-    const logs = Log.find({ meta: type });
+    // const logs = Log.find({ meta: type });
+
+    const logs = await Log.collection
+      .aggregate([
+        {
+          $unwind: "$meta",
+        },
+      ])
+      .toArray();
+
+    console.log(logs);
     return logs;
   }
 }
