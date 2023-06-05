@@ -2,6 +2,7 @@ const os = require("os");
 const winston = require("winston");
 const winstonDaily = require("winston-daily-rotate-file");
 require("winston-syslog");
+require("winston-mongodb");
 // const process = require("process");
 
 const { combine, timestamp, label, printf } = winston.format;
@@ -27,11 +28,26 @@ const papertrail = new winston.transports.Syslog({
   eol: "\n",
 });
 
+const mongoDBTransport = new winston.transports.MongoDB({
+  db: process.env.MONGODB_URI,
+  collection: "logs",
+});
+
 const logger = winston.createLogger({
   format: winston.format.simple(),
   levels: winston.config.syslog.levels,
-  transports: [papertrail],
+  transports: [mongoDBTransport],
 });
+
+const getLogsFromMongoDB = async () => {
+  try {
+    const logs = await mongoDBTransport.query({}, { limit: 10, order: "desc" });
+
+    return logs;
+  } catch (error) {
+    console.error("로그 가져오기 실패:", error);
+  }
+};
 
 // const logger = winston.createLogger({
 //   //* 로그 출력 형식 정의
@@ -87,4 +103,4 @@ const logger = winston.createLogger({
 //   );
 // }
 
-module.exports = logger;
+module.exports = { logger, getLogsFromMongoDB };
