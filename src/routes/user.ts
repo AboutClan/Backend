@@ -135,12 +135,12 @@ router
     return res.status(200).send(userPoint);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { point } = req.body;
+    const { point, message } = req.body;
 
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    await userServiceInstance.updatePoint(point);
+    await userServiceInstance.updatePoint(point, message);
     return res.status(200).end();
   });
 
@@ -171,10 +171,32 @@ router
     const { userServiceInstance } = req;
     if (!userServiceInstance) return res.status(401).send("Unauthorized");
 
-    await userServiceInstance.updateScore(score);
+    await userServiceInstance.updateScore(score, message);
     return res.status(200).end();
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {});
+
+router
+  .route("/deposit")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    const userScore = await userServiceInstance.getUserInfo([
+      "name",
+      "deposit",
+    ]);
+    return res.status(200).send(userScore);
+  })
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const { deposit, message } = req.body;
+
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    await userServiceInstance.updateDeposit(deposit, message);
+    return res.status(200).end();
+  });
 
 router
   .route("/score/all")

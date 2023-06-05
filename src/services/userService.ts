@@ -208,27 +208,39 @@ export default class UserService {
     return updatedUser;
   }
 
-  async updatePoint(point: number) {
+  async updatePoint(point: number, message: string) {
     const user = await User.findOne({ uid: this.token.uid });
     if (!user) throw new Error();
 
     user.point += point;
     await user.save();
 
-    logger.logger.info(`${user.name}님 ${point} point 기록`, {
+    logger.logger.info(message, {
       metadata: { type: "score", uid: this.token.uid },
     });
   }
 
-  async updateScore(score: number) {
+  async updateScore(score: number, message: string) {
     const user = await User.findOne({ uid: this.token.uid });
     if (!user) throw new Error();
 
     user.score += score;
     await user.save();
 
-    logger.logger.info(`${user.name}님 ${score} score 기록`, {
+    logger.logger.info(message, {
       metadata: { type: "score", uid: this.token.uid },
+    });
+  }
+
+  async updateDeposit(deposit: number, message: string) {
+    const user = await User.findOne({ uid: this.token.uid });
+    if (!user) throw new Error();
+
+    user.deposit += deposit;
+    await user.save();
+
+    logger.logger.info(message, {
+      metadata: { type: "deposit", uid: this.token.uid },
     });
   }
 }
