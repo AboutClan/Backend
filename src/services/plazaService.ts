@@ -7,4 +7,9 @@ export default class PlazaService {
     const plazaData = await Plaza.find();
     return plazaData;
   }
+
+  async createPlaza(data: any) {
+    await Plaza.create(data);
+    return;
+  }
 }
