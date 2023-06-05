@@ -10,22 +10,23 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-router.route("/").get(async (req, res, next) => {
-  const { plazaServiceInstance } = req;
-  if (!plazaServiceInstance) throw new Error();
+router
+  .route("/")
+  .get(async (req, res, next) => {
+    const { plazaServiceInstance } = req;
+    if (!plazaServiceInstance) throw new Error();
 
-  const plazaData = await plazaServiceInstance.getPlaza();
-  res.status(200).json(plazaData);
-});
+    const plazaData = await plazaServiceInstance.getPlaza();
+    res.status(200).json(plazaData);
+  })
+  .post(async (req, res, next) => {
+    const { plazaServiceInstance } = req;
+    if (!plazaServiceInstance) throw new Error();
 
-router.route("/").post(async (req, res, next) => {
-  const { plazaServiceInstance } = req;
-  if (!plazaServiceInstance) throw new Error();
+    const { plaza } = req.body;
 
-  const { plaza } = req.body;
-
-  const plazaData = await plazaServiceInstance.createPlaza(plaza);
-  res.status(200).json(plazaData);
-});
+    await plazaServiceInstance.createPlaza(plaza);
+    res.status(200).end();
+  });
 
 module.exports = router;
