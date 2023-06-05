@@ -18,4 +18,14 @@ router.route("/").get(async (req, res, next) => {
   res.status(200).json(plazaData);
 });
 
+router.route("/").post(async (req, res, next) => {
+  const { plazaServiceInstance } = req;
+  if (!plazaServiceInstance) throw new Error();
+
+  const { plaza } = req.body;
+
+  const plazaData = await plazaServiceInstance.createPlaza(plaza);
+  res.status(200).json(plazaData);
+});
+
 module.exports = router;
