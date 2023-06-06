@@ -37,23 +37,6 @@ export default class LogService {
       { "meta.type": type },
       "-_id timestamp message meta"
     );
-    // const logs = await Log.collection
-    //   .aggregate([
-    //     {
-    //       $match: {
-    //         "$meta.type": type,
-    //       },
-    //     },
-    //     {
-    //       $project: {
-    //         _id: false,
-    //         timestamp: "$timestamp",
-    //         message: "$message",
-    //         meta: "$meta",
-    //       },
-    //     },
-    //   ])
-    //   .toArray();
 
     return logs;
   }
