@@ -33,6 +33,15 @@ router.route("/score").get(async (req, res, next) => {
   return res.status(200).json(logs);
 });
 
+router.route("/score/all").get(async (req, res, next) => {
+  const { logServiceInstance } = req;
+  if (!logServiceInstance) throw new Error();
+
+  const logs = await logServiceInstance.getAllLog("score");
+
+  return res.status(200).json(logs);
+});
+
 router.route("/point").get(async (req, res, next) => {
   const { logServiceInstance } = req;
   if (!logServiceInstance) throw new Error();
@@ -41,11 +50,28 @@ router.route("/point").get(async (req, res, next) => {
   return res.status(200).json(logs);
 });
 
+router.route("/point/all").get(async (req, res, next) => {
+  const { logServiceInstance } = req;
+  if (!logServiceInstance) throw new Error();
+
+  const logs = await logServiceInstance.getAllLog("point");
+  return res.status(200).json(logs);
+});
+
 router.route("/deposit").get(async (req, res, next) => {
   const { logServiceInstance } = req;
   if (!logServiceInstance) throw new Error();
 
   const logs = await logServiceInstance.getLog("deposit");
+
+  return res.status(200).json(logs);
+});
+
+router.route("/deposit/all").get(async (req, res, next) => {
+  const { logServiceInstance } = req;
+  if (!logServiceInstance) throw new Error();
+
+  const logs = await logServiceInstance.getAllLog("deposit");
 
   return res.status(200).json(logs);
 });

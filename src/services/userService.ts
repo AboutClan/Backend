@@ -216,7 +216,7 @@ export default class UserService {
     await user.save();
 
     logger.logger.info(message, {
-      metadata: { type: "score", uid: this.token.uid },
+      metadata: { type: "score", uid: this.token.uid, value: point },
     });
   }
 
@@ -228,7 +228,7 @@ export default class UserService {
     await user.save();
 
     logger.logger.info(message, {
-      metadata: { type: "score", uid: this.token.uid },
+      metadata: { type: "score", uid: this.token.uid, value: score },
     });
   }
 
@@ -240,7 +240,7 @@ export default class UserService {
     await user.save();
 
     logger.logger.info(message, {
-      metadata: { type: "deposit", uid: this.token.uid },
+      metadata: { type: "deposit", uid: this.token.uid, value: deposit },
     });
   }
 }

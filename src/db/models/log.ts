@@ -4,12 +4,13 @@ export interface ILog {
   timeStamp: Date;
   level: string;
   message: string;
-  meta: { type: string; uid: string };
+  meta: { type: string; uid: string; value: number };
 }
 
 const metaSchema = new Schema({
   type: String,
   uid: String,
+  value: Number,
 });
 
 export const LogSchema: Schema<ILog> = new Schema({

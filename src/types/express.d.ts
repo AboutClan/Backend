@@ -11,6 +11,7 @@ import AdminVoteService from "../services/adminVoteServices";
 import StoreService from "../services/giftService";
 import RegisterService from "../services/registerService";
 import LogService from "../services/logService";
+import AdminLogService from "../services/adminLogService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -28,6 +29,7 @@ declare global {
       bookServiceInstance?: BookService;
       giftServiceInstance?: StoreService;
       registerServiceInstance?: RegisterService;
+      adminLogServiceInstance?: AdminLogService;
       adminUserServiceInstance?: AdminUserService;
       adminVoteServiceInstance?: AdminVoteService;
       logServiceInstance?: LogService;
