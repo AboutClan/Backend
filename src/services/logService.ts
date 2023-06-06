@@ -8,26 +8,33 @@ export default class LogService {
   }
 
   async getLog(type: string) {
-    const logs = await Log.collection
-      .aggregate([
-        {
-          $match: {
-            meta: {
-              type,
-              uid: this.token.uid,
-            },
-          },
-        },
-        {
-          $project: {
-            _id: false,
-            timestamp: "$timestamp",
-            message: "$message",
-            meta: "$meta",
-          },
-        },
-      ])
-      .toArray();
+    console.log(parseInt(this.token.uid as string));
+    const logs = await Log.find(
+      {
+        $and: [{ "meta.type": type }, { "meta.uid": this.token.uid }],
+      },
+      "-_id timestamp message meta"
+    );
+    // const logs = await Log.collection
+    //   .aggregate([
+    //     {
+    //       $match: {
+    //         meta: {
+    //           type,
+    //           uid: this.token.uid,
+    //         },
+    //       },
+    //     },
+    //     {
+    //       $project: {
+    //         _id: false,
+    //         timestamp: "$timestamp",
+    //         message: "$message",
+    //         meta: "$meta",
+    //       },
+    //     },
+    //   ])
+    //   .toArray();
 
     return logs;
   }
