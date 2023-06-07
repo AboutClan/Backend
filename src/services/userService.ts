@@ -216,7 +216,7 @@ export default class UserService {
     await user.save();
 
     logger.logger.info(message, {
-      metadata: { type: "score", uid: this.token.uid, value: point },
+      metadata: { type: "point", uid: this.token.uid, value: point },
     });
   }
 
