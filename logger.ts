@@ -20,14 +20,6 @@ const logFormat = printf(({ level, message, label, timestamp }: any) => {
  * error: 0, warn: 1, info: 2, http: 3, verbose: 4, debug: 5, silly: 6
  */
 
-const papertrail = new winston.transports.Syslog({
-  host: "logs5.papertrailapp.com",
-  port: "29998",
-  protocol: "tls4",
-  localhost: os.hostname(),
-  eol: "\n",
-});
-
 const mongoDBTransport = new winston.transports.MongoDB({
   db: process.env.MONGODB_URI,
   collection: "logs",
