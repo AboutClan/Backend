@@ -15,6 +15,7 @@ export interface restType {
 export interface IPlazaData {
   category: string;
   title?: string;
+
   date: Dayjs;
   writer: string;
   content: string;
