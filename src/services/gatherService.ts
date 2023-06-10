@@ -4,7 +4,7 @@ export default class GatherService {
   constructor() {}
 
   async getGather() {
-    const gatherData = await Gather.find();
+    const gatherData = await Gather.find().select("-_id");
     return gatherData;
   }
 

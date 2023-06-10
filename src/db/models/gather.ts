@@ -38,23 +38,29 @@ export const typeSchema: Schema<GatherType> = new Schema({
   },
 });
 
-export const locationSchema: Schema<LocationType> = new Schema({
-  main: {
-    type: String,
+export const locationSchema: Schema<LocationType> = new Schema(
+  {
+    main: {
+      type: String,
+    },
+    sub: {
+      type: String,
+    },
   },
-  sub: {
-    type: String,
-  },
-});
+  { _id: false }
+);
 
-export const memberCntSchema: Schema<memberCntType> = new Schema({
-  min: {
-    type: Number,
+export const memberCntSchema: Schema<memberCntType> = new Schema(
+  {
+    min: {
+      type: Number,
+    },
+    max: {
+      type: Number,
+    },
   },
-  max: {
-    type: Number,
-  },
-});
+  { _id: false }
+);
 
 export const GatherSchema: Schema<IGatherData> = new Schema({
   type: {
@@ -70,7 +76,7 @@ export const GatherSchema: Schema<IGatherData> = new Schema({
     type: locationSchema,
   },
   date: {
-    type: Dayjs,
+    type: Date,
   },
   memberCnt: {
     type: memberCntSchema,
@@ -92,5 +98,5 @@ export const GatherSchema: Schema<IGatherData> = new Schema({
   },
 });
 export const Gather =
-  (mongoose.models.Plaza as Model<IGatherData, {}, {}, {}>) ||
+  (mongoose.models.Gather as Model<IGatherData, {}, {}, {}>) ||
   model<IGatherData>("Gather", GatherSchema);

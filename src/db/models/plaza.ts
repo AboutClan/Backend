@@ -1,11 +1,6 @@
 import { Dayjs } from "dayjs";
 import mongoose, { model, Model, Schema } from "mongoose";
 
-interface IVoteList {
-  voteListIdx: number;
-  value: string;
-}
-
 export interface restType {
   type: string;
   start: Dayjs;
@@ -27,8 +22,8 @@ export const restSchema: Schema<restType> = new Schema({
     type: String,
     enum: ["일반", "특별"],
   },
-  start: Dayjs,
-  end: Dayjs,
+  start: Date,
+  end: Date,
 });
 export const PlazaSchema: Schema<IPlazaData> = new Schema({
   category: {
@@ -39,7 +34,7 @@ export const PlazaSchema: Schema<IPlazaData> = new Schema({
     type: String,
   },
   date: {
-    type: Dayjs,
+    type: Date,
   },
   writer: {
     type: String,

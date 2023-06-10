@@ -24,7 +24,9 @@ router
     const { gatherServiceInstance } = req;
     if (!gatherServiceInstance) throw new Error();
 
-    const { gather } = req.body;
+    const gather = req.body;
+
+    console.log(gather);
 
     await gatherServiceInstance.createGather(gather);
     res.status(200).end();
