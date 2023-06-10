@@ -13,7 +13,7 @@ import { dbSet } from "./middlewares/dbSet";
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");
-const plaza = require("./routes/plaza");
+const request = require("./routes/request");
 const place = require("./routes/place");
 const book = require("./routes/book");
 const gift = require("./routes/gift");
@@ -49,7 +49,7 @@ class App {
     this.app.use("/user", user);
     this.app.use("/register", register);
     this.app.use("/vote", vote);
-    this.app.use("/plaza", plaza);
+    this.app.use("/request", request);
     this.app.use("/place", place);
     this.app.use("/book", book);
     this.app.use("/admin", admin);

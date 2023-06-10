@@ -7,7 +7,7 @@ export interface restType {
   end: Dayjs;
 }
 
-export interface IPlazaData {
+export interface IRequestData {
   category: string;
   title?: string;
 
@@ -17,15 +17,19 @@ export interface IPlazaData {
   rest?: restType;
 }
 
-export const restSchema: Schema<restType> = new Schema({
-  type: {
-    type: String,
-    enum: ["일반", "특별"],
+export const restSchema: Schema<restType> = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ["일반", "특별"],
+    },
+    start: Date,
+    end: Date,
   },
-  start: Date,
-  end: Date,
-});
-export const PlazaSchema: Schema<IPlazaData> = new Schema({
+  { _id: false }
+);
+
+export const RequestSchema: Schema<IRequestData> = new Schema({
   category: {
     type: String,
     enum: ["건의", "신고", "홍보", "휴식", "충전"],
@@ -46,6 +50,6 @@ export const PlazaSchema: Schema<IPlazaData> = new Schema({
     type: restSchema,
   },
 });
-export const Plaza =
-  (mongoose.models.Plaza as Model<IPlazaData, {}, {}, {}>) ||
-  model<IPlazaData>("Plaza", PlazaSchema);
+export const Request =
+  (mongoose.models.Request as Model<IRequestData, {}, {}, {}>) ||
+  model<IRequestData>("Request", RequestSchema);

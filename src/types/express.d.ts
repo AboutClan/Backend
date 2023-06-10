@@ -4,7 +4,7 @@ import { JWT } from "next-auth/jwt";
 import UserService from "../services/userService";
 import VoteService from "../services/voteService";
 import BookService from "../services/bookService";
-import PlazaService from "../services/plazaService";
+import RequestService from "../services/requestService";
 import PlaceService from "../services/placeService";
 import AdminUserService from "../services/adminUserServices";
 import AdminVoteService from "../services/adminVoteServices";
@@ -26,7 +26,7 @@ declare global {
       userServiceInstance?: UserService;
       voteServiceInstance?: VoteService;
       placeServiceInstance?: PlaceService;
-      plazaServiceInstance?: PlazaService;
+      requestServiceInstance?: RequestService;
       bookServiceInstance?: BookService;
       giftServiceInstance?: StoreService;
       gatherServiceInstance?: GatherService;
