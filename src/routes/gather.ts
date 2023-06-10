@@ -1,6 +1,4 @@
 import express, { NextFunction, Request, Response, Router } from "express";
-import { decode } from "next-auth/jwt";
-import PlazaService from "../services/plazaService";
 import GatherService from "../services/gatherService";
 
 const router: Router = express.Router();
@@ -17,8 +15,8 @@ router
     const { gatherServiceInstance } = req;
     if (!gatherServiceInstance) throw new Error();
 
-    const plazaData = await gatherServiceInstance.getGather();
-    res.status(200).json(plazaData);
+    const gatherData = await gatherServiceInstance.getGather();
+    res.status(200).json(gatherData);
   })
   .post(async (req, res, next) => {
     const { gatherServiceInstance } = req;

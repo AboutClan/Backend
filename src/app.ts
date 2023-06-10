@@ -13,12 +13,13 @@ import { dbSet } from "./middlewares/dbSet";
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");
-const plaza = require("./routes/plaza");
+const request = require("./routes/request");
 const place = require("./routes/place");
 const book = require("./routes/book");
 const gift = require("./routes/gift");
 const log = require("./routes/log");
 const gather = require("./routes/gather");
+const plaza = require("./routes/plaza");
 const register = require("./routes/register");
 const admin = require("./routes/admin/admin");
 
@@ -49,13 +50,14 @@ class App {
     this.app.use("/user", user);
     this.app.use("/register", register);
     this.app.use("/vote", vote);
-    this.app.use("/plaza", plaza);
+    this.app.use("/request", request);
     this.app.use("/place", place);
     this.app.use("/book", book);
     this.app.use("/admin", admin);
     this.app.use("/gift", gift);
     this.app.use("/log", log);
     this.app.use("/gather", gather);
+    this.app.use("/plaza", plaza);
     this.app.use(ErrorHandler);
   }
 

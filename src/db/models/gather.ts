@@ -62,41 +62,44 @@ export const memberCntSchema: Schema<memberCntType> = new Schema(
   { _id: false }
 );
 
-export const GatherSchema: Schema<IGatherData> = new Schema({
-  type: {
-    type: typeSchema,
+export const GatherSchema: Schema<IGatherData> = new Schema(
+  {
+    type: {
+      type: typeSchema,
+    },
+    title: {
+      type: String,
+    },
+    content: {
+      type: String,
+    },
+    location: {
+      type: locationSchema,
+    },
+    date: {
+      type: Date,
+    },
+    memberCnt: {
+      type: memberCntSchema,
+    },
+    age: {
+      type: [Number],
+    },
+    preCnt: {
+      type: Number,
+    },
+    genderCondition: {
+      type: Boolean,
+    },
+    password: {
+      type: String,
+    },
+    id: {
+      type: Number,
+    },
   },
-  title: {
-    type: String,
-  },
-  content: {
-    type: String,
-  },
-  location: {
-    type: locationSchema,
-  },
-  date: {
-    type: Date,
-  },
-  memberCnt: {
-    type: memberCntSchema,
-  },
-  age: {
-    type: [Number],
-  },
-  preCnt: {
-    type: Number,
-  },
-  genderCondition: {
-    type: Boolean,
-  },
-  password: {
-    type: String,
-  },
-  id: {
-    type: Number,
-  },
-});
+  { timestamps: true }
+);
 export const Gather =
   (mongoose.models.Gather as Model<IGatherData, {}, {}, {}>) ||
   model<IGatherData>("Gather", GatherSchema);
