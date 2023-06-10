@@ -2,6 +2,9 @@ import { JWT } from "next-auth/jwt";
 import { IRegistered, Registered } from "../db/models/registered";
 import { User } from "../db/models/user";
 import * as CryptoJS from "crypto-js";
+import LogService from "./logService";
+
+const logger = require("../../logger");
 
 export default class RegisterService {
   private token: JWT;
@@ -54,15 +57,18 @@ export default class RegisterService {
       ...user.toObject(),
       registerDate: new Date(),
       isActive: true,
+      deposit: 3000,
     };
-
-    console.log(123, userForm);
 
     await User.findOneAndUpdate({ uid }, userForm, {
       upsert: true,
       new: true,
     });
     await this.deleteRegisterUser(uid);
+
+    logger.logger.info("가입 보증금", {
+      metadata: { type: "deposit", uid, value: 3000 },
+    });
 
     return;
   }
