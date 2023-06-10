@@ -114,7 +114,7 @@ export const UserSchema: Schema<IUser> = new Schema({
   },
   deposit: {
     type: Number,
-    default: 2000,
+    default: 3000,
   },
 });
 

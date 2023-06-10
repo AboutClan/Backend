@@ -207,8 +207,23 @@ router
     const userScore = await userServiceInstance.getAllUserInfo([
       "name",
       "score",
+      "uid",
     ]);
 
+    return res.status(200).send(userScore);
+  });
+
+router
+  .route("/deposit/all")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    const userScore = await userServiceInstance.getAllUserInfo([
+      "name",
+      "deposit",
+      "uid",
+    ]);
     return res.status(200).send(userScore);
   });
 
