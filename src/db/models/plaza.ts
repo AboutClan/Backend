@@ -1,49 +1,43 @@
-import { Dayjs } from "dayjs";
 import mongoose, { model, Model, Schema } from "mongoose";
 
-export interface restType {
-  type: string;
-  start: Dayjs;
-  end: Dayjs;
+interface IVoteList {
+  voteListIdx: number;
+  value: string;
 }
 
 export interface IPlazaData {
   category: string;
-  title?: string;
-
-  date: Dayjs;
-  writer: string;
+  title: string;
   content: string;
-  rest?: restType;
+  voteList?: IVoteList[];
+  id?: string;
+  writer: string;
+  date?: string;
+  deadline?: any;
+  suggestContent?: any;
 }
 
-export const restSchema: Schema<restType> = new Schema({
-  type: {
-    type: String,
-    enum: ["일반", "특별"],
-  },
-  start: Date,
-  end: Date,
-});
 export const PlazaSchema: Schema<IPlazaData> = new Schema({
   category: {
     type: String,
-    enum: ["건의", "신고", "홍보", "휴식", "충전"],
-  },
-  title: {
-    type: String,
-  },
-  date: {
-    type: Date,
   },
   writer: {
+    type: String,
+  },
+  deadline: {
+    type: String,
+  },
+  title: {
     type: String,
   },
   content: {
     type: String,
   },
-  rest: {
-    type: restSchema,
+  suggestContent: {
+    type: String,
+  },
+  voteList: {
+    // type: [{}],
   },
 });
 export const Plaza =
