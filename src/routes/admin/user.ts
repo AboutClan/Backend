@@ -18,7 +18,7 @@ router
 
     const allUser = await adminUserServiceInstance.getAllUser();
 
-    res.status(200).json(allUser);
+    return res.status(200).json(allUser);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
@@ -28,42 +28,66 @@ router
 
     await adminUserServiceInstance.updateProfile(profile);
 
-    res.status(200).end();
+    return res.status(200).end();
   });
 
 router
   .route("/:id/point")
-  .delete(async (req: Request, res: Response, next: NextFunction) => {
+  .post(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
     if (!adminUserServiceInstance) throw new Error();
 
-    const { id: uid } = req.query;
+    const { id: uid } = req.params;
+    const { value, message = "" } = req.body;
 
-    await adminUserServiceInstance.deletePoint();
-    res.status(200).end();
+    if (!value) return res.status(400).send("no value");
+
+    await adminUserServiceInstance.updateValue(
+      uid as string,
+      value,
+      "point",
+      message
+    );
+    return res.status(200).end();
   });
 
 router
   .route("/:id/score")
-  .delete(async (req: Request, res: Response, next: NextFunction) => {
+  .post(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
     if (!adminUserServiceInstance) throw new Error();
 
-    const { id: uid } = req.query;
+    const { id: uid } = req.params;
+    const { value, message = "" } = req.body;
 
-    await adminUserServiceInstance.deletePoint();
+    if (!value) return res.status(400).send("no value");
+
+    await adminUserServiceInstance.updateValue(
+      uid as string,
+      value,
+      "score",
+      message
+    );
     res.status(200).end();
   });
 
 router
   .route("/:id/deposit")
-  .delete(async (req: Request, res: Response, next: NextFunction) => {
+  .post(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
     if (!adminUserServiceInstance) throw new Error();
 
-    const { id: uid } = req.query;
+    const { id: uid } = req.params;
+    const { value, message = "" } = req.body;
 
-    await adminUserServiceInstance.deletePoint();
+    if (!value) return res.status(400).send("no value");
+
+    await adminUserServiceInstance.updateValue(
+      uid as string,
+      value,
+      "deposit",
+      message
+    );
     res.status(200).end();
   });
 
@@ -74,7 +98,7 @@ router
     if (!adminUserServiceInstance) throw new Error();
 
     await adminUserServiceInstance.deletePoint();
-    res.status(200).end();
+    return res.status(200).end();
   });
 
 router
@@ -84,7 +108,7 @@ router
     if (!adminUserServiceInstance) throw new Error();
 
     await adminUserServiceInstance.deleteScore();
-    res.status(200).end();
+    return res.status(200).end();
   });
 
 router
@@ -96,7 +120,7 @@ router
     const { id: uid } = req.query;
 
     const user = await adminUserServiceInstance.getCertainUser(uid as string);
-    res.status(200).json(user);
+    return res.status(200).json(user);
   });
 
 router
@@ -105,10 +129,11 @@ router
     const { adminUserServiceInstance } = req;
     if (!adminUserServiceInstance) throw new Error();
 
-    const { id: uid } = req.body;
+    const { id: uid } = req.params;
     const { role } = req.body;
 
     adminUserServiceInstance.setRole(role, uid);
+    return res.status(200).end();
   });
 
 module.exports = router;

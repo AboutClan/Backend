@@ -1,5 +1,7 @@
 import { IUser, User } from "../db/models/user";
 
+const logger = require("../../logger");
+
 export default class AdminUserService {
   constructor() {}
 
@@ -10,6 +12,30 @@ export default class AdminUserService {
 
   async updateProfile(profile: Partial<IUser>) {
     await User.updateOne({ uid: profile.uid }, profile);
+    return;
+  }
+
+  async updateValue(
+    uid: string,
+    value: string,
+    type: "point" | "score" | "deposit",
+    message: string
+  ) {
+    switch (type) {
+      case "point":
+        await User.updateOne({ uid }, { point: value });
+        break;
+      case "score":
+        await User.updateOne({ uid }, { score: value });
+        break;
+      case "deposit":
+        await User.updateOne({ uid }, { deposit: value });
+        break;
+    }
+
+    logger.logger.info(message, {
+      metadata: { type, uid, value },
+    });
     return;
   }
 
