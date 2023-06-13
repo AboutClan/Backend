@@ -1,5 +1,4 @@
 import express, { NextFunction, Request, Response, Router } from "express";
-import { decode } from "next-auth/jwt";
 import PlazaService from "../services/plazaService";
 
 const router: Router = express.Router();

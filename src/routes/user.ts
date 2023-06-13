@@ -227,17 +227,4 @@ router
     return res.status(200).send(userScore);
   });
 
-// router
-//   .route("/withdrawal")
-//   .delete(async (req: Request, res: Response, next: NextFunction) => {
-//     const { token } = req;
-//     if (!token) return res.status(401).send("Unauthorized");
-
-//     try {
-//       await withdrawal(token.accessToken as string);
-//       return res.status(204).end();
-//     } catch (err) {
-//       next(err);
-//     }
-//   });
 module.exports = router;

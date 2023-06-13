@@ -4,12 +4,20 @@ export default class RequestService {
   constructor() {}
 
   async getRequest() {
-    const gatherData = await Request.find();
-    return gatherData;
+    try {
+      const gatherData = await Request.find({}, "-_id");
+      return gatherData;
+    } catch (err: any) {
+      throw new Error();
+    }
   }
 
   async createRequest(data: any) {
-    await Request.create(data);
-    return;
+    try {
+      await Request.create(data);
+      return;
+    } catch (err: any) {
+      throw new Error();
+    }
   }
 }

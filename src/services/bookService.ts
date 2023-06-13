@@ -13,7 +13,7 @@ export default class BookService {
       `https://data4library.kr/api/loanItemSrch?authKey=0a18d855cdbe794e1225816ee8f65f7e71c94ffcb19cba97e9c90e1199e078ff&startDt=${startDt}&endDt=${endDt}&gender=1&age=20&format=json`
     );
 
-    if (response.status !== 200) throw new Error();
+    if (response.status !== 200) throw new Error("Fail fetching book data");
 
     return response.data;
   }

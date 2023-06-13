@@ -33,214 +33,252 @@ export default class UserService {
 
   async getUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
-    const result = await User.findOne(
-      { uid: this.token.uid },
-      "-_id" + queryString
-    );
 
-    if (!result) return;
+    try {
+      const result = await User.findOne(
+        { uid: this.token.uid },
+        "-_id" + queryString
+      );
 
-    if (result.telephone)
-      result.telephone = await this.decodeByAES256(result.telephone);
+      if (result && result.telephone)
+        result.telephone = await this.decodeByAES256(result.telephone);
 
-    return result;
+      return result;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getAllUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
-    const users = await User.find({}, "-_id" + queryString);
+    try {
+      const users = await User.find({}, "-_id" + queryString);
 
-    users.forEach(async (user) => {
-      if (user.telephone)
-        user.telephone = await this.decodeByAES256(user.telephone);
-    });
+      users.forEach(async (user) => {
+        if (user.telephone)
+          user.telephone = await this.decodeByAES256(user.telephone);
+      });
 
-    return users;
+      return users;
+    } catch (err: any) {
+      throw new Error();
+    }
   }
 
   async updateUser(updateInfo: Partial<IUser>) {
-    await User.updateOne({ uid: this.token.uid }, { $set: updateInfo });
+    try {
+      await User.updateOne({ uid: this.token.uid }, { $set: updateInfo });
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getParticipationRate(startDay: string, endDay: string) {
-    const allUser = await User.find({ isActive: true });
-    const attendForm = allUser.reduce((accumulator: any[], user) => {
-      return [...accumulator, { uid: user.uid, cnt: 0 }];
-    }, []);
+    try {
+      const allUser = await User.find({ isActive: true });
+      const attendForm = allUser.reduce((accumulator: any[], user) => {
+        return [...accumulator, { uid: user.uid, cnt: 0 }];
+      }, []);
 
-    const forParticipation = await Vote.collection
-      .aggregate([
-        {
-          $match: {
-            date: {
-              $gte: dayjs(startDay).toDate(),
-              $lt: dayjs(endDay).toDate(),
+      const forParticipation = await Vote.collection
+        .aggregate([
+          {
+            $match: {
+              date: {
+                $gte: dayjs(startDay).toDate(),
+                $lt: dayjs(endDay).toDate(),
+              },
             },
           },
-        },
-        {
-          $unwind: "$participations",
-        },
-        {
-          $project: {
-            status: "$participations.status",
-            attendences: "$participations.attendences",
+          {
+            $unwind: "$participations",
           },
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "attendences.user",
-            foreignField: "_id",
-            as: "attendences.user",
+          {
+            $project: {
+              status: "$participations.status",
+              attendences: "$participations.attendences",
+            },
           },
-        },
-        {
-          $match: {
-            status: "open",
+          {
+            $lookup: {
+              from: "users",
+              localField: "attendences.user",
+              foreignField: "_id",
+              as: "attendences.user",
+            },
           },
-        },
-        {
-          $unwind: "$attendences.user",
-        },
-        {
-          $replaceRoot: {
-            newRoot: "$attendences.user",
+          {
+            $match: {
+              status: "open",
+            },
           },
-        },
-        {
-          $group: {
-            _id: "$uid",
-            cnt: { $sum: 1 },
+          {
+            $unwind: "$attendences.user",
           },
-        },
-        {
-          $project: {
-            _id: false,
-            uid: "$_id",
-            cnt: "$cnt",
+          {
+            $replaceRoot: {
+              newRoot: "$attendences.user",
+            },
           },
-        },
-      ])
-      .toArray();
+          {
+            $group: {
+              _id: "$uid",
+              cnt: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: false,
+              uid: "$_id",
+              cnt: "$cnt",
+            },
+          },
+        ])
+        .toArray();
 
-    forParticipation.forEach((obj) => {
-      const idx = attendForm.findIndex((user) => user.uid === obj.uid);
-      if (attendForm[idx]) attendForm[idx].cnt = obj.cnt;
-    });
-    return attendForm;
+      forParticipation.forEach((obj) => {
+        const idx = attendForm.findIndex((user) => user.uid === obj.uid);
+        if (attendForm[idx]) attendForm[idx].cnt = obj.cnt;
+      });
+      return attendForm;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getVoteRate(startDay: string, endDay: string) {
-    const allUser = await User.find({ isActive: true });
-    const attendForm = allUser.reduce((accumulator, user) => {
-      return { ...accumulator, [user.uid.toString()]: 0 };
-    }, {});
-
-    const forVote = await Vote.collection
-      .aggregate([
-        {
-          $match: {
-            date: {
-              $gte: dayjs(startDay).toDate(),
-              $lt: dayjs(endDay).toDate(),
-            },
-          },
-        },
-        { $unwind: "$participations" },
-        { $unwind: "$participations.attendences" },
-        {
-          $project: {
-            attendences: "$participations.attendences",
-          },
-        },
-        {
-          $project: {
-            firstChoice: "$attendences.firstChoice",
-            attendences: "$attendences",
-          },
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "attendences.user",
-            foreignField: "_id",
-            as: "attendences.user",
-          },
-        },
-      ])
-      .toArray();
-
-    const voteCnt = forVote
-      .flatMap((participation) => participation.attendences)
-      .filter((attendence) => attendence.firstChoice === true)
-      .flatMap((attendance) => attendance.user)
-      .map((user) => user.uid.toString())
-      .reduce((acc, val) => {
-        if (val in acc) {
-          acc[val]++;
-        } else {
-          acc[val] = 1;
-        }
-        return acc;
+    try {
+      const allUser = await User.find({ isActive: true });
+      const attendForm = allUser.reduce((accumulator, user) => {
+        return { ...accumulator, [user.uid.toString()]: 0 };
       }, {});
 
-    const voteRateForm = { ...attendForm, ...voteCnt };
-    const result = [];
+      const forVote = await Vote.collection
+        .aggregate([
+          {
+            $match: {
+              date: {
+                $gte: dayjs(startDay).toDate(),
+                $lt: dayjs(endDay).toDate(),
+              },
+            },
+          },
+          { $unwind: "$participations" },
+          { $unwind: "$participations.attendences" },
+          {
+            $project: {
+              attendences: "$participations.attendences",
+            },
+          },
+          {
+            $project: {
+              firstChoice: "$attendences.firstChoice",
+              attendences: "$attendences",
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "attendences.user",
+              foreignField: "_id",
+              as: "attendences.user",
+            },
+          },
+        ])
+        .toArray();
 
-    for (let value in voteRateForm) {
-      result.push({ uid: value, cnt: voteRateForm[value] });
+      const voteCnt = forVote
+        .flatMap((participation) => participation.attendences)
+        .filter((attendence) => attendence.firstChoice === true)
+        .flatMap((attendance) => attendance.user)
+        .map((user) => user.uid.toString())
+        .reduce((acc, val) => {
+          if (val in acc) {
+            acc[val]++;
+          } else {
+            acc[val] = 1;
+          }
+          return acc;
+        }, {});
+
+      const voteRateForm = { ...attendForm, ...voteCnt };
+      const result = [];
+
+      for (let value in voteRateForm) {
+        result.push({ uid: value, cnt: voteRateForm[value] });
+      }
+
+      return result;
+    } catch (err: any) {
+      throw new Error(err);
     }
-
-    return result;
   }
 
   async patchProfile() {
-    const profile = await getProfile(
-      this.token.accessToken as string,
-      this.token.uid as string
-    );
-    if (!profile) {
-      return new Error();
+    try {
+      const profile = await getProfile(
+        this.token.accessToken as string,
+        this.token.uid as string
+      );
+      if (!profile) {
+        return new Error();
+      }
+      await User.updateOne({ uid: this.token.uid }, { $set: profile });
+      const updatedUser = await User.findOne({ uid: this.token.uid });
+      return updatedUser;
+    } catch (err: any) {
+      throw new Error(err);
     }
-    await User.updateOne({ uid: this.token.uid }, { $set: profile });
-    const updatedUser = await User.findOne({ uid: this.token.uid });
-    return updatedUser;
   }
 
   async updatePoint(point: number, message: string) {
-    const user = await User.findOne({ uid: this.token.uid });
-    if (!user) throw new Error();
+    try {
+      const user = await User.findOne({ uid: this.token.uid });
+      if (!user) throw new Error();
 
-    user.point += point;
-    await user.save();
+      user.point += point;
+      await user.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
 
     logger.logger.info(message, {
       metadata: { type: "point", uid: this.token.uid, value: point },
     });
+    return;
   }
 
   async updateScore(score: number, message: string) {
-    const user = await User.findOne({ uid: this.token.uid });
-    if (!user) throw new Error();
+    try {
+      const user = await User.findOne({ uid: this.token.uid });
+      if (!user) throw new Error();
 
-    user.score += score;
-    await user.save();
+      user.score += score;
+      await user.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
 
     logger.logger.info(message, {
       metadata: { type: "score", uid: this.token.uid, value: score },
     });
+    return;
   }
 
   async updateDeposit(deposit: number, message: string) {
-    const user = await User.findOne({ uid: this.token.uid });
-    if (!user) throw new Error();
+    try {
+      const user = await User.findOne({ uid: this.token.uid });
+      if (!user) throw new Error();
 
-    user.deposit += deposit;
-    await user.save();
+      user.deposit += deposit;
+      await user.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
 
     logger.logger.info(message, {
       metadata: { type: "deposit", uid: this.token.uid, value: deposit },
     });
+    return;
   }
 }

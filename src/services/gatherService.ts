@@ -4,12 +4,20 @@ export default class GatherService {
   constructor() {}
 
   async getGather() {
-    const gatherData = await Gather.find().select("-_id");
-    return gatherData;
+    try {
+      const gatherData = await Gather.find().select("-_id");
+      return gatherData;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async createGather(data: IGatherData) {
-    await Gather.create(data);
-    return;
+    try {
+      await Gather.create(data);
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 }

@@ -4,7 +4,11 @@ export default class PlaceService {
   constructor() {}
 
   async getActivePlace() {
-    const places = await Place.find({ status: "active" });
-    return places;
+    try {
+      const places = await Place.find({ status: "active" });
+      return places;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 }
