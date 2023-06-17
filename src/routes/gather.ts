@@ -39,8 +39,6 @@ router
 
     const { gather } = req.body;
 
-    console.log(gather);
-
     await gatherServiceInstance.createGather(gather);
     res.status(200).end();
   });

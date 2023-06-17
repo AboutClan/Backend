@@ -281,4 +281,14 @@ export default class UserService {
     });
     return;
   }
+
+  async setPreference(place: any, subPlace: any) {
+    try {
+      await User.updateOne({ uid: this.token.uid }, { place, subPlace });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    return;
+  }
 }

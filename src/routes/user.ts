@@ -227,4 +227,16 @@ router
     return res.status(200).send(userScore);
   });
 
+router
+  .route("/preference")
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    const { place, subPlace } = req.body;
+
+    await userServiceInstance.setPreference(place, subPlace);
+    return res.status(200).end();
+  });
+
 module.exports = router;
