@@ -25,8 +25,6 @@ router
 
     const { request } = req.body;
 
-    console.log(request);
-
     await requestServiceInstance.createRequest(request);
     res.status(200).end();
   });

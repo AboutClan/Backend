@@ -8,55 +8,68 @@ export default class GiftService {
   }
 
   async getAllGift() {
-    const giftUsers = await GiftModel.find({})
-      .sort("createdAt")
-      .select("-_id -createdAt -updatedAt -__v");
+    try {
+      const giftUsers = await GiftModel.find({})
+        .sort("createdAt")
+        .select("-_id -createdAt -updatedAt -__v");
 
-    return giftUsers;
+      return giftUsers;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getGift(id: number) {
-    const giftUser = await GiftModel.find({ giftId: id }).select(
-      "-_id -createdAt -updatedAt -__v"
-    );
+    try {
+      const giftUser = await GiftModel.find({ giftId: id }).select(
+        "-_id -createdAt -updatedAt -__v"
+      );
 
-    return giftUser;
+      return giftUser;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async setGift(name: any, cnt: any, giftId: any) {
     const { uid } = this.token;
-    const existingUser = await GiftModel.findOne({
-      uid,
-      giftId,
-    });
+    try {
+      const existingUser = await GiftModel.findOne({
+        uid,
+        giftId,
+      });
 
-    if (existingUser) {
-      const user = await GiftModel.findOneAndUpdate(
-        { uid: this.token.uid },
-        { name, uid, cnt: existingUser.cnt + cnt, giftId },
-        { new: true, runValidators: true }
-      );
-      if (!user) {
-        throw new Error();
+      if (existingUser) {
+        const user = await GiftModel.findOneAndUpdate(
+          { uid: this.token.uid },
+          { name, uid, cnt: existingUser.cnt + cnt, giftId },
+          { new: true, runValidators: true }
+        );
+        if (!user) {
+          throw new Error("no user");
+        }
+
+        const resUser = {
+          name: user.name,
+          uid: user.uid,
+          cnt: user.cnt,
+          giftId: user.giftId,
+        };
+
+        return resUser;
       }
 
-      const resUser = {
-        name: user.name,
-        uid: user.uid,
-        cnt: user.cnt,
-        giftId: user.giftId,
+      const newUser = await GiftModel.create({ name, uid, cnt, giftId });
+      const user = {
+        name: newUser.name,
+        uid: newUser.uid,
+        cnt: newUser.cnt,
+        giftId: newUser.giftId,
       };
 
-      return resUser;
+      return user;
+    } catch (err: any) {
+      throw new Error(err);
     }
-    const newUser = await GiftModel.create({ name, uid, cnt, giftId });
-    const user = {
-      name: newUser.name,
-      uid: newUser.uid,
-      cnt: newUser.cnt,
-      giftId: newUser.giftId,
-    };
-
-    return user;
   }
 }

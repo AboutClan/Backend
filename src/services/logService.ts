@@ -8,22 +8,30 @@ export default class LogService {
   }
 
   async getLog(type: string) {
-    const logs = await Log.find(
-      {
-        $and: [{ "meta.type": type }, { "meta.uid": this.token.uid }],
-      },
-      "-_id timestamp message meta"
-    );
+    try {
+      const logs = await Log.find(
+        {
+          $and: [{ "meta.type": type }, { "meta.uid": this.token.uid }],
+        },
+        "-_id timestamp message meta"
+      );
 
-    return logs;
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getAllLog(type: string) {
-    const logs = await Log.find(
-      { "meta.type": type },
-      "-_id timestamp message meta"
-    );
+    try {
+      const logs = await Log.find(
+        { "meta.type": type },
+        "-_id timestamp message meta"
+      );
 
-    return logs;
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 }

@@ -30,9 +30,13 @@ router
     const { registerServiceInstance } = req;
     if (!registerServiceInstance) return res.status(401).send("Unauthorized");
 
-    const registeredUsers = await registerServiceInstance.getRegister();
+    try {
+      const registeredUsers = await registerServiceInstance.getRegister();
 
-    return res.status(200).json(registeredUsers);
+      return res.status(200).json(registeredUsers);
+    } catch (err: any) {
+      next(err);
+    }
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const registerForm = req.body;
@@ -63,7 +67,7 @@ router
     const { registerServiceInstance } = req;
     if (!registerServiceInstance) return res.status(401).send("Unauthorized");
 
-    await registerServiceInstance.deleteRegisterUser(uid);
+    await registerServiceInstance.deleteRegisterUser(uid, null);
 
     return res.status(200).end();
   });

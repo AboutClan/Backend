@@ -4,12 +4,20 @@ export default class PlazaService {
   constructor() {}
 
   async getPlaza() {
-    const plazaData = await Plaza.find();
-    return plazaData;
+    try {
+      const plazaData = await Plaza.find();
+      return plazaData;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async createPlaza(data: any) {
-    await Plaza.create(data);
-    return;
+    try {
+      await Plaza.create(data);
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 }
