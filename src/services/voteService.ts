@@ -9,7 +9,7 @@ import {
 } from "../db/models/vote";
 import { findOneVote } from "../utils/voteUtils";
 import { IPlace, Place } from "../db/models/place";
-import { IUser } from "../db/models/user";
+import { IUser, User } from "../db/models/user";
 import { IVoteStudyInfo } from "../types/vote";
 import { now } from "../utils/dateUtils";
 
@@ -442,4 +442,37 @@ export default class VoteService {
 
     return result;
   }
+
+  async quickVote(
+    date: any,
+    studyInfo: Omit<IVoteStudyInfo, "place" | "subPlace">
+  ) {
+    const { start, end } = studyInfo;
+    const user: any = await User.find(
+      { uid: this.token.uid },
+      "studyPreference"
+    );
+    const { place, subPlace } = user;
+
+    if (!place) {
+      return;
+    }
+
+    await this.setVote(date, { start, end, place, subPlace });
+
+    return;
+  }
+
+  // async setPreference() {
+  //   const place = await Place.findOne({ fullname: "카탈로그" });
+
+  //   await User.updateOne(
+  //     { uid: this.token.uid },
+  //     {
+  //       studyPreference: { place: place?.id, subPlace: [place?.id, place?.id] },
+  //     }
+  //   );
+
+  //   return;
+  // }
 }

@@ -21,17 +21,22 @@ export default class AdminUserService {
     type: "point" | "score" | "deposit",
     message: string
   ) {
+    const user = await User.findOne({ uid: this.token.uid });
+    if (!user) throw new Error();
+
     switch (type) {
       case "point":
-        await User.updateOne({ uid }, { point: value });
+        user.point += parseInt(value);
         break;
       case "score":
-        await User.updateOne({ uid }, { score: value });
+        user.score += parseInt(value);
         break;
       case "deposit":
-        await User.updateOne({ uid }, { deposit: value });
+        user.deposit += parseInt(value);
         break;
     }
+
+    await user.save();
 
     logger.logger.info(message, {
       metadata: { type, uid, value },

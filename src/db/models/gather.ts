@@ -1,5 +1,6 @@
 import { Dayjs } from "dayjs";
 import mongoose, { model, Model, Schema } from "mongoose";
+import { IUser } from "./user";
 
 export interface GatherType {
   title: string;
@@ -27,6 +28,9 @@ export interface IGatherData {
   genderCondition: boolean;
   password?: string;
   id: number;
+  status: string;
+  participants: string[] | IUser[];
+  user: string | IUser;
 }
 
 export const typeSchema: Schema<GatherType> = new Schema({
@@ -96,6 +100,14 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     },
     id: {
       type: Number,
+    },
+    participants: {
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   { timestamps: true }

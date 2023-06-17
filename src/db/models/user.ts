@@ -1,5 +1,6 @@
 import mongoose, { model, Schema, Model, Document } from "mongoose";
 import { IRegistered, InterestSchema, MajorSchema } from "./registered";
+import { IPlace } from "./place";
 
 export interface restType {
   type: string;
@@ -13,6 +14,11 @@ export interface avatarType {
   bg: number;
 }
 
+export interface preferenceType {
+  place: string | IPlace;
+  subPlace: string[] | IPlace[];
+}
+
 export interface IUser extends Document, IRegistered {
   registerDate: string;
   isActive?: boolean;
@@ -23,6 +29,7 @@ export interface IUser extends Document, IRegistered {
   rest: restType;
   avatar: avatarType;
   deposit: number;
+  studyPreference: preferenceType;
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -42,6 +49,23 @@ export const avatarSchema: Schema<avatarType> = new Schema({
     default: 1,
   },
 });
+
+//Todo: Error
+export const preferenceSchema: Schema<preferenceType> = new Schema(
+  {
+    subPlace: {
+      type: [Schema.Types.ObjectId],
+      ref: "Place",
+    },
+    place: {
+      type: Schema.Types.ObjectId,
+      ref: "Place",
+    },
+  },
+  {
+    _id: false,
+  }
+);
 
 export const UserSchema: Schema<IUser> = new Schema({
   uid: {
@@ -115,6 +139,9 @@ export const UserSchema: Schema<IUser> = new Schema({
   deposit: {
     type: Number,
     default: 3000,
+  },
+  studyPreference: {
+    type: preferenceSchema,
   },
 });
 

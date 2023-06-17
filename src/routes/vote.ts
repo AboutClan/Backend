@@ -199,4 +199,18 @@ router
     res.status(200).json(result);
   });
 
+router
+  .route("/:date/quick")
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
+    const { date } = req;
+    if (!date) return res.status(400).send("no data");
+
+    const voteInfo: Omit<IVoteStudyInfo, "place" | "subPlace"> = req.body;
+
+    await voteServiceInstance.quickVote(date, voteInfo);
+    res.status(200).end();
+  });
+
 module.exports = router;
