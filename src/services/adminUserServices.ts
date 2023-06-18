@@ -1,9 +1,13 @@
+import { JWT } from "next-auth/jwt";
 import { IUser, User } from "../db/models/user";
 
 const logger = require("../../logger");
 
 export default class AdminUserService {
-  constructor() {}
+  private token: JWT;
+  constructor(token?: JWT) {
+    this.token = token as JWT;
+  }
 
   async getAllUser() {
     const users = await User.find({});
