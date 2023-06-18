@@ -1,13 +1,28 @@
 import express, { NextFunction, Request, Response } from "express";
 import AdminUserService from "../../services/adminUserServices";
 import { IUser } from "../../db/models/user";
+import { decode } from "next-auth/jwt";
 
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const adminUserServiceInstance = new AdminUserService();
-  req.adminUserServiceInstance = adminUserServiceInstance;
-  next();
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (token?.toString() == "undefined" || !token)
+    return res.status(401).send("Unauthorized");
+
+  const decodedToken = await decode({
+    token,
+    secret: "klajsdflksjdflkdvdssdq231e1w",
+  });
+
+  if (!decodedToken) {
+    return res.status(401).send("Unauthorized");
+  } else {
+    const adminUserServiceInstance = new AdminUserService(decodedToken);
+    req.adminUserServiceInstance = adminUserServiceInstance;
+    next();
+  }
 });
 
 router
