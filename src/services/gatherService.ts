@@ -9,7 +9,7 @@ export default class GatherService {
 
   async getGather() {
     try {
-      const gatherData = await Gather.find().select("-_id");
+      const gatherData = await Gather.find().populate("user").select("-_id");
       return gatherData;
     } catch (err: any) {
       throw new Error(err);
