@@ -1,6 +1,7 @@
 import { JWT } from "next-auth/jwt";
 import { Gather, IGatherData, gatherStatus } from "../db/models/gather";
 import { IUser } from "../db/models/user";
+import { v4 as uuidv4 } from "uuid";
 
 export default class GatherService {
   private token: JWT;
@@ -19,7 +20,7 @@ export default class GatherService {
 
   async createGather(data: IGatherData) {
     try {
-      const randomId = crypto.randomUUID();
+      const randomId = uuidv4().toString();
       const gatherData = { ...data, user: this.token.id, id: randomId };
       await Gather.create(gatherData);
       return;

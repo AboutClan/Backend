@@ -29,7 +29,7 @@ export interface IGatherData {
   preCnt?: number;
   genderCondition: boolean;
   password?: string;
-  id: number;
+  id: string;
   status: gatherStatus;
   participants: (string | IUser)[];
   user: string | IUser;
@@ -101,7 +101,7 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
       type: String,
     },
     id: {
-      type: Number,
+      type: String,
     },
     participants: {
       type: [Schema.Types.ObjectId],
