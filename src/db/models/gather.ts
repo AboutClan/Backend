@@ -29,7 +29,7 @@ export interface IGatherData {
   password?: string;
   id: number;
   status: string;
-  participants: string[] | IUser[];
+  participants: (string | IUser)[];
   user: string | IUser;
 }
 
