@@ -1,5 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { Gather, IGatherData } from "../db/models/gather";
+import { IUser } from "../db/models/user";
 
 export default class GatherService {
   private token: JWT;
@@ -25,12 +26,19 @@ export default class GatherService {
     }
   }
 
-  // async participateGather(gatherId: string) {
-  //   const gather = await Gather.findOne({ id: gatherId });
+  async participateGather(gatherId: string) {
+    const gather = await Gather.findOne({ id: gatherId });
+    if (!gather) return;
 
-  //   await gather?.participants = [
-  //     ...(gather?.participants || []),
-  //     this.token.id
-  //   ];
-  // }
+    if (!gather.participants.includes(this.token.id as IUser)) {
+      gather.participants = [
+        ...(gather?.participants || []),
+        this.token.id as IUser,
+      ];
+
+      await gather?.save();
+    }
+
+    return;
+  }
 }

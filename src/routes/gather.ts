@@ -43,4 +43,14 @@ router
     res.status(200).end();
   });
 
+router.route("/participate").post(async (req, res, next) => {
+  const { gatherServiceInstance } = req;
+  if (!gatherServiceInstance) throw new Error();
+
+  const { gatherId } = req.body;
+
+  await gatherServiceInstance.participateGather(gatherId);
+  res.status(200).end();
+});
+
 module.exports = router;
