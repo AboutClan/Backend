@@ -19,7 +19,9 @@ export default class GatherService {
 
   async createGather(data: IGatherData) {
     try {
-      await Gather.create({ ...data, user: this.token.id });
+      const randomId = crypto.randomUUID();
+      const gatherData = { ...data, user: this.token.id, id: randomId };
+      await Gather.create(gatherData);
       return;
     } catch (err: any) {
       throw new Error(err);
