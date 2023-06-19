@@ -53,4 +53,34 @@ router.route("/participate").post(async (req, res, next) => {
   res.status(200).end();
 });
 
+router.route("/open").patch(async (req, res, next) => {
+  const { gatherServiceInstance } = req;
+  if (!gatherServiceInstance) throw new Error();
+
+  const { gatherId } = req.body;
+
+  await gatherServiceInstance.setStatus(gatherId, "open");
+  res.status(200).end();
+});
+
+router.route("/close").patch(async (req, res, next) => {
+  const { gatherServiceInstance } = req;
+  if (!gatherServiceInstance) throw new Error();
+
+  const { gatherId } = req.body;
+
+  await gatherServiceInstance.setStatus(gatherId, "close");
+  res.status(200).end();
+});
+
+router.route("/end").patch(async (req, res, next) => {
+  const { gatherServiceInstance } = req;
+  if (!gatherServiceInstance) throw new Error();
+
+  const { gatherId } = req.body;
+
+  await gatherServiceInstance.setStatus(gatherId, "end");
+  res.status(200).end();
+});
+
 module.exports = router;

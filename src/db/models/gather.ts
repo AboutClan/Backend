@@ -2,6 +2,8 @@ import { Dayjs } from "dayjs";
 import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
 
+export type gatherStatus = "pending" | "open" | "close" | "end";
+
 export interface GatherType {
   title: string;
   subtitle?: string;
@@ -28,7 +30,7 @@ export interface IGatherData {
   genderCondition: boolean;
   password?: string;
   id: number;
-  status: string;
+  status: gatherStatus;
   participants: (string | IUser)[];
   user: string | IUser;
 }
@@ -108,6 +110,12 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
+    },
+    status: {
+      type: String,
+      enum: ["pending", "open", "close", "end"],
+      default: "pending",
+      required: true,
     },
   },
   { timestamps: true }
