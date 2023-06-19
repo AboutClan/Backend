@@ -25,7 +25,7 @@ export default class AdminUserService {
     type: "point" | "score" | "deposit",
     message: string
   ) {
-    const user = await User.findOne({ uid: this.token.uid });
+    const user = await User.findOne({ uid });
     if (!user) throw new Error();
 
     switch (type) {
