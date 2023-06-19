@@ -1,5 +1,5 @@
 import { JWT } from "next-auth/jwt";
-import { Gather, IGatherData } from "../db/models/gather";
+import { Gather, IGatherData, gatherStatus } from "../db/models/gather";
 import { IUser } from "../db/models/user";
 
 export default class GatherService {
@@ -40,5 +40,14 @@ export default class GatherService {
     }
 
     return;
+  }
+
+  async setStatus(gatherId: string, status: gatherStatus) {
+    try {
+      await Gather.updateOne({ id: gatherId }, { status });
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 }
