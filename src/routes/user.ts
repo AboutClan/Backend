@@ -42,6 +42,17 @@ router
 
     const avatar = await userServiceInstance.getUserInfo(["avatar"]);
     return res.status(200).json(avatar);
+  })
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    const { type, bg } = req.body;
+
+    const avatar = await userServiceInstance.updateUser({
+      avatar: { type, bg },
+    });
+    return res.status(200).json(avatar);
   });
 
 router
