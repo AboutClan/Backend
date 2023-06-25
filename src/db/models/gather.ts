@@ -38,6 +38,7 @@ export interface commentType {
 }
 
 export interface IGatherData {
+  title: string;
   type: TitleType;
   gatherList: GatherType[];
   content: string;
@@ -146,6 +147,9 @@ export const commentSchema: Schema<commentType> = new Schema(
 
 export const GatherSchema: Schema<IGatherData> = new Schema(
   {
+    title: {
+      type: String,
+    },
     gatherList: {
       type: [gatherListSchema],
     },
