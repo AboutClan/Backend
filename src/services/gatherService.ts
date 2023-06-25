@@ -31,15 +31,19 @@ export default class GatherService {
     }
   }
 
-  async participateGather(gatherId: string) {
+  async participateGather(gatherId: string, phase: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) return;
 
-    if (!gather.participants.includes(this.token.id as IUser)) {
-      gather.participants = [
-        ...(gather?.participants || []),
-        this.token.id as IUser,
-      ];
+    if (
+      !gather.participants.some(
+        (participant) => participant.user == (this.token.id as IUser)
+      )
+    ) {
+      gather.participants.push({
+        user: this.token.id as IUser,
+        phase,
+      });
 
       await gather?.save();
     }
@@ -54,5 +58,35 @@ export default class GatherService {
     } catch (err: any) {
       throw new Error(err);
     }
+  }
+
+  async createComment(gatherId: string, comment: string) {
+    const gather = await Gather.findOne({ id: gatherId });
+    if (!gather) return;
+
+    gather.comment.push({
+      user: this.token.id as IUser,
+      comment,
+    });
+
+    await gather.save();
+  }
+
+  async deleteGather(gatherId: string) {
+    await Gather.deleteOne({ id: gatherId });
+
+    return;
+  }
+
+  async deleteParticipate(gatherId: string) {
+    const gather = await Gather.findOne({ id: gatherId });
+    if (!gather) return;
+
+    gather.participants = gather.participants.filter(
+      (participant) => participant.user != (this.token.id as IUser)
+    );
+
+    await gather.save();
+    return;
   }
 }

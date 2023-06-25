@@ -41,15 +41,45 @@ router
 
     await gatherServiceInstance.createGather(gather);
     res.status(200).end();
+  })
+  .delete(async (req, res, next) => {
+    const { gatherServiceInstance } = req;
+    if (!gatherServiceInstance) throw new Error();
+
+    const { gatherId } = req.body;
+
+    const gatherData = await gatherServiceInstance.deleteGather(gatherId);
+    res.status(200).json(gatherData);
   });
 
-router.route("/participate").post(async (req, res, next) => {
+router
+  .route("/participate")
+  .post(async (req, res, next) => {
+    const { gatherServiceInstance } = req;
+    if (!gatherServiceInstance) throw new Error();
+
+    const { gatherId, phase } = req.body;
+
+    await gatherServiceInstance.participateGather(gatherId, phase);
+    res.status(200).end();
+  })
+  .delete(async (req, res, next) => {
+    const { gatherServiceInstance } = req;
+    if (!gatherServiceInstance) throw new Error();
+
+    const { gatherId } = req.body;
+
+    await gatherServiceInstance.deleteParticipate(gatherId);
+    res.status(200).end();
+  });
+
+router.route("/comment").post(async (req, res, next) => {
   const { gatherServiceInstance } = req;
   if (!gatherServiceInstance) throw new Error();
 
-  const { gatherId } = req.body;
+  const { gatherId, comment } = req.body;
 
-  await gatherServiceInstance.participateGather(gatherId);
+  await gatherServiceInstance.createComment(gatherId, comment);
   res.status(200).end();
 });
 
