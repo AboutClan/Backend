@@ -1,10 +1,14 @@
-import { Dayjs } from "dayjs";
 import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
 
 export type gatherStatus = "pending" | "open" | "close" | "end";
 
-export interface GatherType {
+export interface ITime {
+  hour?: number;
+  minute?: number;
+}
+
+export interface TitleType {
   title: string;
   subtitle?: string;
 }
@@ -18,31 +22,73 @@ export interface memberCntType {
   max: number;
 }
 
+export interface GatherType {
+  text: string;
+  time: ITime;
+}
+
+export interface participantsType {
+  user: string | IUser;
+  phase: string;
+}
+
+export interface commentType {
+  user: string | IUser;
+  comment: string;
+}
+
 export interface IGatherData {
-  type: GatherType;
-  title: string;
+  type: TitleType;
+  gatherList: GatherType[];
   content: string;
   location: LocationType;
-  date: Dayjs;
   memberCnt: memberCntType;
   age?: number[];
   preCnt?: number;
   genderCondition: boolean;
   password?: string;
-  id: string;
   status: gatherStatus;
-  participants: (string | IUser)[];
+  participants: participantsType[];
   user: string | IUser;
+  comment: commentType[];
+  id: number;
 }
 
-export const typeSchema: Schema<GatherType> = new Schema({
-  title: {
-    type: String,
+export const typeSchema: Schema<TitleType> = new Schema(
+  {
+    title: {
+      type: String,
+    },
+    subtitle: {
+      type: String,
+    },
   },
-  subtitle: {
-    type: String,
+  { _id: false }
+);
+
+export const timeSchema: Schema<ITime> = new Schema(
+  {
+    hour: {
+      type: Number,
+    },
+    minute: {
+      type: Number,
+    },
   },
-});
+  { _id: false }
+);
+
+export const gatherListSchema: Schema<GatherType> = new Schema(
+  {
+    text: {
+      type: String,
+    },
+    time: {
+      type: timeSchema,
+    },
+  },
+  { _id: false }
+);
 
 export const locationSchema: Schema<LocationType> = new Schema(
   {
@@ -68,22 +114,49 @@ export const memberCntSchema: Schema<memberCntType> = new Schema(
   { _id: false }
 );
 
+export const participantsSchema: Schema<participantsType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    phase: {
+      type: String,
+      enum: ["all", "first", "second"],
+    },
+  },
+  { _id: false }
+);
+
+export const commentSchema: Schema<commentType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+    _id: false,
+  }
+);
+
 export const GatherSchema: Schema<IGatherData> = new Schema(
   {
+    gatherList: {
+      type: [gatherListSchema],
+    },
     type: {
       type: typeSchema,
-    },
-    title: {
-      type: String,
     },
     content: {
       type: String,
     },
     location: {
       type: locationSchema,
-    },
-    date: {
-      type: Date,
     },
     memberCnt: {
       type: memberCntSchema,
@@ -100,11 +173,8 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     password: {
       type: String,
     },
-    id: {
-      type: String,
-    },
     participants: {
-      type: [Schema.Types.ObjectId],
+      type: [participantsSchema],
       ref: "User",
     },
     user: {
@@ -117,9 +187,17 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
       default: "pending",
       required: true,
     },
+    comment: {
+      type: [commentSchema],
+    },
+    id: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
+
 export const Gather =
   (mongoose.models.Gather as Model<IGatherData, {}, {}, {}>) ||
   model<IGatherData>("Gather", GatherSchema);

@@ -156,7 +156,6 @@ export default class AdminVoteService {
   async deleteVote() {
     const day = now().add(2, "days").toDate();
     await Vote.deleteMany({ date: { $gte: day } });
-    console.log(21);
     return;
   }
 }
