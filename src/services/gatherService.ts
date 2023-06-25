@@ -2,11 +2,23 @@ import { JWT } from "next-auth/jwt";
 import { Gather, IGatherData, gatherStatus } from "../db/models/gather";
 import { IUser } from "../db/models/user";
 import { v4 as uuidv4 } from "uuid";
+import { Counter } from "../db/models/counter";
+import dbConnect from "../db/conn";
 
 export default class GatherService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
+  }
+
+  async getNextSequence(name: any) {
+    const counter = await Counter.findOne({ key: name });
+    if (counter) {
+      counter.seq++;
+
+      await counter.save();
+      return counter.seq;
+    }
   }
 
   async getGather() {
@@ -21,14 +33,22 @@ export default class GatherService {
   }
 
   async createGather(data: IGatherData) {
+    const nextId = await this.getNextSequence("counterid");
+
+    const gatherInfo = {
+      ...data,
+      user: this.token.id,
+      id: nextId,
+    };
     try {
-      const randomId = uuidv4().toString();
-      const gatherData = { ...data, user: this.token.id, id: randomId };
+      const gatherData = gatherInfo;
       await Gather.create(gatherData);
       return;
     } catch (err: any) {
       throw new Error(err);
     }
+
+    return nextId;
   }
 
   async participateGather(gatherId: string, phase: string) {

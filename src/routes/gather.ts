@@ -39,8 +39,8 @@ router
 
     const { gather } = req.body;
 
-    await gatherServiceInstance.createGather(gather);
-    res.status(200).end();
+    const gatherId = await gatherServiceInstance.createGather(gather);
+    res.status(200).json({ gatherId });
   })
   .delete(async (req, res, next) => {
     const { gatherServiceInstance } = req;

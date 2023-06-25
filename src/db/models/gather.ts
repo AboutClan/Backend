@@ -1,4 +1,3 @@
-import { Dayjs } from "dayjs";
 import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
 
@@ -48,11 +47,11 @@ export interface IGatherData {
   preCnt?: number;
   genderCondition: boolean;
   password?: string;
-  id: string;
   status: gatherStatus;
   participants: participantsType[];
   user: string | IUser;
   comment: commentType[];
+  id: number;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -174,9 +173,6 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     password: {
       type: String,
     },
-    id: {
-      type: String,
-    },
     participants: {
       type: [participantsSchema],
       ref: "User",
@@ -194,9 +190,14 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     comment: {
       type: [commentSchema],
     },
+    id: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
+
 export const Gather =
   (mongoose.models.Gather as Model<IGatherData, {}, {}, {}>) ||
   model<IGatherData>("Gather", GatherSchema);
