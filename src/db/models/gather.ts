@@ -141,7 +141,6 @@ export const commentSchema: Schema<commentType> = new Schema(
   },
   {
     timestamps: true,
-    _id: false,
   }
 );
 
