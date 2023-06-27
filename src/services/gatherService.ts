@@ -24,7 +24,7 @@ export default class GatherService {
   async getGather() {
     try {
       const gatherData = await Gather.find()
-        .populate(["user", "participants"])
+        .populate(["user", "participants.user", "comment.user"])
         .select("-_id");
       return gatherData;
     } catch (err: any) {
@@ -90,6 +90,29 @@ export default class GatherService {
     });
 
     await gather.save();
+  }
+
+  async deleteComment(gatherId: string, commentId: string) {
+    const gather = await Gather.findOne({ id: gatherId });
+    if (!gather) return;
+
+    gather.comment = gather.comment.filter((com: any) => {
+      (com._id as string) != commentId;
+    });
+
+    await gather.save();
+  }
+
+  async patchComment(gatherId: string, commentId: string, comment: string) {
+    const gather = await Gather.findOne({ id: gatherId });
+    if (!gather) return;
+
+    gather.comment.forEach(async (com: any) => {
+      if ((com._id as string) == commentId) {
+        com.comment = comment;
+        await gather.save();
+      }
+    });
   }
 
   async deleteGather(gatherId: string) {

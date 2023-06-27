@@ -61,6 +61,7 @@ router
     const { gatherId, phase } = req.body;
 
     await gatherServiceInstance.participateGather(gatherId, phase);
+
     res.status(200).end();
   })
   .delete(async (req, res, next) => {
@@ -73,15 +74,35 @@ router
     res.status(200).end();
   });
 
-router.route("/comment").post(async (req, res, next) => {
-  const { gatherServiceInstance } = req;
-  if (!gatherServiceInstance) throw new Error();
+router
+  .route("/comment")
+  .post(async (req, res, next) => {
+    const { gatherServiceInstance } = req;
+    if (!gatherServiceInstance) throw new Error();
 
-  const { gatherId, comment } = req.body;
+    const { gatherId, comment } = req.body;
 
-  await gatherServiceInstance.createComment(gatherId, comment);
-  res.status(200).end();
-});
+    await gatherServiceInstance.createComment(gatherId, comment);
+    res.status(200).end();
+  })
+  .delete(async (req, res, next) => {
+    const { gatherServiceInstance } = req;
+    if (!gatherServiceInstance) throw new Error();
+
+    const { gatherId, commentId } = req.body;
+
+    await gatherServiceInstance.deleteComment(gatherId, commentId);
+    res.status(200).end();
+  })
+  .patch(async (req, res, next) => {
+    const { gatherServiceInstance } = req;
+    if (!gatherServiceInstance) throw new Error();
+
+    const { gatherId, commentId, comment } = req.body;
+
+    await gatherServiceInstance.patchComment(gatherId, commentId, comment);
+    res.status(200).end();
+  });
 
 router.route("/open").patch(async (req, res, next) => {
   const { gatherServiceInstance } = req;
