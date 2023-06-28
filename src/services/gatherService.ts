@@ -96,7 +96,9 @@ export default class GatherService {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) return;
 
-    gather.comment = gather.comment.filter((com: any) => (com._id as string) != commentId;);
+    gather.comment = gather.comment.filter(
+      (com: any) => (com._id as string) != commentId
+    );
 
     await gather.save();
   }
