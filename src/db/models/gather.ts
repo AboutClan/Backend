@@ -53,6 +53,7 @@ export interface IGatherData {
   user: string | IUser;
   comment: commentType[];
   id: number;
+  date: string;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -196,6 +197,9 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     id: {
       type: Number,
       default: 0,
+    },
+    date: {
+      type: String,
     },
   },
   { timestamps: true }
