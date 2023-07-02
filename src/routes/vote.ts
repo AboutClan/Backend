@@ -209,8 +209,12 @@ router
 
     const voteInfo: Omit<IVoteStudyInfo, "place" | "subPlace"> = req.body;
 
-    await voteServiceInstance.quickVote(date, voteInfo);
-    res.status(200).end();
+    const success = await voteServiceInstance.quickVote(date, voteInfo);
+    if (success) {
+      return res.status(200).end();
+    } else {
+      return res.status(500).end();
+    }
   });
 
 module.exports = router;

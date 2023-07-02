@@ -178,6 +178,9 @@ export default class VoteService {
     const isVoting = await this.isVoting(date);
     const vote = await this.getVote(date);
 
+    console.log(date);
+    console.log(place, subPlace);
+
     if (isVoting) {
       vote.participations = vote.participations.map((participation) => ({
         ...participation,
@@ -448,19 +451,24 @@ export default class VoteService {
     studyInfo: Omit<IVoteStudyInfo, "place" | "subPlace">
   ) {
     const { start, end } = studyInfo;
-    const user: any = await User.find(
+    const user: any = await User.findOne(
       { uid: this.token.uid },
       "studyPreference"
     );
-    const { place, subPlace } = user;
+    let { place, subPlace } = user.studyPreference;
 
     if (!place) {
-      return;
+      return false;
     }
+
+    place = { _id: place.toString() };
+    subPlace = subPlace.map((_id: any) => {
+      return { _id: _id.toString() };
+    });
 
     await this.setVote(date, { start, end, place, subPlace });
 
-    return;
+    return true;
   }
 
   // async setPreference() {
