@@ -430,7 +430,8 @@ export default class VoteService {
 
   async getStart(date: any) {
     const vote = await findOneVote(date);
-    if (!vote) throw new Error();
+
+    if (!vote) return [];
 
     const result: any = [];
     vote.participations.map((participation) => {

@@ -4,8 +4,8 @@ import { IUser } from "./user";
 export type gatherStatus = "pending" | "open" | "close" | "end";
 
 export interface ITime {
-  hour?: number;
-  minute?: number;
+  hours?: number;
+  minutes?: number;
 }
 
 export interface TitleType {
@@ -70,10 +70,10 @@ export const typeSchema: Schema<TitleType> = new Schema(
 
 export const timeSchema: Schema<ITime> = new Schema(
   {
-    hour: {
+    hours: {
       type: Number,
     },
-    minute: {
+    minutes: {
       type: Number,
     },
   },
