@@ -284,7 +284,22 @@ export default class UserService {
 
   async setPreference(place: any, subPlace: any) {
     try {
-      await User.updateOne({ uid: this.token.uid }, { place, subPlace });
+      await User.updateOne(
+        { uid: this.token.uid },
+        { studyPreference: { place, subPlace } }
+      );
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    return;
+  }
+  async getPreference() {
+    try {
+      const result = await User.findOne({ uid: this.token.uid })
+        .populate("studyPreference.place studyPreference.subPlace")
+        .select("studyPreference");
+      return result;
     } catch (err: any) {
       throw new Error(err);
     }

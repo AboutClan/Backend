@@ -248,6 +248,13 @@ router
 
     await userServiceInstance.setPreference(place, subPlace);
     return res.status(200).end();
+  })
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    const result = await userServiceInstance.getPreference();
+    return res.status(200).json(result);
   });
 
 module.exports = router;
