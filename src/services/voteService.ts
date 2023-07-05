@@ -341,7 +341,7 @@ export default class VoteService {
     vote.participations.forEach((participation: any) => {
       const arriveForm: any = {};
       arriveForm[participation.place.fullname] = [];
-      if (participation.status === "open") {
+      if (["open", "free"].includes(participation.status as string)) {
         participation.attendences?.forEach((att: any) => {
           if (att.arrived) {
             arriveForm[participation.place.fullname].push({
@@ -435,7 +435,10 @@ export default class VoteService {
 
     const result: any = [];
     vote.participations.map((participation) => {
-      if (participation.status === "open" && participation.startTime) {
+      if (
+        ["open", "free"].includes(participation.status as string) &&
+        participation.startTime
+      ) {
         const openInfo = {
           place_id: participation.place?._id,
           startTime: participation.startTime,
@@ -472,16 +475,18 @@ export default class VoteService {
     return true;
   }
 
-  // async setPreference() {
-  //   const place = await Place.findOne({ fullname: "카탈로그" });
+  async setFree(date: any, placeId: any) {
+    const vote = await findOneVote(date);
 
-  //   await User.updateOne(
-  //     { uid: this.token.uid },
-  //     {
-  //       studyPreference: { place: place?.id, subPlace: [place?.id, place?.id] },
-  //     }
-  //   );
+    if (!vote) return;
 
-  //   return;
-  // }
+    vote.participations.forEach(async (participation) => {
+      if (participation.place?._id.toString() === placeId) {
+        participation.status = "free";
+        await vote.save();
+      }
+    });
+
+    return;
+  }
 }
