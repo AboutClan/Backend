@@ -15,7 +15,7 @@ export interface ITimeStartToEndHM {
 }
 
 export interface IPlaceStatus {
-  status?: "pending" | "waiting_confirm" | "open" | "dismissed";
+  status?: "pending" | "waiting_confirm" | "open" | "dismissed" | "free";
 }
 
 export interface IParticipation extends IPlaceStatus, ITimeStartToEndHM {
@@ -116,7 +116,7 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
 
     status: {
       type: Schema.Types.String,
-      enum: ["pending", "waiting_confirm", "open", "dismissed"],
+      enum: ["pending", "waiting_confirm", "open", "dismissed", "free"],
       default: "pending",
     },
   },

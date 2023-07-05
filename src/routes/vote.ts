@@ -217,4 +217,19 @@ router
     }
   });
 
+router
+  .route("/:date/free")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
+
+    const { date } = req;
+    if (!date) return res.status(400).send("no data");
+
+    const { placeId } = req.body;
+    await voteServiceInstance.setFree(date, placeId);
+
+    return res.status(200).end();
+  });
+
 module.exports = router;
