@@ -108,6 +108,15 @@ export const UserSchema: Schema<IUser> = new Schema({
   },
   role: {
     type: String,
+    enum: [
+      "noMember",
+      "waiting",
+      "human",
+      "member",
+      "manager",
+      "previliged",
+      "resting",
+    ],
     default: "member",
   },
   score: {

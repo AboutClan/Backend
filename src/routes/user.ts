@@ -257,4 +257,20 @@ router
     return res.status(200).json(result);
   });
 
+router
+  .route("/role")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    if (!userServiceInstance) return res.status(401).send("Unauthorized");
+
+    const { role } = req.body;
+
+    const result = await userServiceInstance.patchRole(role);
+
+    if (result) {
+      return res.status(200).end();
+    } else {
+      return res.status(500).end();
+    }
+  });
 module.exports = router;
