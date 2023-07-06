@@ -306,4 +306,21 @@ export default class UserService {
 
     return;
   }
+
+  async patchRole(role: string) {
+    if (
+      ![
+        "noMember",
+        "waiting",
+        "human",
+        "member",
+        "manager",
+        "previliged",
+        "resting",
+      ].includes(role)
+    )
+      return false;
+    this.updateUser({ role });
+    return true;
+  }
 }
