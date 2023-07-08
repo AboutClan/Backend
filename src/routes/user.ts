@@ -218,6 +218,7 @@ router
     const userScore = await userServiceInstance.getAllUserInfo([
       "name",
       "score",
+      "location",
       "uid",
     ]);
 

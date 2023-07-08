@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import AdminUserService from "../../services/adminUserServices";
-import { IUser } from "../../db/models/user";
+import { IUser, User } from "../../db/models/user";
 import { decode } from "next-auth/jwt";
 
 const router = express.Router();
@@ -148,6 +148,17 @@ router
     const { role } = req.body;
 
     adminUserServiceInstance.setRole(role, uid);
+    return res.status(200).end();
+  });
+
+router
+  .route("/test")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { adminUserServiceInstance } = req;
+    if (!adminUserServiceInstance) throw new Error();
+
+    await User.updateMany({}, { role: "human" });
+
     return res.status(200).end();
   });
 
