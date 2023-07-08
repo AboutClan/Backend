@@ -20,473 +20,533 @@ export default class VoteService {
   }
 
   async getArrivedPeriod(startDay: string, endDay: string) {
-    let userArrivedInfo = await Vote.collection
-      .aggregate([
-        {
-          $match: {
-            date: {
-              $gte: dayjs(startDay).toDate(),
-              $lt: dayjs(endDay).toDate(),
+    try {
+      let userArrivedInfo = await Vote.collection
+        .aggregate([
+          {
+            $match: {
+              date: {
+                $gte: dayjs(startDay).toDate(),
+                $lt: dayjs(endDay).toDate(),
+              },
             },
           },
-        },
-        {
-          $unwind: "$participations",
-        },
-        {
-          $unwind: "$participations.attendences",
-        },
-        {
-          $lookup: {
-            from: "places",
-            localField: "participations.place",
-            foreignField: "_id",
-            as: "place",
+          {
+            $unwind: "$participations",
           },
-        },
-        {
-          $project: {
-            date: "$date",
-            attendence: "$participations.attendences",
-            place: "$place",
-            status: "$participations.status",
+          {
+            $unwind: "$participations.attendences",
           },
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "attendence.user",
-            foreignField: "_id",
-            as: "attendence.user",
+          {
+            $lookup: {
+              from: "places",
+              localField: "participations.place",
+              foreignField: "_id",
+              as: "place",
+            },
           },
-        },
-        {
-          $unwind: "$place",
-        },
-        {
-          $unwind: "$attendence.user",
-        },
-        {
-          $project: {
-            date: "$date",
-            name: "$attendence.user.name",
-            uid: "$attendence.user.uid",
-            placeId: "$place._id",
-            location: "$place.location",
-            arrived: "$attendence.arrived",
-            status: "$status",
+          {
+            $project: {
+              date: "$date",
+              attendence: "$participations.attendences",
+              place: "$place",
+              status: "$participations.status",
+            },
           },
-        },
-      ])
-      .toArray();
+          {
+            $lookup: {
+              from: "users",
+              localField: "attendence.user",
+              foreignField: "_id",
+              as: "attendence.user",
+            },
+          },
+          {
+            $unwind: "$place",
+          },
+          {
+            $unwind: "$attendence.user",
+          },
+          {
+            $project: {
+              date: "$date",
+              name: "$attendence.user.name",
+              uid: "$attendence.user.uid",
+              placeId: "$place._id",
+              location: "$place.location",
+              arrived: "$attendence.arrived",
+              status: "$status",
+            },
+          },
+        ])
+        .toArray();
 
-    userArrivedInfo = userArrivedInfo.filter(
-      (info) => info.status === "open" && info.arrived
-    );
-
-    const results = userArrivedInfo.reduce((acc, obj) => {
-      const date = dayjs(obj.date).format("YYYY-MM-DD").toString();
-      const placeId = obj.placeId;
-      const uid = obj.uid;
-      const name = obj.name;
-
-      const idx = acc.findIndex((el: any) => el.date === date);
-      if (idx === -1) {
-        acc.push({ date, arrivedInfoList: [{ placeId, uid, name }] });
-      } else {
-        acc[idx].arrivedInfoList.push({ placeId, uid, name });
-      }
-
-      return acc;
-    }, []);
-
-    results.forEach((result: any) => {
-      result.arrivedInfoList = result.arrivedInfoList.reduce(
-        (acc: any, obj: any) => {
-          const placeId = obj.placeId.toString();
-          const uid = obj.uid;
-          const name = obj.name;
-          const idx = acc.findIndex((el: any) => el.placeId === placeId);
-
-          if (idx === -1) {
-            acc.push({ placeId, arrivedInfo: [{ uid, name }] });
-          } else {
-            acc[idx].arrivedInfo.push({ uid, name });
-          }
-
-          return acc;
-        },
-        []
+      userArrivedInfo = userArrivedInfo.filter(
+        (info) => info.status === "open" && info.arrived
       );
-    });
 
-    return results;
+      const results = userArrivedInfo.reduce((acc, obj) => {
+        const date = dayjs(obj.date).format("YYYY-MM-DD").toString();
+        const placeId = obj.placeId;
+        const uid = obj.uid;
+        const name = obj.name;
+
+        const idx = acc.findIndex((el: any) => el.date === date);
+        if (idx === -1) {
+          acc.push({ date, arrivedInfoList: [{ placeId, uid, name }] });
+        } else {
+          acc[idx].arrivedInfoList.push({ placeId, uid, name });
+        }
+
+        return acc;
+      }, []);
+
+      results.forEach((result: any) => {
+        result.arrivedInfoList = result.arrivedInfoList.reduce(
+          (acc: any, obj: any) => {
+            const placeId = obj.placeId.toString();
+            const uid = obj.uid;
+            const name = obj.name;
+            const idx = acc.findIndex((el: any) => el.placeId === placeId);
+
+            if (idx === -1) {
+              acc.push({ placeId, arrivedInfo: [{ uid, name }] });
+            } else {
+              acc[idx].arrivedInfo.push({ uid, name });
+            }
+
+            return acc;
+          },
+          []
+        );
+      });
+
+      return results;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getVote(date: any): Promise<IVote> {
-    let vote = await findOneVote(date);
+    try {
+      let vote = await findOneVote(date);
 
-    if (!vote) {
-      const places = await Place.find({ status: "active" });
-      const participants = places.map((place) => {
-        return {
-          place: place._id,
-          attendences: [],
-          absences: [],
-          invitations: [],
-          status: "pending",
-        } as any;
-      });
+      if (!vote) {
+        const places = await Place.find({ status: "active" });
+        const participants = places.map((place) => {
+          return {
+            place: place._id,
+            attendences: [],
+            absences: [],
+            invitations: [],
+            status: "pending",
+          } as any;
+        });
 
-      await Vote.create({
-        date,
-        participations: participants,
-      });
+        await Vote.create({
+          date,
+          participations: participants,
+        });
 
-      vote = await findOneVote(date);
+        vote = await findOneVote(date);
+      }
+
+      return vote as IVote;
+    } catch (err) {
+      throw new Error();
     }
-
-    return vote as IVote;
   }
 
   async isVoting(date: any) {
-    let vote = await this.getVote(date);
+    try {
+      let vote = await this.getVote(date);
 
-    const isVoting = vote.participations
-      .flatMap((participation) =>
-        participation.attendences?.map((attendance) => {
-          return (attendance.user as IUser)?._id;
-        })
-      )
-      .find((ObjId) => String(ObjId) === this.token.id);
+      const isVoting = vote.participations
+        .flatMap((participation) =>
+          participation.attendences?.map((attendance) => {
+            return (attendance.user as IUser)?._id;
+          })
+        )
+        .find((ObjId) => String(ObjId) === this.token.id);
 
-    return isVoting;
+      return isVoting;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async getFilteredVote(date: any, location: string) {
-    const filteredVote = await this.getVote(date);
+    try {
+      const filteredVote = await this.getVote(date);
 
-    filteredVote.participations = filteredVote?.participations.filter(
-      (participation) => participation.place?.location === location
-    );
+      filteredVote.participations = filteredVote?.participations.filter(
+        (participation) => participation.place?.location === location
+      );
 
-    return filteredVote;
+      return filteredVote;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async setVote(date: any, studyInfo: IVoteStudyInfo) {
-    const { place, subPlace, start, end }: IVoteStudyInfo = studyInfo;
-    const isVoting = await this.isVoting(date);
-    const vote = await this.getVote(date);
+    try {
+      const { place, subPlace, start, end }: IVoteStudyInfo = studyInfo;
+      const isVoting = await this.isVoting(date);
+      const vote = await this.getVote(date);
 
-    console.log(date);
-    console.log(place, subPlace);
+      if (isVoting) {
+        vote.participations = vote.participations.map((participation) => ({
+          ...participation,
+          attendences: participation.attendences?.filter((attandence) => {
+            return (
+              (attandence.user as IUser)?.uid.toString() !==
+              this.token.uid?.toString()
+            );
+          }),
+        }));
 
-    if (isVoting) {
-      vote.participations = vote.participations.map((participation) => ({
-        ...participation,
-        attendences: participation.attendences?.filter((attandence) => {
-          return (
-            (attandence.user as IUser)?.uid.toString() !==
-            this.token.uid?.toString()
-          );
-        }),
-      }));
+        await vote.save();
+      }
+
+      const attendance = {
+        time: { start: start, end: end },
+        user: this.token.id,
+      } as IAttendance;
+
+      vote.participations = vote.participations.map(
+        (participation: IParticipation) => {
+          const placeId = (participation.place as IPlace)._id.toString();
+          const subPlaceIdArr = subPlace?.map((place: any) => place._id);
+          if (placeId === place._id) {
+            return {
+              ...participation,
+              attendences: [
+                ...(participation.attendences || []),
+                { ...attendance, firstChoice: true },
+              ],
+            };
+          } else if (subPlaceIdArr?.includes(placeId)) {
+            return {
+              ...participation,
+              attendences: [
+                ...(participation.attendences || []),
+                { ...attendance, firstChoice: false },
+              ],
+            };
+          }
+          return participation;
+        }
+      );
 
       await vote.save();
+    } catch (err) {
+      throw new Error();
     }
-
-    const attendance = {
-      time: { start: start, end: end },
-      user: this.token.id,
-    } as IAttendance;
-
-    vote.participations = vote.participations.map(
-      (participation: IParticipation) => {
-        const placeId = (participation.place as IPlace)._id.toString();
-        const subPlaceIdArr = subPlace?.map((place: any) => place._id);
-        if (placeId === place._id) {
-          return {
-            ...participation,
-            attendences: [
-              ...(participation.attendences || []),
-              { ...attendance, firstChoice: true },
-            ],
-          };
-        } else if (subPlaceIdArr?.includes(placeId)) {
-          return {
-            ...participation,
-            attendences: [
-              ...(participation.attendences || []),
-              { ...attendance, firstChoice: false },
-            ],
-          };
-        }
-        return participation;
-      }
-    );
-
-    await vote.save();
   }
 
   async patchVote(date: any, start: any, end: any) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
 
-    if (start && end) {
-      vote.participations.map((participation) => {
-        participation.attendences?.map((attendance) => {
-          if (
-            (attendance.user as IUser)?.uid.toString() ===
-            this.token.uid?.toString()
-          ) {
-            attendance.time.start = start;
-            attendance.time.end = end;
-          }
+    try {
+      if (start && end) {
+        vote.participations.map((participation) => {
+          participation.attendences?.map((attendance) => {
+            if (
+              (attendance.user as IUser)?.uid.toString() ===
+              this.token.uid?.toString()
+            ) {
+              attendance.time.start = start;
+              attendance.time.end = end;
+            }
+          });
         });
-      });
 
-      await vote.save();
-    } else {
-      return new Error();
+        await vote.save();
+      } else {
+        return new Error();
+      }
+    } catch (err) {
+      throw new Error();
     }
   }
 
   async deleteVote(date: any) {
-    const vote = await this.getVote(date);
-    if (!vote) throw new Error();
+    try {
+      const vote = await this.getVote(date);
+      if (!vote) throw new Error();
 
-    const isVoting = vote.participations
-      .flatMap((participation) =>
-        participation.attendences?.map((attendence) => {
-          return (attendence.user as IUser)?._id;
-        })
-      )
-      .find((ObjId) => String(ObjId) === this.token.id);
+      const isVoting = vote.participations
+        .flatMap((participation) =>
+          participation.attendences?.map((attendence) => {
+            return (attendence.user as IUser)?._id;
+          })
+        )
+        .find((ObjId) => String(ObjId) === this.token.id);
 
-    if (!isVoting) {
+      if (!isVoting) {
+        throw new Error();
+      }
+
+      vote.participations = vote.participations.map((participation) => ({
+        ...participation,
+        attendences: participation.attendences?.filter((attendance) => {
+          return (
+            (attendance.user as IUser)?.uid.toString() !==
+            this.token.uid?.toString()
+          );
+        }),
+      }));
+
+      await vote.save();
+    } catch (err) {
       throw new Error();
     }
-
-    vote.participations = vote.participations.map((participation) => ({
-      ...participation,
-      attendences: participation.attendences?.filter((attendance) => {
-        return (
-          (attendance.user as IUser)?.uid.toString() !==
-          this.token.uid?.toString()
-        );
-      }),
-    }));
-
-    await vote.save();
   }
 
   async getAbsence(date: any) {
-    const result: any[] = [];
+    try {
+      const result: any[] = [];
 
-    const vote = await this.getVote(date);
-    if (!vote) throw new Error();
+      const vote = await this.getVote(date);
+      if (!vote) throw new Error();
 
-    vote?.participations.map((participation) => {
-      participation.absences?.map((absence) => {
-        result.push({
-          uid: (absence.user as IUser)?.uid,
-          message: absence.message,
+      vote?.participations.map((participation) => {
+        participation.absences?.map((absence) => {
+          result.push({
+            uid: (absence.user as IUser)?.uid,
+            message: absence.message,
+          });
         });
       });
-    });
 
-    return result;
+      return result;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async setAbsence(date: any, message: string) {
-    const vote = await this.getVote(date);
+    try {
+      const vote = await this.getVote(date);
 
-    await vote?.participations.map((participation) => {
-      participation.attendences?.map((attendence) => {
-        if (
-          (attendence.user as IUser)?.uid.toString() ===
-            this.token.uid?.toString() &&
-          attendence.firstChoice
-        ) {
+      await vote?.participations.map((participation) => {
+        participation.attendences?.map((attendence) => {
           if (
-            !participation.absences?.some(
-              (absence) =>
-                (absence.user as IUser)?.uid.toString() ===
-                this.token.uid?.toString()
+            (attendence.user as IUser)?.uid.toString() ===
+              this.token.uid?.toString() &&
+            attendence.firstChoice
+          ) {
+            if (
+              !participation.absences?.some(
+                (absence) =>
+                  (absence.user as IUser)?.uid.toString() ===
+                  this.token.uid?.toString()
+              )
             )
-          )
-            participation.absences = [
-              ...(participation.absences || []),
-              {
-                user: this.token.id as string,
-                noShow: true,
-                message,
-              },
-            ];
-        }
+              participation.absences = [
+                ...(participation.absences || []),
+                {
+                  user: this.token.id as string,
+                  noShow: true,
+                  message,
+                },
+              ];
+          }
+        });
       });
-    });
 
-    await vote?.save();
+      await vote?.save();
 
-    return;
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getArrived(date: any) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
 
-    const arriveInfo: any = [];
+    try {
+      const arriveInfo: any = [];
 
-    vote.participations.forEach((participation: any) => {
-      const arriveForm: any = {};
-      arriveForm[participation.place.fullname] = [];
-      if (["open", "free"].includes(participation.status as string)) {
-        participation.attendences?.forEach((att: any) => {
-          if (att.arrived) {
-            arriveForm[participation.place.fullname].push({
-              location: participation.place.fullname,
-              spaceId: participation.place._id,
-              uid: (att.user as IUser)?.uid,
-              arrived: att.arrived,
-            });
-          }
-        });
-      }
-      arriveInfo.push(arriveForm);
-    });
+      vote.participations.forEach((participation: any) => {
+        const arriveForm: any = {};
+        arriveForm[participation.place.fullname] = [];
+        if (["open", "free"].includes(participation.status as string)) {
+          participation.attendences?.forEach((att: any) => {
+            if (att.arrived) {
+              arriveForm[participation.place.fullname].push({
+                location: participation.place.fullname,
+                spaceId: participation.place._id,
+                uid: (att.user as IUser)?.uid,
+                arrived: att.arrived,
+              });
+            }
+          });
+        }
+        arriveInfo.push(arriveForm);
+      });
 
-    return arriveInfo;
+      return arriveInfo;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async patchArrive(date: any, memo: any) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
 
-    const currentTime = now().add(9, "hour");
+    try {
+      const currentTime = now().add(9, "hour");
 
-    vote.participations.forEach((participation: any) => {
-      participation.attendences.forEach((att: any) => {
-        if (
-          (att.user as IUser)._id.toString() === this.token.id?.toString() &&
-          att.firstChoice
-        ) {
-          const { start, end } = att.time;
-          const startable = dayjs(start).add(8, "hour");
-          const endable = dayjs(end).add(9, "hour");
-          if (startable <= currentTime && currentTime <= endable) {
-            att.arrived = currentTime.toDate();
-            att.memo = memo;
-          } else {
-            return false;
+      vote.participations.forEach((participation: any) => {
+        participation.attendences.forEach((att: any) => {
+          if (
+            (att.user as IUser)._id.toString() === this.token.id?.toString() &&
+            att.firstChoice
+          ) {
+            const { start, end } = att.time;
+            const startable = dayjs(start).add(8, "hour");
+            const endable = dayjs(end).add(9, "hour");
+            if (startable <= currentTime && currentTime <= endable) {
+              att.arrived = currentTime.toDate();
+              att.memo = memo;
+            } else {
+              return false;
+            }
           }
-        }
+        });
       });
-    });
 
-    await vote.save();
-    return true;
+      await vote.save();
+      return true;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async patchConfirm(date: any) {
-    const vote = await findOneVote(date);
-    if (!vote) throw new Error();
+    try {
+      const vote = await findOneVote(date);
+      if (!vote) throw new Error();
 
-    vote.participations.forEach((participation) => {
-      participation.attendences?.forEach((attendance) => {
-        if (
-          (attendance.user as IUser).uid.toString() ===
-          this.token.uid?.toString()
-        ) {
-          attendance.confirmed = true;
-        }
+      vote.participations.forEach((participation) => {
+        participation.attendences?.forEach((attendance) => {
+          if (
+            (attendance.user as IUser).uid.toString() ===
+            this.token.uid?.toString()
+          ) {
+            attendance.confirmed = true;
+          }
+        });
       });
-    });
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async patchDismiss(date: any) {
     const vote = await findOneVote(date);
     if (!vote) throw new Error();
 
-    vote.participations.forEach((participation) => {
-      const isTargetParticipation = !!participation.attendences?.find(
-        (att) =>
-          (att.user as IUser)?.uid.toString() === this.token.uid?.toString()
-      );
-      if (isTargetParticipation) {
-        participation.attendences = participation.attendences?.filter(
+    try {
+      vote.participations.forEach((participation) => {
+        const isTargetParticipation = !!participation.attendences?.find(
           (att) =>
-            (att.user as IUser)?.uid.toString() !== this.token.uid?.toString()
+            (att.user as IUser)?.uid.toString() === this.token.uid?.toString()
         );
-        participation.absences = [
-          ...(participation.absences as IAbsence[]),
-          { user: this.token._id, noShow: false, message: "" } as IAbsence,
-        ];
-      }
-    });
+        if (isTargetParticipation) {
+          participation.attendences = participation.attendences?.filter(
+            (att) =>
+              (att.user as IUser)?.uid.toString() !== this.token.uid?.toString()
+          );
+          participation.absences = [
+            ...(participation.absences as IAbsence[]),
+            { user: this.token._id, noShow: false, message: "" } as IAbsence,
+          ];
+        }
+      });
 
-    await vote.save();
+      await vote.save();
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async getStart(date: any) {
-    const vote = await findOneVote(date);
+    try {
+      const vote = await findOneVote(date);
+      if (!vote) return [];
 
-    if (!vote) return [];
+      const result: any = [];
+      vote.participations.map((participation) => {
+        if (
+          ["open", "free"].includes(participation.status as string) &&
+          participation.startTime
+        ) {
+          const openInfo = {
+            place_id: participation.place?._id,
+            startTime: participation.startTime,
+          };
+          result.push(openInfo);
+        }
+      });
 
-    const result: any = [];
-    vote.participations.map((participation) => {
-      if (
-        ["open", "free"].includes(participation.status as string) &&
-        participation.startTime
-      ) {
-        const openInfo = {
-          place_id: participation.place?._id,
-          startTime: participation.startTime,
-        };
-        result.push(openInfo);
-      }
-    });
-
-    return result;
+      return result;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async quickVote(
     date: any,
     studyInfo: Omit<IVoteStudyInfo, "place" | "subPlace">
   ) {
-    const { start, end } = studyInfo;
-    const user: any = await User.findOne(
-      { uid: this.token.uid },
-      "studyPreference"
-    );
-    let { place, subPlace } = user.studyPreference;
+    try {
+      const { start, end } = studyInfo;
+      const user: any = await User.findOne(
+        { uid: this.token.uid },
+        "studyPreference"
+      );
+      let { place, subPlace } = user.studyPreference;
 
-    if (!place) {
-      return false;
+      if (!place) {
+        return false;
+      }
+
+      place = { _id: place.toString() };
+      subPlace = subPlace.map((_id: any) => {
+        return { _id: _id.toString() };
+      });
+
+      await this.setVote(date, { start, end, place, subPlace });
+
+      return true;
+    } catch (err) {
+      throw new Error();
     }
-
-    place = { _id: place.toString() };
-    subPlace = subPlace.map((_id: any) => {
-      return { _id: _id.toString() };
-    });
-
-    await this.setVote(date, { start, end, place, subPlace });
-
-    return true;
   }
 
   async setFree(date: any, placeId: any) {
-    const vote = await findOneVote(date);
+    try {
+      const vote = await findOneVote(date);
 
-    if (!vote) return;
+      if (!vote) return;
 
-    vote.participations.forEach(async (participation) => {
-      if (participation.place?._id.toString() === placeId) {
-        participation.status = "free";
-        await vote.save();
-      }
-    });
+      vote.participations.forEach(async (participation) => {
+        if (participation.place?._id.toString() === placeId) {
+          participation.status = "free";
+          await vote.save();
+        }
+      });
 
-    return;
+      return;
+    } catch (err) {
+      throw new Error();
+    }
   }
 }

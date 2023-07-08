@@ -21,12 +21,16 @@ export default class RegisterService {
   }
 
   async decodeByAES256(encodedTel: string) {
-    const key = process.env.cryptoKey;
-    if (!key) return encodedTel;
+    try {
+      const key = process.env.cryptoKey;
+      if (!key) return encodedTel;
 
-    const bytes = CryptoJS.AES.decrypt(encodedTel, key);
-    const originalText = bytes.toString(CryptoJS.enc.Utf8);
-    return originalText;
+      const bytes = CryptoJS.AES.decrypt(encodedTel, key);
+      const originalText = bytes.toString(CryptoJS.enc.Utf8);
+      return originalText;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async register(subRegisterForm: Omit<IRegistered, "uid" | "profileImage">) {
@@ -110,12 +114,16 @@ export default class RegisterService {
   }
 
   async getRegister() {
-    const users = await Registered.find({});
+    try {
+      const users = await Registered.find({});
 
-    users.forEach(async (user) => {
-      user.telephone = await this.decodeByAES256(user.telephone);
-    });
+      users.forEach(async (user) => {
+        user.telephone = await this.decodeByAES256(user.telephone);
+      });
 
-    return users;
+      return users;
+    } catch (err) {
+      throw new Error();
+    }
   }
 }

@@ -82,8 +82,12 @@ router
 
     const { gatherId, comment } = req.body;
 
-    await gatherServiceInstance.createComment(gatherId, comment);
-    res.status(200).end();
+    try {
+      await gatherServiceInstance.createComment(gatherId, comment);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   })
   .delete(async (req, res, next) => {
     const { gatherServiceInstance } = req;
@@ -91,8 +95,12 @@ router
 
     const { gatherId, commentId } = req.body;
 
-    await gatherServiceInstance.deleteComment(gatherId, commentId);
-    res.status(200).end();
+    try {
+      await gatherServiceInstance.deleteComment(gatherId, commentId);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   })
   .patch(async (req, res, next) => {
     const { gatherServiceInstance } = req;
@@ -100,8 +108,12 @@ router
 
     const { gatherId, commentId, comment } = req.body;
 
-    await gatherServiceInstance.patchComment(gatherId, commentId, comment);
-    res.status(200).end();
+    try {
+      await gatherServiceInstance.patchComment(gatherId, commentId, comment);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 router.route("/open").patch(async (req, res, next) => {
@@ -110,8 +122,12 @@ router.route("/open").patch(async (req, res, next) => {
 
   const { gatherId } = req.body;
 
-  await gatherServiceInstance.setStatus(gatherId, "open");
-  res.status(200).end();
+  try {
+    await gatherServiceInstance.setStatus(gatherId, "open");
+    res.status(200).end();
+  } catch (err: any) {
+    next(err);
+  }
 });
 
 router.route("/close").patch(async (req, res, next) => {
@@ -120,8 +136,12 @@ router.route("/close").patch(async (req, res, next) => {
 
   const { gatherId } = req.body;
 
-  await gatherServiceInstance.setStatus(gatherId, "close");
-  res.status(200).end();
+  try {
+    await gatherServiceInstance.setStatus(gatherId, "close");
+    res.status(200).end();
+  } catch (err: any) {
+    next(err);
+  }
 });
 
 router.route("/end").patch(async (req, res, next) => {
@@ -130,8 +150,12 @@ router.route("/end").patch(async (req, res, next) => {
 
   const { gatherId } = req.body;
 
-  await gatherServiceInstance.setStatus(gatherId, "end");
-  res.status(200).end();
+  try {
+    await gatherServiceInstance.setStatus(gatherId, "end");
+    res.status(200).end();
+  } catch (err: any) {
+    next(err);
+  }
 });
 
 module.exports = router;

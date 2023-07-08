@@ -32,9 +32,12 @@ router
     const { giftServiceInstance } = req;
     if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
-    const user = await giftServiceInstance.setGift(name, cnt, giftId);
-
-    res.status(200).json({ user });
+    try {
+      const user = await giftServiceInstance.setGift(name, cnt, giftId);
+      res.status(200).json({ user });
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 router
@@ -44,11 +47,13 @@ router
     if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
     const { id } = req.params;
-    const user = await giftServiceInstance.getGift(parseInt(id));
 
-    res.status(200).json({ user });
-
-    res;
+    try {
+      const user = await giftServiceInstance.getGift(parseInt(id));
+      res.status(200).json({ user });
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 router
@@ -57,8 +62,12 @@ router
     const { giftServiceInstance } = req;
     if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
-    const user = await giftServiceInstance.getAllGift();
-    res.status(200).json({ user });
+    try {
+      const user = await giftServiceInstance.getAllGift();
+      res.status(200).json({ user });
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 module.exports = router;

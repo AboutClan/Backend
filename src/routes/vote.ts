@@ -39,12 +39,15 @@ router
       endDay: string;
     };
 
-    const results = await voteServiceInstance.getArrivedPeriod(
-      startDay,
-      endDay
-    );
-
-    return res.status(200).json(results);
+    try {
+      const results = await voteServiceInstance.getArrivedPeriod(
+        startDay,
+        endDay
+      );
+      return res.status(200).json(results);
+    } catch (err) {
+      next(err);
+    }
   });
 
 router.use(
@@ -69,12 +72,15 @@ router
     if (!voteServiceInstance) return res.status(401).send("Unauthorized");
     if (!date) return res.status(400).send("no data");
 
-    const filteredVote = await voteServiceInstance.getFilteredVote(
-      date,
-      location
-    );
-
-    return res.status(200).json(filteredVote);
+    try {
+      const filteredVote = await voteServiceInstance.getFilteredVote(
+        date,
+        location
+      );
+      return res.status(200).json(filteredVote);
+    } catch (err) {
+      next(err);
+    }
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { place, subPlace, start, end }: IVoteStudyInfo = req.body;
@@ -85,11 +91,12 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    const vote = await findOneVote(date);
-    if (!vote) throw new Error();
-
-    voteServiceInstance.setVote(date, { place, subPlace, start, end });
-    return res.status(204).end();
+    try {
+      voteServiceInstance.setVote(date, { place, subPlace, start, end });
+      return res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
@@ -99,8 +106,12 @@ router
 
     const { start, end }: IVoteStudyInfo = req.body;
 
-    voteServiceInstance.patchVote(date, start, end);
-    return res.status(200).end();
+    try {
+      voteServiceInstance.patchVote(date, start, end);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   })
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
@@ -108,8 +119,12 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    await voteServiceInstance.deleteVote(date);
-    return res.status(204).end();
+    try {
+      await voteServiceInstance.deleteVote(date);
+      return res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
   });
 
 //Todo: aggregate와 속도 비교
@@ -121,8 +136,12 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    const result = await voteServiceInstance.getAbsence(date);
-    return res.status(200).json(result);
+    try {
+      const result = await voteServiceInstance.getAbsence(date);
+      return res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
@@ -131,8 +150,12 @@ router
     if (!date) return res.status(400).send("no data");
     const { message = "" } = req.body;
 
-    const result = await voteServiceInstance.setAbsence(date, message);
-    return res.status(200).json(result);
+    try {
+      const result = await voteServiceInstance.setAbsence(date, message);
+      return res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
   });
 
 router
@@ -143,8 +166,12 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    const arriveInfo = await voteServiceInstance.getArrived(date);
-    return res.status(200).json(arriveInfo);
+    try {
+      const arriveInfo = await voteServiceInstance.getArrived(date);
+      return res.status(200).json(arriveInfo);
+    } catch (err) {
+      next(err);
+    }
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
@@ -156,10 +183,11 @@ router
       body: { memo },
     } = req;
 
-    if (await voteServiceInstance.patchArrive(date, memo)) {
+    try {
+      await voteServiceInstance.patchArrive(date, memo);
       return res.status(204).end();
-    } else {
-      return res.status(400).end();
+    } catch (err) {
+      next(err);
     }
   });
 
@@ -171,8 +199,12 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    await voteServiceInstance.patchConfirm(date);
-    return res.status(200).end();
+    try {
+      await voteServiceInstance.patchConfirm(date);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   });
 
 router
@@ -183,8 +215,12 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    voteServiceInstance.patchDismiss(date);
-    return res.status(204).end();
+    try {
+      voteServiceInstance.patchDismiss(date);
+      return res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
   });
 
 router
@@ -195,8 +231,12 @@ router
     const { date } = req;
     if (!date) return res.status(400).send("no data");
 
-    const result = await voteServiceInstance.getStart(date);
-    res.status(200).json(result);
+    try {
+      const result = await voteServiceInstance.getStart(date);
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
   });
 
 router
@@ -209,11 +249,11 @@ router
 
     const voteInfo: Omit<IVoteStudyInfo, "place" | "subPlace"> = req.body;
 
-    const success = await voteServiceInstance.quickVote(date, voteInfo);
-    if (success) {
+    try {
+      await voteServiceInstance.quickVote(date, voteInfo);
       return res.status(200).end();
-    } else {
-      return res.status(500).end();
+    } catch (err) {
+      next(err);
     }
   });
 
@@ -227,9 +267,13 @@ router
     if (!date) return res.status(400).send("no data");
 
     const { placeId } = req.body;
-    await voteServiceInstance.setFree(date, placeId);
 
-    return res.status(200).end();
+    try {
+      await voteServiceInstance.setFree(date, placeId);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   });
 
 module.exports = router;

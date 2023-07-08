@@ -303,8 +303,6 @@ export default class UserService {
     } catch (err: any) {
       throw new Error(err);
     }
-
-    return;
   }
 
   async patchRole(role: string) {
@@ -319,8 +317,16 @@ export default class UserService {
         "resting",
       ].includes(role)
     )
-      return false;
-    this.updateUser({ role });
-    return true;
+      throw new Error();
+
+    try {
+      this.updateUser({ role });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async test() {
+    throw new Error("error");
   }
 }
