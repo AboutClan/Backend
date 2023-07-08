@@ -10,13 +10,21 @@ export default class AdminUserService {
   }
 
   async getAllUser() {
-    const users = await User.find({});
-    return users;
+    try {
+      const users = await User.find({});
+      return users;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async updateProfile(profile: Partial<IUser>) {
-    await User.updateOne({ uid: profile.uid }, profile);
-    return;
+    try {
+      await User.updateOne({ uid: profile.uid }, profile);
+      return;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async updateValue(
@@ -28,19 +36,23 @@ export default class AdminUserService {
     const user = await User.findOne({ uid });
     if (!user) throw new Error();
 
-    switch (type) {
-      case "point":
-        user.point += parseInt(value);
-        break;
-      case "score":
-        user.score += parseInt(value);
-        break;
-      case "deposit":
-        user.deposit += parseInt(value);
-        break;
-    }
+    try {
+      switch (type) {
+        case "point":
+          user.point += parseInt(value);
+          break;
+        case "score":
+          user.score += parseInt(value);
+          break;
+        case "deposit":
+          user.deposit += parseInt(value);
+          break;
+      }
 
-    await user.save();
+      await user.save();
+    } catch (err) {
+      throw new Error();
+    }
 
     logger.logger.info(message, {
       metadata: { type, uid, value },
@@ -49,31 +61,46 @@ export default class AdminUserService {
   }
 
   async deleteScore() {
-    await User.updateMany({}, { $set: { score: 0 } });
-    return;
+    try {
+      await User.updateMany({}, { $set: { score: 0 } });
+      return;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async deletePoint() {
-    await User.updateMany({}, { $set: { point: 0 } });
-    return;
+    try {
+      await User.updateMany({}, { $set: { point: 0 } });
+      return;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async getCertainUser(uid: string) {
-    const user = await User.findOne({ uid: uid });
-
-    return user;
+    try {
+      const user = await User.findOne({ uid: uid });
+      return user;
+    } catch (err) {
+      throw new Error();
+    }
+    return;
   }
 
   async setRole(role: string, uid: string) {
-    await User.updateOne(
-      { status: "active", uid: uid },
-      {
-        $set: {
-          role: role,
-        },
-      }
-    );
-
+    try {
+      await User.updateOne(
+        { status: "active", uid: uid },
+        {
+          $set: {
+            role: role,
+          },
+        }
+      );
+    } catch (err) {
+      throw new Error();
+    }
     return;
   }
 }

@@ -16,8 +16,12 @@ router
     const { requestServiceInstance } = req;
     if (!requestServiceInstance) throw new Error();
 
-    const requestData = await requestServiceInstance.getRequest();
-    res.status(200).json(requestData);
+    try {
+      const requestData = await requestServiceInstance.getRequest();
+      res.status(200).json(requestData);
+    } catch (err: any) {
+      next(err);
+    }
   })
   .post(async (req, res, next) => {
     const { requestServiceInstance } = req;
@@ -25,8 +29,12 @@ router
 
     const { request } = req.body;
 
-    await requestServiceInstance.createRequest(request);
-    res.status(200).end();
+    try {
+      await requestServiceInstance.createRequest(request);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 module.exports = router;

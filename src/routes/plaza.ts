@@ -15,8 +15,12 @@ router
     const { plazaServiceInstance } = req;
     if (!plazaServiceInstance) throw new Error();
 
-    const plazaData = await plazaServiceInstance.getPlaza();
-    res.status(200).json(plazaData);
+    try {
+      const plazaData = await plazaServiceInstance.getPlaza();
+      res.status(200).json(plazaData);
+    } catch (err: any) {
+      next(err);
+    }
   })
   .post(async (req, res, next) => {
     const { plazaServiceInstance } = req;
@@ -24,8 +28,12 @@ router
 
     const { plaza } = req.body;
 
-    await plazaServiceInstance.createPlaza(plaza);
-    res.status(200).end();
+    try {
+      await plazaServiceInstance.createPlaza(plaza);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 module.exports = router;

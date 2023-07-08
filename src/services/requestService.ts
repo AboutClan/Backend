@@ -8,7 +8,7 @@ export default class RequestService {
       const gatherData = await Request.find({}, "-_id");
       return gatherData;
     } catch (err: any) {
-      throw new Error();
+      throw new Error(err);
     }
   }
 
@@ -17,7 +17,7 @@ export default class RequestService {
       await Request.create(data);
       return;
     } catch (err: any) {
-      throw new Error();
+      throw new Error(err);
     }
   }
 }

@@ -15,8 +15,12 @@ router
     const { bookServiceInstance } = req;
     if (!bookServiceInstance) throw new Error();
 
-    const bookList = await bookServiceInstance.getBookList();
-    res.status(200).send(bookList);
+    try {
+      const bookList = await bookServiceInstance.getBookList();
+      res.status(200).send(bookList);
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 module.exports = router;

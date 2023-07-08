@@ -7,9 +7,12 @@ export default class AdminLogService {
 
   async deleteLog(day: number) {
     if (day < 7) return;
-    const targetDate = now().subtract(day, "days").toDate();
-
-    await Log.deleteMany({ timestamp: { $lt: targetDate } });
+    try {
+      const targetDate = now().subtract(day, "days").toDate();
+      await Log.deleteMany({ timestamp: { $lt: targetDate } });
+    } catch (err) {
+      throw new Error();
+    }
     return;
   }
 }

@@ -47,28 +47,30 @@ export default class GatherService {
     } catch (err: any) {
       throw new Error(err);
     }
-
-    return nextId;
   }
 
   async participateGather(gatherId: string, phase: string) {
     const gather = await Gather.findOne({ id: gatherId });
-    if (!gather) return;
+    if (!gather) throw new Error();
 
-    if (
-      !gather.participants.some(
-        (participant) => participant.user == (this.token.id as IUser)
-      )
-    ) {
-      gather.participants.push({
-        user: this.token.id as IUser,
-        phase,
-      });
+    try {
+      if (
+        !gather.participants.some(
+          (participant) => participant.user == (this.token.id as IUser)
+        )
+      ) {
+        gather.participants.push({
+          user: this.token.id as IUser,
+          phase,
+        });
 
-      await gather?.save();
+        await gather?.save();
+      }
+
+      return;
+    } catch (err) {
+      throw new Error();
     }
-
-    return;
   }
 
   async setStatus(gatherId: string, status: gatherStatus) {
@@ -82,54 +84,74 @@ export default class GatherService {
 
   async createComment(gatherId: string, comment: string) {
     const gather = await Gather.findOne({ id: gatherId });
-    if (!gather) return;
+    if (!gather) throw new Error();
 
-    gather.comment.push({
-      user: this.token.id as IUser,
-      comment,
-    });
+    try {
+      gather.comment.push({
+        user: this.token.id as IUser,
+        comment,
+      });
 
-    await gather.save();
+      await gather.save();
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async deleteComment(gatherId: string, commentId: string) {
     const gather = await Gather.findOne({ id: gatherId });
-    if (!gather) return;
+    if (!gather) throw new Error();
 
-    gather.comment = gather.comment.filter(
-      (com: any) => (com._id as string) != commentId
-    );
+    try {
+      gather.comment = gather.comment.filter(
+        (com: any) => (com._id as string) != commentId
+      );
 
-    await gather.save();
+      await gather.save();
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async patchComment(gatherId: string, commentId: string, comment: string) {
     const gather = await Gather.findOne({ id: gatherId });
-    if (!gather) return;
+    if (!gather) throw new Error();
 
-    gather.comment.forEach(async (com: any) => {
-      if ((com._id as string) == commentId) {
-        com.comment = comment;
-        await gather.save();
-      }
-    });
+    try {
+      gather.comment.forEach(async (com: any) => {
+        if ((com._id as string) == commentId) {
+          com.comment = comment;
+          await gather.save();
+        }
+      });
+      return;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async deleteGather(gatherId: string) {
-    await Gather.deleteOne({ id: gatherId });
+    try {
+      await Gather.deleteOne({ id: gatherId });
+    } catch (err) {
+      throw new Error();
+    }
 
     return;
   }
 
   async deleteParticipate(gatherId: string) {
     const gather = await Gather.findOne({ id: gatherId });
-    if (!gather) return;
+    if (!gather) throw new Error();
 
-    gather.participants = gather.participants.filter(
-      (participant) => participant.user != (this.token.id as IUser)
-    );
-
-    await gather.save();
+    try {
+      gather.participants = gather.participants.filter(
+        (participant) => participant.user != (this.token.id as IUser)
+      );
+      await gather.save();
+    } catch (err) {
+      throw new Error();
+    }
     return;
   }
 }

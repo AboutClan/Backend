@@ -44,9 +44,12 @@ router
     const { registerServiceInstance } = req;
     if (!registerServiceInstance) return res.status(401).send("Unauthorized");
 
-    await registerServiceInstance.register(registerForm);
-
-    return res.status(200).end();
+    try {
+      await registerServiceInstance.register(registerForm);
+      return res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 router
@@ -57,9 +60,12 @@ router
     const { registerServiceInstance } = req;
     if (!registerServiceInstance) return res.status(401).send("Unauthorized");
 
-    await registerServiceInstance.approve(uid);
-
-    return res.status(200).end();
+    try {
+      await registerServiceInstance.approve(uid);
+      return res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   })
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { uid } = req.body;
@@ -67,9 +73,12 @@ router
     const { registerServiceInstance } = req;
     if (!registerServiceInstance) return res.status(401).send("Unauthorized");
 
-    await registerServiceInstance.deleteRegisterUser(uid, null);
-
-    return res.status(200).end();
+    try {
+      await registerServiceInstance.deleteRegisterUser(uid, null);
+      return res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   });
 
 module.exports = router;
