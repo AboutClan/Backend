@@ -50,6 +50,20 @@ router
     }
   });
 
+router
+  .route("/arriveCnt")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
+
+    try {
+      const result = await voteServiceInstance.getArriveCheckCnt();
+      return res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  });
+
 router.use(
   "/:date",
   async (req: Request, res: Response, next: NextFunction) => {
