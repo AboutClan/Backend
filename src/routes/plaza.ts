@@ -23,13 +23,13 @@ router
     }
   })
   .post(async (req, res, next) => {
-    const { plazaServiceInstance } = req;
-    if (!plazaServiceInstance) throw new Error();
-
-    const { plaza } = req.body;
+    const {
+      plazaServiceInstance,
+      body: { plaza },
+    } = req;
 
     try {
-      await plazaServiceInstance.createPlaza(plaza);
+      await plazaServiceInstance?.createPlaza(plaza);
       res.status(200).end();
     } catch (err: any) {
       next(err);

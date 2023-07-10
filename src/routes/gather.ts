@@ -34,82 +34,82 @@ router
     res.status(200).json(gatherData);
   })
   .post(async (req, res, next) => {
-    const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
+    const {
+      gatherServiceInstance,
+      body: { gather },
+    } = req;
 
-    const { gather } = req.body;
-
-    const gatherId = await gatherServiceInstance.createGather(gather);
+    const gatherId = await gatherServiceInstance?.createGather(gather);
     res.status(200).json({ gatherId });
   })
   .delete(async (req, res, next) => {
-    const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
+    const {
+      gatherServiceInstance,
+      body: { gatherId },
+    } = req;
 
-    const { gatherId } = req.body;
-
-    const gatherData = await gatherServiceInstance.deleteGather(gatherId);
+    const gatherData = await gatherServiceInstance?.deleteGather(gatherId);
     res.status(200).json(gatherData);
   });
 
 router
   .route("/participate")
   .post(async (req, res, next) => {
-    const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
+    const {
+      gatherServiceInstance,
+      body: { gatherId, phase },
+    } = req;
 
-    const { gatherId, phase } = req.body;
-
-    await gatherServiceInstance.participateGather(gatherId, phase);
+    await gatherServiceInstance?.participateGather(gatherId, phase);
 
     res.status(200).end();
   })
   .delete(async (req, res, next) => {
-    const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
+    const {
+      gatherServiceInstance,
+      body: { gatherId },
+    } = req;
 
-    const { gatherId } = req.body;
-
-    await gatherServiceInstance.deleteParticipate(gatherId);
+    await gatherServiceInstance?.deleteParticipate(gatherId);
     res.status(200).end();
   });
 
 router
   .route("/comment")
   .post(async (req, res, next) => {
-    const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
-
-    const { gatherId, comment } = req.body;
+    const {
+      gatherServiceInstance,
+      body: { gatherId, comment },
+    } = req;
 
     try {
-      await gatherServiceInstance.createComment(gatherId, comment);
+      await gatherServiceInstance?.createComment(gatherId, comment);
       res.status(200).end();
     } catch (err: any) {
       next(err);
     }
   })
   .delete(async (req, res, next) => {
-    const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
-
-    const { gatherId, commentId } = req.body;
+    const {
+      gatherServiceInstance,
+      body: { gatherId, commentId },
+    } = req;
 
     try {
-      await gatherServiceInstance.deleteComment(gatherId, commentId);
+      await gatherServiceInstance?.deleteComment(gatherId, commentId);
       res.status(200).end();
     } catch (err: any) {
       next(err);
     }
   })
   .patch(async (req, res, next) => {
-    const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
-
-    const { gatherId, commentId, comment } = req.body;
+    const {
+      gatherServiceInstance,
+      body: { gatherId, commentId, comment },
+    } = req;
 
     try {
-      await gatherServiceInstance.patchComment(gatherId, commentId, comment);
+      await gatherServiceInstance?.patchComment(gatherId, commentId, comment);
       res.status(200).end();
     } catch (err: any) {
       next(err);
@@ -117,13 +117,13 @@ router
   });
 
 router.route("/open").patch(async (req, res, next) => {
-  const { gatherServiceInstance } = req;
-  if (!gatherServiceInstance) throw new Error();
-
-  const { gatherId } = req.body;
+  const {
+    gatherServiceInstance,
+    body: { gatherId },
+  } = req;
 
   try {
-    await gatherServiceInstance.setStatus(gatherId, "open");
+    await gatherServiceInstance?.setStatus(gatherId, "open");
     res.status(200).end();
   } catch (err: any) {
     next(err);
@@ -131,13 +131,13 @@ router.route("/open").patch(async (req, res, next) => {
 });
 
 router.route("/close").patch(async (req, res, next) => {
-  const { gatherServiceInstance } = req;
-  if (!gatherServiceInstance) throw new Error();
-
-  const { gatherId } = req.body;
+  const {
+    gatherServiceInstance,
+    body: { gatherId },
+  } = req;
 
   try {
-    await gatherServiceInstance.setStatus(gatherId, "close");
+    await gatherServiceInstance?.setStatus(gatherId, "close");
     res.status(200).end();
   } catch (err: any) {
     next(err);
@@ -145,13 +145,13 @@ router.route("/close").patch(async (req, res, next) => {
 });
 
 router.route("/end").patch(async (req, res, next) => {
-  const { gatherServiceInstance } = req;
-  if (!gatherServiceInstance) throw new Error();
-
-  const { gatherId } = req.body;
+  const {
+    gatherServiceInstance,
+    body: { gatherId },
+  } = req;
 
   try {
-    await gatherServiceInstance.setStatus(gatherId, "end");
+    await gatherServiceInstance?.setStatus(gatherId, "end");
     res.status(200).end();
   } catch (err: any) {
     next(err);

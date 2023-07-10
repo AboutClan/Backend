@@ -28,10 +28,9 @@ router
   .route("/")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { registerServiceInstance } = req;
-    if (!registerServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const registeredUsers = await registerServiceInstance.getRegister();
+      const registeredUsers = await registerServiceInstance?.getRegister();
 
       return res.status(200).json(registeredUsers);
     } catch (err: any) {
@@ -40,12 +39,10 @@ router
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const registerForm = req.body;
-
     const { registerServiceInstance } = req;
-    if (!registerServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      await registerServiceInstance.register(registerForm);
+      await registerServiceInstance?.register(registerForm);
       return res.status(200).end();
     } catch (err: any) {
       next(err);
@@ -55,26 +52,26 @@ router
 router
   .route("/approval")
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { uid } = req.body;
-
-    const { registerServiceInstance } = req;
-    if (!registerServiceInstance) return res.status(401).send("Unauthorized");
+    const {
+      registerServiceInstance,
+      body: { uid },
+    } = req;
 
     try {
-      await registerServiceInstance.approve(uid);
+      await registerServiceInstance?.approve(uid);
       return res.status(200).end();
     } catch (err: any) {
       next(err);
     }
   })
   .delete(async (req: Request, res: Response, next: NextFunction) => {
-    const { uid } = req.body;
-
-    const { registerServiceInstance } = req;
-    if (!registerServiceInstance) return res.status(401).send("Unauthorized");
+    const {
+      registerServiceInstance,
+      body: { uid },
+    } = req;
 
     try {
-      await registerServiceInstance.deleteRegisterUser(uid, null);
+      await registerServiceInstance?.deleteRegisterUser(uid, null);
       return res.status(200).end();
     } catch (err: any) {
       next(err);

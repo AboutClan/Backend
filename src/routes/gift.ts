@@ -27,13 +27,13 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 router
   .route("/")
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { name, cnt, giftId } = req.body;
-
-    const { giftServiceInstance } = req;
-    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
+    const {
+      giftServiceInstance,
+      body: { name, cnt, giftId },
+    } = req;
 
     try {
-      const user = await giftServiceInstance.setGift(name, cnt, giftId);
+      const user = await giftServiceInstance?.setGift(name, cnt, giftId);
       res.status(200).json({ user });
     } catch (err: any) {
       next(err);
@@ -43,13 +43,13 @@ router
 router
   .route("/:id")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { giftServiceInstance } = req;
-    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
-
-    const { id } = req.params;
+    const {
+      giftServiceInstance,
+      params: { id },
+    } = req;
 
     try {
-      const user = await giftServiceInstance.getGift(parseInt(id));
+      const user = await giftServiceInstance?.getGift(parseInt(id));
       res.status(200).json({ user });
     } catch (err: any) {
       next(err);
@@ -60,10 +60,9 @@ router
   .route("/all")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { giftServiceInstance } = req;
-    if (!giftServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const user = await giftServiceInstance.getAllGift();
+      const user = await giftServiceInstance?.getAllGift();
       res.status(200).json({ user });
     } catch (err: any) {
       next(err);

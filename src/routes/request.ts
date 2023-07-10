@@ -24,13 +24,13 @@ router
     }
   })
   .post(async (req, res, next) => {
-    const { requestServiceInstance } = req;
-    if (!requestServiceInstance) throw new Error();
-
-    const { request } = req.body;
+    const {
+      requestServiceInstance,
+      body: { request },
+    } = req;
 
     try {
-      await requestServiceInstance.createRequest(request);
+      await requestServiceInstance?.createRequest(request);
       res.status(200).end();
     } catch (err: any) {
       next(err);
