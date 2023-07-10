@@ -4,28 +4,17 @@ import { strToDate } from "../utils/dateUtils";
 import { findOneVote } from "../utils/voteUtils";
 import { IVoteStudyInfo } from "../types/vote";
 import VoteService from "../services/voteService";
+// import { query, matchedData, validationResult } from "express-validator";
 
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const { decodedToken } = req;
 
-  if (token?.toString() == "undefined" || !token)
-    return res.status(401).send("Unauthorized");
-
-  const decodedToken = await decode({
-    token,
-    secret: "klajsdflksjdflkdvdssdq231e1w",
-  });
-
-  if (!decodedToken) {
-    return res.status(401).send("Unauthorized");
-  } else {
-    const voteServiceInstance = new VoteService(decodedToken);
-    req.voteServiceInstance = voteServiceInstance;
-    req.token = decodedToken;
-    next();
-  }
+  const voteServiceInstance = new VoteService(decodedToken);
+  req.voteServiceInstance = voteServiceInstance;
+  req.token = decodedToken;
+  next();
 });
 
 router
@@ -80,8 +69,7 @@ router
   .route("/:date")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
-    let { location } = req.query as { location: string };
-    if (!location || location.toString() == "undefined") location = "수원";
+    let { location = "수원" } = req.query as { location: string };
     const { date } = req;
 
     try {

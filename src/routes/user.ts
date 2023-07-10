@@ -1,27 +1,14 @@
 import express, { NextFunction, Request, Response } from "express";
-import { decode } from "next-auth/jwt";
 import UserService from "../services/userService";
 
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const { decodedToken } = req;
 
-  if (token?.toString() == "undefined" || !token)
-    return res.status(401).send("Unauthorized");
-
-  const decodedToken = await decode({
-    token,
-    secret: "klajsdflksjdflkdvdssdq231e1w",
-  });
-
-  if (!decodedToken) {
-    return res.status(401).send("Unauthorized");
-  } else {
-    const userServiceInstance = new UserService(decodedToken);
-    req.userServiceInstance = userServiceInstance;
-    next();
-  }
+  const userServiceInstance = new UserService(decodedToken);
+  req.userServiceInstance = userServiceInstance;
+  next();
 });
 
 router

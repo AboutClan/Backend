@@ -5,23 +5,11 @@ import { decode } from "next-auth/jwt";
 const router: Router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const { decodedToken } = req;
 
-  if (token?.toString() == "undefined" || !token)
-    return res.status(401).send("Unauthorized");
-
-  const decodedToken = await decode({
-    token,
-    secret: "klajsdflksjdflkdvdssdq231e1w",
-  });
-
-  if (!decodedToken) {
-    return res.status(401).send("Unauthorized");
-  } else {
-    const gatherServiceInstance = new GatherService(decodedToken);
-    req.gatherServiceInstance = gatherServiceInstance;
-    next();
-  }
+  const gatherServiceInstance = new GatherService(decodedToken);
+  req.gatherServiceInstance = gatherServiceInstance;
+  next();
 });
 
 router
