@@ -13,9 +13,8 @@ router
   .route("/")
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { adminVoteServiceInstance } = req;
-    if (!adminVoteServiceInstance) throw new Error();
 
-    await adminVoteServiceInstance.deleteVote();
+    await adminVoteServiceInstance?.deleteVote();
 
     res.status(200).end();
   });
@@ -23,12 +22,12 @@ router
 router
   .route("/:date/status/confirm")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminVoteServiceInstance } = req;
-    if (!adminVoteServiceInstance) throw new Error();
+    const {
+      adminVoteServiceInstance,
+      params: { date: dateStr },
+    } = req;
 
-    const { date: dateStr } = req.params;
-
-    await adminVoteServiceInstance.confirm(dateStr);
+    await adminVoteServiceInstance?.confirm(dateStr);
 
     res.status(200).end();
   });
@@ -36,12 +35,12 @@ router
 router
   .route("/:date/status/waitingConfirm")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminVoteServiceInstance } = req;
-    if (!adminVoteServiceInstance) throw new Error();
+    const {
+      adminVoteServiceInstance,
+      params: { date: dateStr },
+    } = req;
 
-    const { date: dateStr } = req.params;
-
-    await adminVoteServiceInstance.waitingConfirm(dateStr);
+    await adminVoteServiceInstance?.waitingConfirm(dateStr);
 
     res.status(200).end();
   });

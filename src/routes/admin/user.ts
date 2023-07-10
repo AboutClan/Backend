@@ -29,19 +29,17 @@ router
   .route("/")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
 
-    const allUser = await adminUserServiceInstance.getAllUser();
+    const allUser = await adminUserServiceInstance?.getAllUser();
 
     return res.status(200).json(allUser);
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
 
     const { profile }: { profile: IUser } = req.body;
 
-    await adminUserServiceInstance.updateProfile(profile);
+    await adminUserServiceInstance?.updateProfile(profile);
 
     return res.status(200).end();
   });
@@ -49,15 +47,15 @@ router
 router
   .route("/:id/point")
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
-
-    const { id: uid } = req.params;
-    const { value, message = "" } = req.body;
+    const {
+      adminUserServiceInstance,
+      params: { id: uid },
+      body: { value = 0, message = "" },
+    } = req;
 
     if (!value) return res.status(400).send("no value");
 
-    await adminUserServiceInstance.updateValue(
+    await adminUserServiceInstance?.updateValue(
       uid as string,
       value,
       "point",
@@ -69,15 +67,13 @@ router
 router
   .route("/:id/score")
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
+    const {
+      adminUserServiceInstance,
+      params: { id: uid },
+      body: { value = 0, message = "" },
+    } = req;
 
-    const { id: uid } = req.params;
-    const { value, message = "" } = req.body;
-
-    if (!value) return res.status(400).send("no value");
-
-    await adminUserServiceInstance.updateValue(
+    await adminUserServiceInstance?.updateValue(
       uid as string,
       value,
       "score",
@@ -89,15 +85,15 @@ router
 router
   .route("/:id/deposit")
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
-
-    const { id: uid } = req.params;
-    const { value, message = "" } = req.body;
+    const {
+      adminUserServiceInstance,
+      params: { id: uid },
+      body: { value, message = "" },
+    } = req;
 
     if (!value) return res.status(400).send("no value");
 
-    await adminUserServiceInstance.updateValue(
+    await adminUserServiceInstance?.updateValue(
       uid as string,
       value,
       "deposit",
@@ -110,9 +106,8 @@ router
   .route("/point")
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
 
-    await adminUserServiceInstance.deletePoint();
+    await adminUserServiceInstance?.deletePoint();
     return res.status(200).end();
   });
 
@@ -120,9 +115,8 @@ router
   .route("/score")
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
 
-    await adminUserServiceInstance.deleteScore();
+    await adminUserServiceInstance?.deleteScore();
     return res.status(200).end();
   });
 
@@ -130,11 +124,10 @@ router
   .route("/:id/info")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
 
     const { id: uid } = req.query;
 
-    const user = await adminUserServiceInstance.getCertainUser(uid as string);
+    const user = await adminUserServiceInstance?.getCertainUser(uid as string);
     return res.status(200).json(user);
   });
 
@@ -142,21 +135,19 @@ router
   .route("/:id/role")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
 
-    const { id: uid } = req.params;
-    const { role } = req.body;
+    const {
+      params: { id: uid },
+      body: { role },
+    } = req;
 
-    adminUserServiceInstance.setRole(role, uid);
+    adminUserServiceInstance?.setRole(role, uid);
     return res.status(200).end();
   });
 
 router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminUserServiceInstance } = req;
-    if (!adminUserServiceInstance) throw new Error();
-
     await User.updateMany({}, { role: "human" });
 
     return res.status(200).end();

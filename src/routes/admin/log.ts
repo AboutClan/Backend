@@ -11,11 +11,10 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router.route("/delete/:day").delete(async (req, res, next) => {
   const { adminLogServiceInstance } = req;
-  if (!adminLogServiceInstance) throw new Error();
 
   const { day } = req.params;
 
-  await adminLogServiceInstance.deleteLog(parseInt(day));
+  await adminLogServiceInstance?.deleteLog(parseInt(day));
   return res.status(200).end();
 });
 
