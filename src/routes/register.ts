@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import RegisterService from "../services/registerService";
-import { decode } from "next-auth/jwt";
+import { body } from "express-validator";
+import validateCheck from "../middlewares/validator";
 
 const router = express.Router();
 
@@ -39,31 +40,39 @@ router
 
 router
   .route("/approval")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      registerServiceInstance,
-      body: { uid },
-    } = req;
+  .post(
+    body("uid").isEmpty().withMessage("uid필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        registerServiceInstance,
+        body: { uid },
+      } = req;
 
-    try {
-      await registerServiceInstance?.approve(uid);
-      return res.status(200).end();
-    } catch (err: any) {
-      next(err);
+      try {
+        await registerServiceInstance?.approve(uid);
+        return res.status(200).end();
+      } catch (err: any) {
+        next(err);
+      }
     }
-  })
-  .delete(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      registerServiceInstance,
-      body: { uid },
-    } = req;
+  )
+  .delete(
+    body("uid").isEmpty().withMessage("uid필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        registerServiceInstance,
+        body: { uid },
+      } = req;
 
-    try {
-      await registerServiceInstance?.deleteRegisterUser(uid, null);
-      return res.status(200).end();
-    } catch (err: any) {
-      next(err);
+      try {
+        await registerServiceInstance?.deleteRegisterUser(uid, null);
+        return res.status(200).end();
+      } catch (err: any) {
+        next(err);
+      }
     }
-  });
+  );
 
 module.exports = router;

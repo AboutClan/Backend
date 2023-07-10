@@ -26,7 +26,7 @@ router
   .post(async (req, res, next) => {
     const {
       requestServiceInstance,
-      body: { request },
+      body: { request = "" },
     } = req;
 
     try {

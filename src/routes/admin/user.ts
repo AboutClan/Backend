@@ -1,7 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
 import AdminUserService from "../../services/adminUserServices";
 import { IUser, User } from "../../db/models/user";
-import { decode } from "next-auth/jwt";
+import { body } from "express-validator";
+import validateCheck from "../../middlewares/validator";
 
 const router = express.Router();
 
@@ -34,61 +35,73 @@ router
 
 router
   .route("/:id/point")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      adminUserServiceInstance,
-      params: { id: uid },
-      body: { value = 0, message = "" },
-    } = req;
+  .post(
+    body("value").isEmpty().isNumeric().withMessage("value필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        adminUserServiceInstance,
+        params: { id: uid },
+        body: { value, message = "" },
+      } = req;
 
-    if (!value) return res.status(400).send("no value");
+      if (!value) return res.status(400).send("no value");
 
-    await adminUserServiceInstance?.updateValue(
-      uid as string,
-      value,
-      "point",
-      message
-    );
-    return res.status(200).end();
-  });
+      await adminUserServiceInstance?.updateValue(
+        uid as string,
+        value,
+        "point",
+        message
+      );
+      return res.status(200).end();
+    }
+  );
 
 router
   .route("/:id/score")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      adminUserServiceInstance,
-      params: { id: uid },
-      body: { value = 0, message = "" },
-    } = req;
+  .post(
+    body("value").isEmpty().isNumeric().withMessage("value필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        adminUserServiceInstance,
+        params: { id: uid },
+        body: { value, message = "" },
+      } = req;
 
-    await adminUserServiceInstance?.updateValue(
-      uid as string,
-      value,
-      "score",
-      message
-    );
-    res.status(200).end();
-  });
+      await adminUserServiceInstance?.updateValue(
+        uid as string,
+        value,
+        "score",
+        message
+      );
+      res.status(200).end();
+    }
+  );
 
 router
   .route("/:id/deposit")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      adminUserServiceInstance,
-      params: { id: uid },
-      body: { value, message = "" },
-    } = req;
+  .post(
+    body("value").isEmpty().isNumeric().withMessage("value필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        adminUserServiceInstance,
+        params: { id: uid },
+        body: { value, message = "" },
+      } = req;
 
-    if (!value) return res.status(400).send("no value");
+      if (!value) return res.status(400).send("no value");
 
-    await adminUserServiceInstance?.updateValue(
-      uid as string,
-      value,
-      "deposit",
-      message
-    );
-    res.status(200).end();
-  });
+      await adminUserServiceInstance?.updateValue(
+        uid as string,
+        value,
+        "deposit",
+        message
+      );
+      res.status(200).end();
+    }
+  );
 
 router
   .route("/point")
@@ -112,7 +125,6 @@ router
   .route("/:id/info")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-
     const { id: uid } = req.query;
 
     const user = await adminUserServiceInstance?.getCertainUser(uid as string);
@@ -137,7 +149,6 @@ router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     await User.updateMany({}, { role: "human" });
-
     return res.status(200).end();
   });
 

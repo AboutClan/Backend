@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
-import { decode } from "next-auth/jwt";
 import GiftService from "../services/giftService";
-
+import validateCheck from "../middlewares/validator";
+import { body } from "express-validator";
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
@@ -12,9 +12,13 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-router
-  .route("/")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+router.route("/").post(
+  body("name").isEmpty().withMessage("name필요"),
+  body("cnt").isEmpty().isNumeric().withMessage("cnt필요"),
+  body("giftId").isEmpty().isNumeric().withMessage("giftId필요"),
+  validateCheck,
+
+  async (req: Request, res: Response, next: NextFunction) => {
     const {
       giftServiceInstance,
       body: { name, cnt, giftId },
@@ -26,7 +30,8 @@ router
     } catch (err: any) {
       next(err);
     }
-  });
+  }
+);
 
 router
   .route("/:id")

@@ -1,5 +1,7 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import PlazaService from "../services/plazaService";
+import validateCheck from "../middlewares/validator";
+import { body } from "express-validator";
 
 const router: Router = express.Router();
 
@@ -22,18 +24,22 @@ router
       next(err);
     }
   })
-  .post(async (req, res, next) => {
-    const {
-      plazaServiceInstance,
-      body: { plaza },
-    } = req;
+  .post(
+    body("plaza").isEmpty().withMessage("plaza필요"),
+    validateCheck,
+    async (req, res, next) => {
+      const {
+        plazaServiceInstance,
+        body: { plaza },
+      } = req;
 
-    try {
-      await plazaServiceInstance?.createPlaza(plaza);
-      res.status(200).end();
-    } catch (err: any) {
-      next(err);
+      try {
+        await plazaServiceInstance?.createPlaza(plaza);
+        res.status(200).end();
+      } catch (err: any) {
+        next(err);
+      }
     }
-  });
+  );
 
 module.exports = router;
