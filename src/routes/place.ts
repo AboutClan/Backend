@@ -12,10 +12,9 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router.route("/").get(async (req, res, next) => {
   const { placeServiceInstance } = req;
-  if (!placeServiceInstance) throw new Error();
 
   try {
-    const places = await placeServiceInstance.getActivePlace();
+    const places = await placeServiceInstance?.getActivePlace();
     return res.status(200).json(places);
   } catch (err: any) {
     next(err);

@@ -32,7 +32,6 @@ router
   .route("/arrived")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
 
     const { startDay, endDay } = req.query as {
       startDay: string;
@@ -40,7 +39,7 @@ router
     };
 
     try {
-      const results = await voteServiceInstance.getArrivedPeriod(
+      const results = await voteServiceInstance?.getArrivedPeriod(
         startDay,
         endDay
       );
@@ -54,10 +53,9 @@ router
   .route("/arriveCnt")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
 
     try {
-      const result = await voteServiceInstance.getArriveCheckCnt();
+      const result = await voteServiceInstance?.getArriveCheckCnt();
       return res.status(200).json(result);
     } catch (err) {
       next(err);
@@ -71,6 +69,8 @@ router.use(
     const dayjsDate = strToDate(dateStr);
     const date = dayjsDate.toDate();
 
+    if (!date) return res.status(401).end();
+
     req.date = date;
     next();
   }
@@ -83,11 +83,9 @@ router
     let { location } = req.query as { location: string };
     if (!location || location.toString() == "undefined") location = "수원";
     const { date } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    if (!date) return res.status(400).send("no data");
 
     try {
-      const filteredVote = await voteServiceInstance.getFilteredVote(
+      const filteredVote = await voteServiceInstance?.getFilteredVote(
         date,
         location
       );
@@ -98,43 +96,30 @@ router
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const { place, subPlace, start, end }: IVoteStudyInfo = req.body;
-
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
+    const { voteServiceInstance, date } = req;
 
     try {
-      voteServiceInstance.setVote(date, { place, subPlace, start, end });
+      voteServiceInstance?.setVote(date, { place, subPlace, start, end });
       return res.status(204).end();
     } catch (err) {
       next(err);
     }
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
-
+    const { voteServiceInstance, date } = req;
     const { start, end }: IVoteStudyInfo = req.body;
 
     try {
-      voteServiceInstance.patchVote(date, start, end);
+      voteServiceInstance?.patchVote(date, start, end);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
   })
   .delete(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
-
+    const { voteServiceInstance, date } = req;
     try {
-      await voteServiceInstance.deleteVote(date);
+      await voteServiceInstance?.deleteVote(date);
       return res.status(204).end();
     } catch (err) {
       next(err);
@@ -145,27 +130,23 @@ router
 router
   .route("/:date/absence")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
-
+    const { voteServiceInstance, date } = req;
     try {
-      const result = await voteServiceInstance.getAbsence(date);
+      const result = await voteServiceInstance?.getAbsence(date);
       return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
-    const { message = "" } = req.body;
+    const {
+      voteServiceInstance,
+      date,
+      body: { message },
+    } = req;
 
     try {
-      const result = await voteServiceInstance.setAbsence(date, message);
+      const result = await voteServiceInstance?.setAbsence(date, message);
       return res.status(200).json(result);
     } catch (err) {
       next(err);
@@ -175,30 +156,24 @@ router
 router
   .route("/:date/arrived")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
+    const { voteServiceInstance, date } = req;
 
     try {
-      const arriveInfo = await voteServiceInstance.getArrived(date);
+      const arriveInfo = await voteServiceInstance?.getArrived(date);
       return res.status(200).json(arriveInfo);
     } catch (err) {
       next(err);
     }
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
+    const { voteServiceInstance, date } = req;
 
     const {
       body: { memo },
     } = req;
 
     try {
-      await voteServiceInstance.patchArrive(date, memo);
+      await voteServiceInstance?.patchArrive(date, memo);
       return res.status(204).end();
     } catch (err) {
       next(err);
@@ -208,13 +183,10 @@ router
 router
   .route("/:date/confirm")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
+    const { voteServiceInstance, date } = req;
 
     try {
-      await voteServiceInstance.patchConfirm(date);
+      await voteServiceInstance?.patchConfirm(date);
       return res.status(200).end();
     } catch (err) {
       next(err);
@@ -224,13 +196,10 @@ router
 router
   .route("/:date/dismiss")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
+    const { voteServiceInstance, date } = req;
 
     try {
-      voteServiceInstance.patchDismiss(date);
+      voteServiceInstance?.patchDismiss(date);
       return res.status(204).end();
     } catch (err) {
       next(err);
@@ -240,13 +209,10 @@ router
 router
   .route("/:date/start")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
+    const { voteServiceInstance, date } = req;
 
     try {
-      const result = await voteServiceInstance.getStart(date);
+      const result = await voteServiceInstance?.getStart(date);
       res.status(200).json(result);
     } catch (err) {
       next(err);
@@ -256,15 +222,12 @@ router
 router
   .route("/:date/quick")
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
+    const { voteServiceInstance, date } = req;
 
     const voteInfo: Omit<IVoteStudyInfo, "place" | "subPlace"> = req.body;
 
     try {
-      await voteServiceInstance.quickVote(date, voteInfo);
+      await voteServiceInstance?.quickVote(date, voteInfo);
       return res.status(200).end();
     } catch (err) {
       next(err);
@@ -274,16 +237,14 @@ router
 router
   .route("/:date/free")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    if (!voteServiceInstance) return res.status(401).send("Unauthorized");
-
-    const { date } = req;
-    if (!date) return res.status(400).send("no data");
-
-    const { placeId } = req.body;
+    const {
+      voteServiceInstance,
+      date,
+      body: { placeId },
+    } = req;
 
     try {
-      await voteServiceInstance.setFree(date, placeId);
+      await voteServiceInstance?.setFree(date, placeId);
       return res.status(200).end();
     } catch (err) {
       next(err);
