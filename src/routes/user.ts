@@ -93,6 +93,31 @@ router
   );
 
 router
+  .route("/participationrate/all")
+  .get(
+    query("startDay").notEmpty().withMessage("startDay입력 필요."),
+    query("endDay").notEmpty().withMessage("startDay입력 필요."),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { userServiceInstance } = req;
+      const { startDay, endDay }: { startDay: string; endDay: string } =
+        req.query as any;
+
+      try {
+        const participationResult =
+          await userServiceInstance?.getParticipationRate(
+            startDay,
+            endDay,
+            true
+          );
+        return res.status(200).json(participationResult);
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+router
   .route("/participationrate")
   .get(
     query("startDay").notEmpty().withMessage("startDay입력 필요."),
@@ -371,12 +396,6 @@ router
 router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
-    try {
-      await userServiceInstance?.test();
-    } catch (err) {
-      next(err);
-    }
+    throw new Error("what?");
   });
 module.exports = router;
