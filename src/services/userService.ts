@@ -73,9 +73,11 @@ export default class UserService {
     }
   }
 
-  async getParticipationRate(startDay: string, endDay: string) {
+  async getParticipationRate(startDay: string, endDay: string, all?: any) {
     try {
-      const allUser = await User.find({ isActive: true });
+      const allUser = all
+        ? await User.find({ isActive: true })
+        : await User.find({ isActive: true, uid: this.token.uid });
       const attendForm = allUser.reduce((accumulator: any[], user) => {
         return [...accumulator, { uid: user.uid, cnt: 0 }];
       }, []);

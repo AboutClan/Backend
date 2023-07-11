@@ -1,36 +1,27 @@
 import express, { NextFunction, Request, Response } from "express";
-import { decode } from "next-auth/jwt";
 import { strToDate } from "../utils/dateUtils";
-import { findOneVote } from "../utils/voteUtils";
 import { IVoteStudyInfo } from "../types/vote";
 import VoteService from "../services/voteService";
+import { query, body, param } from "express-validator";
+import validateCheck from "../middlewares/validator";
 
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const { decodedToken } = req;
 
-  if (token?.toString() == "undefined" || !token)
-    return res.status(401).send("Unauthorized");
-
-  const decodedToken = await decode({
-    token,
-    secret: "klajsdflksjdflkdvdssdq231e1w",
-  });
-
-  if (!decodedToken) {
-    return res.status(401).send("Unauthorized");
-  } else {
-    const voteServiceInstance = new VoteService(decodedToken);
-    req.voteServiceInstance = voteServiceInstance;
-    req.token = decodedToken;
-    next();
-  }
+  const voteServiceInstance = new VoteService(decodedToken);
+  req.voteServiceInstance = voteServiceInstance;
+  req.token = decodedToken;
+  next();
 });
 
-router
-  .route("/arrived")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
+router.route("/arrived").get(
+  query("startDay").notEmpty().withMessage("startDay입력 필요."),
+  query("endDay").notEmpty().withMessage("startDay입력 필요."),
+  validateCheck,
+
+  async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
 
     const { startDay, endDay } = req.query as {
@@ -47,7 +38,8 @@ router
     } catch (err) {
       next(err);
     }
-  });
+  }
+);
 
 router
   .route("/arriveCnt")
@@ -79,10 +71,8 @@ router.use(
 router
   .route("/:date")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    let { location } = req.query as { location: string };
-    if (!location || location.toString() == "undefined") location = "수원";
-    const { date } = req;
+    const { voteServiceInstance, date } = req;
+    let { location = "수원" } = req.query as { location: string };
 
     try {
       const filteredVote = await voteServiceInstance?.getFilteredVote(
@@ -105,17 +95,22 @@ router
       next(err);
     }
   })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
-    const { start, end }: IVoteStudyInfo = req.body;
+  .patch(
+    body("start").isEmpty().withMessage("start필요"),
+    body("end").isEmpty().withMessage("end필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { voteServiceInstance, date } = req;
+      const { start, end }: IVoteStudyInfo = req.body;
 
-    try {
-      voteServiceInstance?.patchVote(date, start, end);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        voteServiceInstance?.patchVote(date, start, end);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  })
+  )
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance, date } = req;
     try {
@@ -142,7 +137,7 @@ router
     const {
       voteServiceInstance,
       date,
-      body: { message },
+      body: { message = "" },
     } = req;
 
     try {
@@ -167,9 +162,8 @@ router
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance, date } = req;
-
     const {
-      body: { memo },
+      body: { memo = "" },
     } = req;
 
     try {
@@ -236,19 +230,23 @@ router
 
 router
   .route("/:date/free")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      voteServiceInstance,
-      date,
-      body: { placeId },
-    } = req;
+  .patch(
+    body("placeId").notEmpty().withMessage("placeId 필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        voteServiceInstance,
+        date,
+        body: { placeId },
+      } = req;
 
-    try {
-      await voteServiceInstance?.setFree(date, placeId);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        await voteServiceInstance?.setFree(date, placeId);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
 module.exports = router;

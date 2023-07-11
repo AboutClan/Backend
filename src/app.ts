@@ -9,6 +9,7 @@ import compression from "compression";
 import dbConnect from "./db/conn";
 import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
+import tokenValidator from "./middlewares/auth";
 
 //router
 const user = require("./routes/user");
@@ -42,6 +43,7 @@ class App {
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(dbSet);
+    this.app.use(tokenValidator);
   }
 
   setupRoutes() {

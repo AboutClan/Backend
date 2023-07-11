@@ -1,27 +1,16 @@
 import express, { NextFunction, Request, Response } from "express";
-import { decode } from "next-auth/jwt";
 import UserService from "../services/userService";
+import { body, query } from "express-validator";
+import validateCheck from "../middlewares/validator";
 
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const { decodedToken } = req;
 
-  if (token?.toString() == "undefined" || !token)
-    return res.status(401).send("Unauthorized");
-
-  const decodedToken = await decode({
-    token,
-    secret: "klajsdflksjdflkdvdssdq231e1w",
-  });
-
-  if (!decodedToken) {
-    return res.status(401).send("Unauthorized");
-  } else {
-    const userServiceInstance = new UserService(decodedToken);
-    req.userServiceInstance = userServiceInstance;
-    next();
-  }
+  const userServiceInstance = new UserService(decodedToken);
+  req.userServiceInstance = userServiceInstance;
+  next();
 });
 
 router
@@ -49,21 +38,26 @@ router
       next(err);
     }
   })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { type, bg },
-    } = req;
+  .post(
+    body("type").notEmpty().isNumeric().withMessage("type은 숫자여야합니다."),
+    body("bg").notEmpty().isNumeric().withMessage("type은 숫자여야합니다."),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { type, bg },
+      } = req;
 
-    try {
-      const avatar = await userServiceInstance?.updateUser({
-        avatar: { type, bg },
-      });
-      return res.status(200).json(avatar);
-    } catch (err) {
-      next(err);
+      try {
+        const avatar = await userServiceInstance?.updateUser({
+          avatar: { type, bg },
+        });
+        return res.status(200).json(avatar);
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
 router
   .route("/comment")
@@ -80,54 +74,93 @@ router
       next(err);
     }
   })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { comment = "" },
-    } = req;
+  .post(
+    body("comment").notEmpty().withMessage("comment입력 필요"),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { comment = "" },
+      } = req;
 
-    try {
-      await userServiceInstance?.updateUser({ comment });
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        await userServiceInstance?.updateUser({ comment });
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
+
+router
+  .route("/participationrate/all")
+  .get(
+    query("startDay").notEmpty().withMessage("startDay입력 필요."),
+    query("endDay").notEmpty().withMessage("startDay입력 필요."),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { userServiceInstance } = req;
+      const { startDay, endDay }: { startDay: string; endDay: string } =
+        req.query as any;
+
+      try {
+        const participationResult =
+          await userServiceInstance?.getParticipationRate(
+            startDay,
+            endDay,
+            true
+          );
+        return res.status(200).json(participationResult);
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
 
 router
   .route("/participationrate")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-    const { startDay, endDay }: { startDay: string; endDay: string } =
-      req.query as any;
+  .get(
+    query("startDay").notEmpty().withMessage("startDay입력 필요."),
+    query("endDay").notEmpty().withMessage("startDay입력 필요."),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { userServiceInstance } = req;
+      const { startDay, endDay }: { startDay: string; endDay: string } =
+        req.query as any;
 
-    try {
-      const participationResult =
-        await userServiceInstance?.getParticipationRate(startDay, endDay);
-      return res.status(200).json(participationResult);
-    } catch (err) {
-      next(err);
+      try {
+        const participationResult =
+          await userServiceInstance?.getParticipationRate(startDay, endDay);
+        return res.status(200).json(participationResult);
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
 router
   .route("/voterate")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-    const { startDay, endDay }: { startDay: string; endDay: string } =
-      req.query as any;
+  .get(
+    query("startDay").notEmpty().withMessage("startDay입력 필요."),
+    query("endDay").notEmpty().withMessage("startDay입력 필요."),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { userServiceInstance } = req;
+      const { startDay, endDay }: { startDay: string; endDay: string } =
+        req.query as any;
 
-    try {
-      const voteResult = await userServiceInstance?.getParticipationRate(
-        startDay,
-        endDay
-      );
+      try {
+        const voteResult = await userServiceInstance?.getParticipationRate(
+          startDay,
+          endDay
+        );
 
-      return res.status(200).json(voteResult);
-    } catch (err) {
-      next(err);
+        return res.status(200).json(voteResult);
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
 router
   .route("/profile")
@@ -176,26 +209,30 @@ router
       next(err);
     }
   })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { point, message },
-    } = req;
+  .post(
+    body("point").notEmpty().isNumeric().withMessage("point입력 필요."),
+    validateCheck,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { point, message = "" },
+      } = req;
 
-    try {
-      await userServiceInstance?.updatePoint(point, message);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        await userServiceInstance?.updatePoint(point, message);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
 router
   .route("/rest")
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       userServiceInstance,
-      body: { info },
+      body: { info = "" },
     } = req;
 
     try {
@@ -221,19 +258,22 @@ router
       next(err);
     }
   })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { score, message },
-    } = req;
+  .post(
+    body("score").notEmpty().isNumeric().withMessage("score입력 필요."),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { score, message },
+      } = req;
 
-    try {
-      await userServiceInstance?.updateScore(score, message);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        await userServiceInstance?.updateScore(score, message);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  })
+  )
   .patch(async (req: Request, res: Response, next: NextFunction) => {});
 
 router
@@ -251,19 +291,22 @@ router
       next(err);
     }
   })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { deposit, message },
-    } = req;
+  .post(
+    body("deposit").notEmpty().isNumeric().withMessage("deposit입력 필요."),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { deposit, message },
+      } = req;
 
-    try {
-      await userServiceInstance?.updateDeposit(deposit, message);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        await userServiceInstance?.updateDeposit(deposit, message);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
 router
   .route("/score/all")
@@ -303,19 +346,22 @@ router
 
 router
   .route("/preference")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { place, subPlace },
-    } = req;
+  .post(
+    body("place").notEmpty().withMessage("place입력 필요."),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { place, subPlace = [] },
+      } = req;
 
-    try {
-      await userServiceInstance?.setPreference(place, subPlace);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        await userServiceInstance?.setPreference(place, subPlace);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  })
+  )
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
 
@@ -329,30 +375,27 @@ router
 
 router
   .route("/role")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { role },
-    } = req;
-    // const { role } = req.body;
+  .patch(
+    body("role").notEmpty().withMessage("role입력 필요."),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { role },
+      } = req;
+      // const { role } = req.body;
 
-    try {
-      await userServiceInstance?.patchRole(role);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
+      try {
+        await userServiceInstance?.patchRole(role);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
 router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
-    try {
-      await userServiceInstance?.test();
-    } catch (err) {
-      next(err);
-    }
+    throw new Error("what?");
   });
 module.exports = router;

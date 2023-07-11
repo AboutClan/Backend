@@ -22,6 +22,7 @@ export interface tokenRequest extends Request {
 declare global {
   namespace Express {
     export interface Request {
+      decodedToken: any;
       token?: JWT;
       date?: Date;
       userServiceInstance?: UserService;
