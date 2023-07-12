@@ -57,14 +57,18 @@ router
     body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
-      const {
-        gatherServiceInstance,
-        body: { gatherId, phase },
-      } = req;
+      try {
+        const {
+          gatherServiceInstance,
+          body: { gatherId, phase },
+        } = req;
 
-      await gatherServiceInstance?.participateGather(gatherId, phase);
+        await gatherServiceInstance?.participateGather(gatherId, phase);
 
-      res.status(200).end();
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
   )
   .delete(
@@ -76,8 +80,12 @@ router
         body: { gatherId },
       } = req;
 
-      await gatherServiceInstance?.deleteParticipate(gatherId);
-      res.status(200).end();
+      try {
+        await gatherServiceInstance?.deleteParticipate(gatherId);
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
     }
   );
 
