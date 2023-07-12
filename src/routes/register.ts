@@ -41,7 +41,7 @@ router
 router
   .route("/approval")
   .post(
-    body("uid").isEmpty().withMessage("uid필요"),
+    body("uid").notEmpty().withMessage("uid필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -58,7 +58,7 @@ router
     }
   )
   .delete(
-    body("uid").isEmpty().withMessage("uid필요"),
+    body("uid").notEmpty().withMessage("uid필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {

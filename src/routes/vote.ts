@@ -96,8 +96,8 @@ router
     }
   })
   .patch(
-    body("start").isEmpty().withMessage("start필요"),
-    body("end").isEmpty().withMessage("end필요"),
+    body("start").notEmpty().withMessage("start필요"),
+    body("end").notEmpty().withMessage("end필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const { voteServiceInstance, date } = req;

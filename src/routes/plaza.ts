@@ -25,7 +25,7 @@ router
     }
   })
   .post(
-    body("plaza").isEmpty().withMessage("plaza필요"),
+    body("plaza").notEmpty().withMessage("plaza필요"),
     validateCheck,
     async (req, res, next) => {
       const {
