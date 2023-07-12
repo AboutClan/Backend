@@ -23,7 +23,7 @@ router
     res.status(200).json(gatherData);
   })
   .post(
-    body("gather").isEmpty().withMessage("gather필요"),
+    body("gather").notEmpty().withMessage("gather필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -31,12 +31,14 @@ router
         body: { gather },
       } = req;
 
+      console.log(gather);
+
       const gatherId = await gatherServiceInstance?.createGather(gather);
       res.status(200).json({ gatherId });
     }
   )
   .delete(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -52,7 +54,7 @@ router
 router
   .route("/participate")
   .post(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -66,7 +68,7 @@ router
     }
   )
   .delete(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -82,8 +84,8 @@ router
 router
   .route("/comment")
   .post(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
-    body("comment").isEmpty().isString().withMessage("gatherId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+    body("comment").notEmpty().isString().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -100,8 +102,8 @@ router
     }
   )
   .delete(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
-    body("commentId").isEmpty().withMessage("commentId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+    body("commentId").notEmpty().withMessage("commentId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -118,9 +120,9 @@ router
     }
   )
   .patch(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
-    body("comment").isEmpty().isString().withMessage("string필요"),
-    body("commentId").isEmpty().withMessage("commentId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+    body("comment").notEmpty().isString().withMessage("string필요"),
+    body("commentId").notEmpty().withMessage("commentId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -140,7 +142,7 @@ router
 router
   .route("/open")
   .patch(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -160,7 +162,7 @@ router
 router
   .route("/close")
   .patch(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
@@ -180,7 +182,7 @@ router
 router
   .route("/end")
   .patch(
-    body("gatherId").isEmpty().isNumeric().withMessage("gatherId필요"),
+    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {

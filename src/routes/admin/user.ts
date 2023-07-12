@@ -36,7 +36,7 @@ router
 router
   .route("/:id/point")
   .post(
-    body("value").isEmpty().isNumeric().withMessage("value필요"),
+    body("value").notEmpty().isNumeric().withMessage("value필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -60,7 +60,7 @@ router
 router
   .route("/:id/score")
   .post(
-    body("value").isEmpty().isNumeric().withMessage("value필요"),
+    body("value").notEmpty().isNumeric().withMessage("value필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -82,7 +82,7 @@ router
 router
   .route("/:id/deposit")
   .post(
-    body("value").isEmpty().isNumeric().withMessage("value필요"),
+    body("value").notEmpty().isNumeric().withMessage("value필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {
