@@ -39,8 +39,6 @@ router
     }
   })
   .post(
-    body("type").notEmpty().isNumeric().withMessage("type은 숫자여야합니다."),
-    body("bg").notEmpty().isNumeric().withMessage("type은 숫자여야합니다."),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {
