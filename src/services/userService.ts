@@ -189,6 +189,7 @@ export default class UserService {
         ])
         .toArray();
 
+      console.log(forVote);
       const voteCnt = forVote
         .flatMap((participation) => participation.attendences)
         .filter((attendence) => attendence.firstChoice === true)
