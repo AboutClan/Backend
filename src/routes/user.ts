@@ -148,7 +148,7 @@ router
         req.query as any;
 
       try {
-        const voteResult = await userServiceInstance?.getParticipationRate(
+        const voteResult = await userServiceInstance?.getVoteRate(
           startDay,
           endDay
         );
