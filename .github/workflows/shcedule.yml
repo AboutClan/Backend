@@ -2,14 +2,10 @@ name: day-shcedule
 run-name: ${{github.actor}} run schedule
 on:
   schedule:
-    - cron: "50 * * * *"
+    - cron: "54 * * * *"
 jobs:
-  cron:
+  deployment:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: http-request
         uses: fjogeleit/http-request-action@v1
