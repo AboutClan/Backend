@@ -4,15 +4,18 @@
 import dayjs from "dayjs";
 import VoteService from "./voteService";
 import { strToDate } from "../utils/dateUtils";
-import { IUser, User } from "../db/models/user";
-
-//월별 정산은 매월 1일에 "human"과 "member" 인원에 대해서(가입일이 그 전 달인 인원 제외.
-//8월 1일에 정산을 한다면 7월 가입자는 제외) 출석체크를 기록이 없는 경우 보증금에서 -1000원을 하면 돼요!
+import { IUser, User, UserSchema } from "../db/models/user";
+import UserService from "./userService";
+import { JWT } from "next-auth/jwt";
 
 export default class AdminManageService {
+  private token: JWT;
   voteServiceInstance: VoteService;
-  constructor() {
-    this.voteServiceInstance = new VoteService();
+  userServiceInstance: UserService;
+  constructor(token?: JWT) {
+    this.token = token as JWT;
+    this.voteServiceInstance = new VoteService(this.token);
+    this.userServiceInstance = new UserService(this.token);
   }
 
   async absenceManage() {
@@ -41,9 +44,66 @@ export default class AdminManageService {
 
       console.log(unUser);
 
-      unUser.forEach(async (userId: any) => {
-        const user = await User.findOne({ uid: userId });
-        if (!user) throw new Error();
+      //   unUser.forEach(async (userId: any) => {
+      //     const user = await User.findOne({ uid: userId });
+      //     if (!user) throw new Error();
+      //     user.deposit -= 1000;
+      //     await user.save();
+      //   });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  //월별 정산은 매월 1일에 "human"과 "member" 인원에 대해서(가입일이 그 전 달인 인원 제외.
+  //8월 1일에 정산을 한다면 7월 가입자는 제외) 출석체크를 기록이 없는 경우 보증금에서 -1000원을 하면 돼요!
+  async monthCalc() {
+    try {
+      const users = await User.find({
+        $or: [{ role: "human" }, { role: "member" }],
+      });
+
+      const fUsers = users.filter((user) => {
+        const thisMonth = dayjs().get("M") + 1;
+        const regMonth = dayjs(user.registerDate).get("M") + 1;
+
+        return thisMonth - regMonth !== 1;
+      });
+
+      const lastMonthStart = dayjs()
+        .subtract(1, "month")
+        .startOf("month")
+        .toString();
+      const lastMonthEnd = dayjs()
+        .subtract(1, "month")
+        .endOf("month")
+        .toString();
+
+      const participationRate =
+        await this.userServiceInstance.getParticipationRate(
+          lastMonthStart,
+          lastMonthEnd,
+          true
+        );
+
+      const notPartUsers: any[] = [];
+      fUsers.forEach((user) => {
+        const idx = participationRate.findIndex(
+          (participant) => user.uid == participant.uid
+        );
+
+        if (idx !== -1) {
+          if (participationRate[idx].cnt == 0)
+            notPartUsers.push(participationRate[idx].uid);
+        }
+      });
+
+      notPartUsers.forEach(async (uid) => {
+        const user = await User.findOne({ uid });
+        if (!user) {
+          throw new Error();
+        }
+
         user.deposit -= 1000;
         await user.save();
       });
@@ -51,5 +111,4 @@ export default class AdminManageService {
       throw new Error(err);
     }
   }
-  async monthCalc() {}
 }
