@@ -2,14 +2,10 @@ name: day-shcedule
 run-name: ${{github.actor}} run schedule
 on:
   schedule:
-    - cron: "45 * * * *"
+    - cron: "54 * * * *"
 jobs:
-  cron:
+  deployment:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: http-request
         uses: fjogeleit/http-request-action@v1
@@ -17,3 +13,4 @@ jobs:
           url: "http://localhost:3000/admin/manage/daycalc"
           method: "PATCH"
           bearerToken: ${{secrets.GITHUB_TOKEN}}
+          customHeaders: '{"Content-Type": "application/json"}'
