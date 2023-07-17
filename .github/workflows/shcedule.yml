@@ -2,7 +2,7 @@ name: day-shcedule
 run-name: ${{github.actor}} run schedule
 on:
   schedule:
-    - cron: "0 1 * * *"
+    - cron: "45 * * * *"
 jobs:
   cron:
     runs-on: ubuntu-latest

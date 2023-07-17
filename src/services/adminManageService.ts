@@ -21,8 +21,8 @@ export default class AdminManageService {
   async absenceManage() {
     try {
       const date = strToDate(dayjs().format("YYYY-MM-DD").toString());
-      console.log(date);
 
+      console.log(date);
       const vote = await this.voteServiceInstance.getVote(date);
       const unUser: any[] = [];
 
