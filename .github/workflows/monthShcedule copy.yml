@@ -1,0 +1,16 @@
+# name: day-shcedule
+# run-name: ${{github.actor}} run schedule
+# on:
+#   schedule:
+#     - cron: "54 * * * *"
+# jobs:
+#   deployment:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: http-request
+#         uses: fjogeleit/http-request-action@v1
+#         with:
+#           url: "https://about-backend.herokuapp.com/admin/manage/monthcalc"
+#           method: "PATCH"
+#           bearerToken: ${{secrets.GITHUB_TOKEN}}
+#           customHeaders: '{"Content-Type": "application/json"}'
