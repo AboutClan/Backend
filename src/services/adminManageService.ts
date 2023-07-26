@@ -22,7 +22,6 @@ export default class AdminManageService {
     try {
       const date = strToDate(dayjs().format("YYYY-MM-DD").toString());
 
-      console.log(date);
       const vote = await this.voteServiceInstance.getVote(date);
       const unUser: any[] = [];
 
@@ -41,8 +40,6 @@ export default class AdminManageService {
           });
         }
       });
-
-      console.log(unUser);
 
       //   unUser.forEach(async (userId: any) => {
       //     const user = await User.findOne({ uid: userId });
