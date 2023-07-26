@@ -2,7 +2,7 @@ name: day-shcedule
 run-name: ${{github.actor}} run schedule
 on:
   schedule:
-    - cron: "20 * * * *"
+    - cron: "01 * * * *"
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -14,3 +14,4 @@ jobs:
           method: "PATCH"
           bearerToken: ${{secrets.GITHUB_TOKEN}}
           customHeaders: '{"Content-Type": "application/json"}'
+          data: "{}"
