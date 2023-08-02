@@ -1,4 +1,9 @@
-import mongoose, { model, Model, Schema } from "mongoose";
+import mongoose, {
+  model,
+  Model,
+  Schema,
+  StringExpressionOperatorReturningBoolean,
+} from "mongoose";
 import { IUser } from "./user";
 
 export type gatherStatus = "pending" | "open" | "close" | "end";
@@ -54,6 +59,7 @@ export interface IGatherData {
   comment: commentType[];
   id: number;
   date: string;
+  place?: string;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -63,6 +69,8 @@ export const typeSchema: Schema<TitleType> = new Schema(
     },
     subtitle: {
       type: String,
+      required: false,
+      default: null,
     },
   },
   { _id: false }
@@ -200,6 +208,10 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     },
     date: {
       type: String,
+    },
+    place: {
+      type: String,
+      enum: ["수원", "양천", "안양"],
     },
   },
   { timestamps: true }

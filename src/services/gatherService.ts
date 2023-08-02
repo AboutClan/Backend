@@ -1,6 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { Gather, IGatherData, gatherStatus } from "../db/models/gather";
-import { IUser } from "../db/models/user";
+import { IUser, User } from "../db/models/user";
 import { v4 as uuidv4 } from "uuid";
 import { Counter } from "../db/models/counter";
 import dbConnect from "../db/conn";
@@ -34,11 +34,13 @@ export default class GatherService {
 
   async createGather(data: IGatherData) {
     const nextId = await this.getNextSequence("counterid");
+    const user = await User.findOne({ uid: this.token.uid });
 
     const gatherInfo = {
       ...data,
       user: this.token.id,
       id: nextId,
+      place: user?.location,
     };
     try {
       const gatherData = gatherInfo;

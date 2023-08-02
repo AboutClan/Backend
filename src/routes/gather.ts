@@ -31,8 +31,6 @@ router
         body: { gather },
       } = req;
 
-      console.log(gather);
-
       const gatherId = await gatherServiceInstance?.createGather(gather);
       res.status(200).json({ gatherId });
     }
