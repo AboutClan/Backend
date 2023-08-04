@@ -10,7 +10,7 @@ export interface restType {
 export interface IRequestData {
   category: string;
   title?: string;
-
+  location: string;
   date: Dayjs;
   writer: string;
   content: string;
@@ -29,27 +29,37 @@ export const restSchema: Schema<restType> = new Schema(
   { _id: false }
 );
 
-export const RequestSchema: Schema<IRequestData> = new Schema({
-  category: {
-    type: String,
-    enum: ["건의", "신고", "홍보", "휴식", "충전"],
+export const RequestSchema: Schema<IRequestData> = new Schema(
+  {
+    category: {
+      type: String,
+      enum: ["건의", "신고", "홍보", "휴식", "충전"],
+    },
+    title: {
+      type: String,
+    },
+    date: {
+      type: Date,
+    },
+    writer: {
+      type: String,
+    },
+    content: {
+      type: String,
+    },
+    rest: {
+      type: restSchema,
+    },
+    location: {
+      type: String,
+      enum: ["수원", "양천", "안양"],
+      default: "수원",
+    },
   },
-  title: {
-    type: String,
-  },
-  date: {
-    type: Date,
-  },
-  writer: {
-    type: String,
-  },
-  content: {
-    type: String,
-  },
-  rest: {
-    type: restSchema,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 export const Request =
   (mongoose.models.Request as Model<IRequestData, {}, {}, {}>) ||
   model<IRequestData>("Request", RequestSchema);
