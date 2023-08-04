@@ -107,6 +107,7 @@ export const locationSchema: Schema<LocationType> = new Schema(
     },
     sub: {
       type: String,
+      default: "",
     },
   },
   { _id: false }
