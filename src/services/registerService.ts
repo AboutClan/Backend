@@ -66,6 +66,7 @@ export default class RegisterService {
 
       userForm = {
         ...user.toObject(),
+        role: "human",
         registerDate: new Date(),
         isActive: true,
         deposit: 3000,
