@@ -11,7 +11,6 @@ export interface IRequestData {
   category: string;
   title?: string;
   location: string;
-  date: Dayjs;
   writer: string;
   content: string;
   rest?: restType;
@@ -33,13 +32,10 @@ export const RequestSchema: Schema<IRequestData> = new Schema(
   {
     category: {
       type: String,
-      enum: ["건의", "신고", "홍보", "휴식", "충전"],
+      enum: ["건의", "홍보", "휴식", "충전", "탈퇴"],
     },
     title: {
       type: String,
-    },
-    date: {
-      type: Date,
     },
     writer: {
       type: String,
