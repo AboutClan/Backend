@@ -14,6 +14,20 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router
+  .route("/:uid")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    const { uid } = req.params;
+
+    try {
+      const isActive = await userServiceInstance?.getUserWithUid(uid);
+      return res.status(200).json(isActive);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
   .route("/active")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
