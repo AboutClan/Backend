@@ -7,6 +7,8 @@ export interface restType {
   startDate: Date;
   endDate: Date;
   content: string;
+  restCnt: number;
+  cumulativeSum: number;
 }
 
 export interface avatarType {
@@ -37,6 +39,8 @@ export const restSchema: Schema<restType> = new Schema({
   startDate: Schema.Types.Date,
   endDate: Schema.Types.Date,
   content: Schema.Types.String,
+  restCnt: Schema.Types.Number,
+  cumulativeSum: Schema.Types.Number,
 });
 
 export const avatarSchema: Schema<avatarType> = new Schema({

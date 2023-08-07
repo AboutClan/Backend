@@ -31,6 +31,19 @@ export default class UserService {
     return result;
   }
 
+  async getUserWithUid(uid: string) {
+    try {
+      const result = await User.findOne({ uid });
+
+      if (result && result.telephone)
+        result.telephone = await this.decodeByAES256(result.telephone);
+
+      return result;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async getUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
 
