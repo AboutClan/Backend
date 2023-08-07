@@ -14,20 +14,6 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router
-  .route("/:uid")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-    const { uid } = req.params;
-
-    try {
-      const isActive = await userServiceInstance?.getUserWithUid(uid);
-      return res.status(200).json(isActive);
-    } catch (err) {
-      next(err);
-    }
-  });
-
-router
   .route("/active")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
@@ -179,6 +165,7 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
 
+    console.log(0);
     try {
       const targetUser = await userServiceInstance?.getUserInfo([]);
       return res.status(200).json(targetUser);
@@ -204,6 +191,20 @@ router
     try {
       const updatedUser = await userServiceInstance?.patchProfile();
       return res.status(200).json(updatedUser);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
+  .route("profile/:uid")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    const { uid } = req.params;
+
+    try {
+      const isActive = await userServiceInstance?.getUserWithUid(uid);
+      return res.status(200).json(isActive);
     } catch (err) {
       next(err);
     }
