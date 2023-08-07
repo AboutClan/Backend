@@ -47,6 +47,8 @@ export default class UserService {
   async getUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
 
+    console.log(this.token.uid);
+
     try {
       const result = await User.findOne(
         { uid: this.token.uid },
