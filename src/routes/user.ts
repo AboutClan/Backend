@@ -249,7 +249,7 @@ router
     } = req;
 
     try {
-      await userServiceInstance?.updateUser({ rest: info });
+      await userServiceInstance?.setRest(info);
       return res.status(200).end();
     } catch (err) {
       next(err);

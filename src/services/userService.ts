@@ -1,5 +1,5 @@
 import { JWT } from "next-auth/jwt";
-import { IUser, User } from "../db/models/user";
+import { IUser, User, restType } from "../db/models/user";
 import dayjs from "dayjs";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
@@ -339,6 +339,31 @@ export default class UserService {
 
     try {
       this.updateUser({ role });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async setRest(info: restType) {
+    try {
+      const { startDate, endDate, type, content } = info;
+      console.log(info);
+
+      const user = await User.findOne({ uid: "2283035576" });
+      if (!user) throw new Error();
+
+      const startDay = dayjs(startDate, "YYYY-MM-DD");
+      const endDay = dayjs(endDate, "YYYY-MM-DD");
+      const dayDiff = endDay.diff(startDay, "day");
+
+      user.rest.type = type;
+      user.rest.content = content;
+      user.rest.startDate = startDate;
+      user.rest.endDate = endDate;
+      user.rest.restCnt = user.rest.restCnt + 1;
+      user.rest.cumulativeSum = user.rest.cumulativeSum + dayDiff;
+
+      await user.save();
     } catch (err: any) {
       throw new Error(err);
     }

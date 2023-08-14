@@ -39,8 +39,14 @@ export const restSchema: Schema<restType> = new Schema({
   startDate: Schema.Types.Date,
   endDate: Schema.Types.Date,
   content: Schema.Types.String,
-  restCnt: Schema.Types.Number,
-  cumulativeSum: Schema.Types.Number,
+  restCnt: {
+    type: Schema.Types.Number,
+    default: 0,
+  },
+  cumulativeSum: {
+    type: Schema.Types.Number,
+    default: 0,
+  },
 });
 
 export const avatarSchema: Schema<avatarType> = new Schema({
