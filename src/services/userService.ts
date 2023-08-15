@@ -12,7 +12,6 @@ export default class UserService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
-    this.token.uid = "0";
   }
 
   async decodeByAES256(encodedTel: string) {
