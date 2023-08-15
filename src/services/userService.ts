@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
 import * as CryptoJS from "crypto-js";
+import { Promotion } from "../db/models/promotion";
 
 const logger = require("../../logger");
 
@@ -11,6 +12,7 @@ export default class UserService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
+    this.token.uid = "0";
   }
 
   async decodeByAES256(encodedTel: string) {
@@ -46,8 +48,6 @@ export default class UserService {
 
   async getUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
-
-    console.log(this.token.uid);
 
     try {
       const result = await User.findOne(
@@ -204,7 +204,6 @@ export default class UserService {
         ])
         .toArray();
 
-      console.log(forVote);
       const voteCnt = forVote
         .flatMap((participation) => participation.attendences)
         .filter((attendence) => attendence.firstChoice === true)
@@ -347,7 +346,6 @@ export default class UserService {
   async setRest(info: restType) {
     try {
       const { startDate, endDate, type, content } = info;
-      console.log(info);
 
       const user = await User.findOne({ uid: "2283035576" });
       if (!user) throw new Error();
@@ -364,6 +362,30 @@ export default class UserService {
       user.rest.cumulativeSum = user.rest.cumulativeSum + dayDiff;
 
       await user.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async setPromotion(name: string) {
+    try {
+      const previousData = await Promotion.findOne({ name });
+      const now = dayjs().format("YYYY-MM-DD");
+
+      if (previousData) {
+        const dayDiff = dayjs(now).diff(dayjs(previousData?.lastDate), "day");
+        if (dayDiff > 3) {
+          await Promotion.updateOne(
+            { name },
+            { name, uid: this.token.uid, lastDate: now }
+          );
+
+          await this.updatePoint(10, "홍보 이벤트 참여");
+        }
+      } else {
+        await Promotion.create({ name, uid: this.token.uid, lastDate: now });
+        await this.updatePoint(10, "홍보 이벤트 참여");
+      }
     } catch (err: any) {
       throw new Error(err);
     }

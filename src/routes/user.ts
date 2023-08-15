@@ -395,8 +395,6 @@ router
         userServiceInstance,
         body: { role },
       } = req;
-      // const { role } = req.body;
-
       try {
         await userServiceInstance?.patchRole(role);
         return res.status(200).end();
@@ -405,6 +403,22 @@ router
       }
     }
   );
+
+router
+  .route("/promotion")
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {
+        userServiceInstance,
+        body: { name },
+      } = req;
+
+      await userServiceInstance?.setPromotion(name);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
 
 router
   .route("/test")
