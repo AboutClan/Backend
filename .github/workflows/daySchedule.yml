@@ -1,17 +1,17 @@
-# name: day-shcedule
-# run-name: ${{github.actor}} run schedule
-# on:
-#   schedule:
-#     - cron: "01 * * * *"
-# jobs:
-#   deployment:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: http-request
-#         uses: fjogeleit/http-request-action@v1
-#         with:
-#           url: "https://about-backend.herokuapp.com/admin/manage/daycalc"
-#           method: "PATCH"
-#           bearerToken: ${{secrets.GITHUB_TOKEN}}
-#           customHeaders: '{"Content-Type": "application/json"}'
-#           data: "{}"
+name: day-shcedule
+run-name: ${{github.actor}} run schedule
+on:
+  schedule:
+    - cron: "20 * * * *"
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: http-request
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://about-backend.herokuapp.com/admin/manage/daycalc"
+          method: "PATCH"
+          bearerToken: ${{secrets.INF_TOKEN}}
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: "{}"
