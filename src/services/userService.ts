@@ -366,6 +366,12 @@ export default class UserService {
     }
   }
 
+  async getPromotion() {
+    try {
+      const promotionData = await Promotion.find({}, "-_id -__v");
+      return promotionData;
+    } catch (err: any) {}
+  }
   async setPromotion(name: string) {
     try {
       const previousData = await Promotion.findOne({ name });
@@ -379,11 +385,11 @@ export default class UserService {
             { name, uid: this.token.uid, lastDate: now }
           );
 
-          await this.updatePoint(10, "홍보 이벤트 참여");
+          await this.updatePoint(50, "홍보 이벤트 참여");
         }
       } else {
         await Promotion.create({ name, uid: this.token.uid, lastDate: now });
-        await this.updatePoint(10, "홍보 이벤트 참여");
+        await this.updatePoint(50, "홍보 이벤트 참여");
       }
     } catch (err: any) {
       throw new Error(err);
