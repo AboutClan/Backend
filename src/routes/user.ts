@@ -406,6 +406,16 @@ router
 
 router
   .route("/promotion")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { userServiceInstance } = req;
+
+      const promotionData = await userServiceInstance?.getPromotion();
+      return res.status(200).json(promotionData);
+    } catch (err) {
+      next(err);
+    }
+  })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {
