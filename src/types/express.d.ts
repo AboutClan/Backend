@@ -15,6 +15,7 @@ import AdminLogService from "../services/adminLogService";
 import GatherService from "../services/gatherService";
 import PlazaService from "../services/plazaService";
 import adminManageService from "../services/adminManageService";
+import NoticeService from "../services/noticeService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -33,6 +34,7 @@ declare global {
       plazaServiceInstance?: PlazaService;
       bookServiceInstance?: BookService;
       giftServiceInstance?: StoreService;
+      noticeServiceInstance?: NoticeService;
       gatherServiceInstance?: GatherService;
       registerServiceInstance?: RegisterService;
       adminLogServiceInstance?: AdminLogService;

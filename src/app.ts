@@ -10,6 +10,7 @@ import dbConnect from "./db/conn";
 import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
+import { Notice } from "./db/models/notice";
 
 //router
 const user = require("./routes/user");
@@ -23,6 +24,7 @@ const gather = require("./routes/gather");
 const plaza = require("./routes/plaza");
 const register = require("./routes/register");
 const admin = require("./routes/admin/admin");
+const notice = require("./routes/notice");
 
 class App {
   private app: express.Application;
@@ -60,6 +62,7 @@ class App {
     this.app.use("/log", log);
     this.app.use("/gather", gather);
     this.app.use("/plaza", plaza);
+    this.app.use("/notice", notice);
     this.app.use(ErrorHandler);
   }
 
