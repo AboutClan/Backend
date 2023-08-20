@@ -2,7 +2,7 @@ name: day-shcedule
 run-name: ${{github.actor}} run schedule
 on:
   schedule:
-    - cron: "30 23 * * *"
+    - cron: "1 0 1 * *"
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -10,7 +10,7 @@ jobs:
       - name: http-request
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://about-backend.herokuapp.com/admin/manage/daycalc"
+          url: "https://about-backend.herokuapp.com/admin/manage/monthCalc"
           method: "PATCH"
           bearerToken: ${{secrets.INF_TOKEN}}
           customHeaders: '{"Content-Type": "application/json"}'
