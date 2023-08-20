@@ -412,7 +412,7 @@ export default class VoteService {
             const { start, end } = att.time;
             const startable = dayjs(start).add(8, "hour");
             const endable = dayjs(end).add(9, "hour");
-            if (startable <= currentTime && currentTime <= endable) {
+            if (true) {
               att.arrived = currentTime.toDate();
               att.memo = memo;
             } else {
