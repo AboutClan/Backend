@@ -379,7 +379,7 @@ export default class UserService {
 
       if (previousData) {
         const dayDiff = dayjs(now).diff(dayjs(previousData?.lastDate), "day");
-        if (dayDiff > 3) {
+        if (dayDiff > 2) {
           await Promotion.updateOne(
             { name },
             { name, uid: this.token.uid, lastDate: now }
