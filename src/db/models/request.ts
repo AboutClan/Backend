@@ -32,7 +32,7 @@ export const RequestSchema: Schema<IRequestData> = new Schema(
   {
     category: {
       type: String,
-      enum: ["건의", "홍보", "휴식", "충전", "탈퇴","출석","배지"],
+      enum: ["건의", "홍보", "휴식", "충전", "탈퇴","출석","배지","불참"],
     },
     title: {
       type: String,
