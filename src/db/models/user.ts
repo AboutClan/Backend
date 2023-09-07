@@ -88,7 +88,7 @@ export const UserSchema: Schema<IUser> = new Schema({
   },
   location: {
     type: String,
-    enum: ["수원", "양천", "안양"],
+    enum: ["수원", "양천", "안양","강남"],
     default: "수원",
   },
   mbti: {
