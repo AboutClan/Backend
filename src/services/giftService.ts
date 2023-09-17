@@ -1,6 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { GiftModel } from "../db/models/gift";
-
+//2
 export default class GiftService {
   private token: JWT;
   constructor(token?: JWT) {
