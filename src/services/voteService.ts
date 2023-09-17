@@ -178,16 +178,18 @@ export default class VoteService {
   async getFilteredVote(date: any, location: string) {
     try {
       const filteredVote = await this.getVote(date);
-
       filteredVote.participations = filteredVote?.participations.filter(
-        (participation) => participation.place?.location === location
+        (participation) =>
+          participation.place?.location === location ||
+          (location === "안양" &&
+            participation.place?.id === "640c271121863deff358f459")
       );
-
       return filteredVote;
     } catch (err) {
       throw new Error();
     }
   }
+  /** 인접한 지역들은 공통된 스터디 장소를 추가하고자 함. 해당 지역들 따로 저장해서 체크하면 좋을 거 같은데 일단은 하드코딩으로 해둘게요. */
 
   async setVote(date: any, studyInfo: IVoteStudyInfo) {
     try {
