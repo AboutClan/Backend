@@ -81,8 +81,9 @@ export default class VoteService {
         ])
         .toArray();
 
+        //open 기록만 가져오는게 아닌 open 및 free 가져오는 걸로 변경
       userArrivedInfo = userArrivedInfo.filter(
-        (info) => info.status === "open" && info.arrived
+        (info) => ["open", "free"].includes(info.status) && info.arrived
       );
 
       const results = userArrivedInfo.reduce((acc, obj) => {
