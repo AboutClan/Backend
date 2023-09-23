@@ -212,7 +212,7 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     },
     place: {
       type: String,
-      enum: ["수원", "양천", "안양","강남"],
+      enum: ["수원", "양천", "안양", "강남", "전체"],
     },
   },
   { timestamps: true }
