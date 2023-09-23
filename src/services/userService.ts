@@ -126,7 +126,7 @@ export default class UserService {
           //open과 free 정보 모두
           {
             $match: {
-              $or: [{ status: "open" }, { status: "free" }],
+              status: "open",
             },
           },
           {
