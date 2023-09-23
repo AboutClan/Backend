@@ -123,9 +123,10 @@ export default class UserService {
               as: "attendences.user",
             },
           },
+          //open과 free 정보 모두
           {
             $match: {
-              status: "open",
+              $or: [{ status: "open" }, { status: "free" }],
             },
           },
           {
