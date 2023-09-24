@@ -81,7 +81,7 @@ export default class VoteService {
         ])
         .toArray();
 
-        //open 기록만 가져오는게 아닌 open 및 free 가져오는 걸로 변경
+      //open 기록만 가져오는게 아닌 open 및 free 가져오는 걸로 변경
       userArrivedInfo = userArrivedInfo.filter(
         (info) => ["open", "free"].includes(info.status) && info.arrived
       );
@@ -412,15 +412,21 @@ export default class VoteService {
             (att.user as IUser)._id.toString() === this.token.id?.toString() &&
             att.firstChoice
           ) {
-            const { start, end } = att.time;
-            const startable = dayjs(start).add(8, "hour");
-            const endable = dayjs(end).add(9, "hour");
-            if (startable <= currentTime && currentTime <= endable) {
-              att.arrived = currentTime.toDate();
-              att.memo = memo;
-            } else {
-              return false;
-            }
+            att.arrived = currentTime.toDate();
+            att.memo = memo;
+
+            /** 시간 조건 삭제. 프론트에서 처리함 */
+            
+            // const { start, end } = att.time;
+            // const startable = dayjs(start).add(8, "hour");
+            // const endable = dayjs(end).add(9, "hour");
+
+            // if (startable <= currentTime && currentTime <= endable) {
+            //   att.arrived = currentTime.toDate();
+            //   att.memo = memo;
+            // } else {
+            //   return false;
+            // }
           }
         });
       });
