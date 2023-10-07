@@ -165,7 +165,6 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
 
-    console.log(0);
     try {
       const targetUser = await userServiceInstance?.getUserInfo([]);
       return res.status(200).json(targetUser);
