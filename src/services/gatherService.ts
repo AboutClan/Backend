@@ -51,6 +51,15 @@ export default class GatherService {
     }
   }
 
+  async updateGather(id: number, data: any) {
+    try {
+      await Gather.updateOne({ id }, data);
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async participateGather(gatherId: string, phase: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) throw new Error();
