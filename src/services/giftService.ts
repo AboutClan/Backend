@@ -38,7 +38,6 @@ export default class GiftService {
         uid,
         giftId,
       });
-
       if (existingUser) {
         const user = await GiftModel.findOneAndUpdate(
           { uid: this.token.uid },
