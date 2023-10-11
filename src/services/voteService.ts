@@ -237,7 +237,6 @@ export default class VoteService {
           } else if (subPlaceIdArr?.includes(placeId)) {
             return {
               ...participation,
-
               attendences: [
                 ...(participation.attendences || []),
                 { ...attendance, firstChoice: false, memo },
