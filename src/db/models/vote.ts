@@ -113,7 +113,6 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
     absences: [AbsenceSchema],
     startTime: Date,
     endTime: Date,
-
     status: {
       type: Schema.Types.String,
       enum: ["pending", "waiting_confirm", "open", "dismissed", "free"],
