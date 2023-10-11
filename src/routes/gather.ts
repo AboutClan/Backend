@@ -47,7 +47,16 @@ router
       const gatherData = await gatherServiceInstance?.deleteGather(gatherId);
       res.status(200).json(gatherData);
     }
-  );
+  )
+  .patch(async (req, res, next) => {
+    const {
+      gatherServiceInstance,
+      body: { id, data },
+    } = req;
+
+    await gatherServiceInstance?.updateGather(id, data);
+    res.status(200).json();
+  });
 
 router
   .route("/participate")
