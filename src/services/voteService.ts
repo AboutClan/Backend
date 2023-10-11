@@ -229,7 +229,7 @@ export default class VoteService {
           if (placeId === place._id) {
             return {
               ...participation,
-              memo,
+              memo: "temp",
               attendences: [
                 ...(participation.attendences || []),
                 { ...attendance, firstChoice: true },
@@ -238,7 +238,7 @@ export default class VoteService {
           } else if (subPlaceIdArr?.includes(placeId)) {
             return {
               ...participation,
-              memo,
+              memo: "temp",
               attendences: [
                 ...(participation.attendences || []),
                 { ...attendance, firstChoice: false },
@@ -420,7 +420,8 @@ export default class VoteService {
             att.firstChoice
           ) {
             att.arrived = currentTime.toDate();
-            att.memo = memo;
+            //memo가 빈문자열인 경우는 출석이 아닌 개인 스터디 신청에서 사용한 경우
+            if (memo) att.memo = memo;
           }
         });
       });
