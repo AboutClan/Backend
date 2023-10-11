@@ -181,11 +181,15 @@ export default class VoteService {
     try {
       const filteredVote = await this.getVote(date);
       filteredVote.participations = filteredVote?.participations.filter(
-        (participation) =>
-          participation.place?.location === location ||
-          (location === "안양" &&
-            participation.place?.id === "640c271121863deff358f459") ||
-          location === "전체"
+        (participation) => {
+          const placeLocation = participation.place?.location;
+          return (
+            placeLocation === location ||
+            (location === "안양" &&
+              participation.place?.id === "640c271121863deff358f459") ||
+            placeLocation === "전체"
+          );
+        }
       );
       return filteredVote;
     } catch (err) {
