@@ -199,7 +199,7 @@ export default class VoteService {
 
   async setVote(date: any, studyInfo: IVoteStudyInfo) {
     try {
-      const { place, subPlace, start, end }: IVoteStudyInfo = studyInfo;
+      const { place, subPlace, start, end, memo }: IVoteStudyInfo = studyInfo;
       const isVoting = await this.isVoting(date);
       const vote = await this.getVote(date);
 
@@ -229,6 +229,7 @@ export default class VoteService {
           if (placeId === place._id) {
             return {
               ...participation,
+              memo,
               attendences: [
                 ...(participation.attendences || []),
                 { ...attendance, firstChoice: true },
@@ -237,6 +238,7 @@ export default class VoteService {
           } else if (subPlaceIdArr?.includes(placeId)) {
             return {
               ...participation,
+              memo,
               attendences: [
                 ...(participation.attendences || []),
                 { ...attendance, firstChoice: false },
@@ -419,19 +421,6 @@ export default class VoteService {
           ) {
             att.arrived = currentTime.toDate();
             att.memo = memo;
-
-            /** 시간 조건 삭제. 프론트에서 처리함 */
-
-            // const { start, end } = att.time;
-            // const startable = dayjs(start).add(8, "hour");
-            // const endable = dayjs(end).add(9, "hour");
-
-            // if (startable <= currentTime && currentTime <= endable) {
-            //   att.arrived = currentTime.toDate();
-            //   att.memo = memo;
-            // } else {
-            //   return false;
-            // }
           }
         });
       });

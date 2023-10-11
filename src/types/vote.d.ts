@@ -3,4 +3,5 @@ export interface IVoteStudyInfo {
   subPlace?: IPlace[];
   start: Dayjs;
   end: Dayjs;
+  memo?: string;
 }
