@@ -222,6 +222,8 @@ export default class VoteService {
         user: this.token.id,
       } as IAttendance;
 
+      //memo는 개인 스터디 신청에 사용 (사전에 작성)
+
       vote.participations = vote.participations.map(
         (participation: IParticipation) => {
           const placeId = (participation.place as IPlace)._id.toString();
