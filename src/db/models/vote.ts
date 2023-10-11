@@ -44,7 +44,7 @@ export interface IAttendance {
   arrived?: Date;
   firstChoice: boolean;
   confirmed: boolean;
-  memo: string;
+  memo?: string;
 }
 
 export interface IAbsence {

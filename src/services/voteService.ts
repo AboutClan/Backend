@@ -229,19 +229,18 @@ export default class VoteService {
           if (placeId === place._id) {
             return {
               ...participation,
-              memo: "temp",
               attendences: [
                 ...(participation.attendences || []),
-                { ...attendance, firstChoice: true },
+                { ...attendance, firstChoice: true, memo },
               ],
             };
           } else if (subPlaceIdArr?.includes(placeId)) {
             return {
               ...participation,
-              memo: "temp",
+
               attendences: [
                 ...(participation.attendences || []),
-                { ...attendance, firstChoice: false },
+                { ...attendance, firstChoice: false, memo },
               ],
             };
           }
