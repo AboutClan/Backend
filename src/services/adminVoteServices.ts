@@ -70,7 +70,9 @@ export default class AdminVoteService {
             participation.startTime = result.start as Date;
             participation.endTime = result.end as Date;
           } else {
-            participation.status = "dismissed";
+            if (participation?.place?.brand === "자유 신청") {
+              participation.status = "free";
+            } else participation.status = "dismissed";
           }
         });
 
