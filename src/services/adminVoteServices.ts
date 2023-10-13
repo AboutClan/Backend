@@ -79,6 +79,7 @@ export default class AdminVoteService {
         //매칭 실패한 사람들 전부 failure에 추가
         vote?.participations?.map((participation) => {
           if (participation.status === "dismissed") {
+         
             participation.attendences?.map((attendance) => {
               if (attendance.firstChoice)
                 failure.add(attendance.user.toString());
