@@ -140,7 +140,7 @@ export default class VoteService {
             attendences: [],
             absences: [],
             invitations: [],
-            status: "pending",
+            status: place.brand !== "자유 신청" ? "pending" : "free",
           } as any;
         });
 
