@@ -65,21 +65,19 @@ export default class AdminVoteService {
 
           let result;
           if (timeObj.length) result = this.checkTimeOverlap(timeObj);
+
           if (result) {
             participation.status = "open";
             participation.startTime = result.start as Date;
             participation.endTime = result.end as Date;
           } else {
-            if (participation?.place?.brand === "자유 신청") {
-              participation.status = "free";
-            } else participation.status = "dismissed";
+            participation.status = "dismissed";
           }
         });
 
         //매칭 실패한 사람들 전부 failure에 추가
         vote?.participations?.map((participation) => {
           if (participation.status === "dismissed") {
-         
             participation.attendences?.map((attendance) => {
               if (attendance.firstChoice)
                 failure.add(attendance.user.toString());
