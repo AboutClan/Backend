@@ -16,6 +16,7 @@ import GatherService from "../services/gatherService";
 import PlazaService from "../services/plazaService";
 import adminManageService from "../services/adminManageService";
 import NoticeService from "../services/noticeService";
+import ImageService from "../services/imageService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -42,6 +43,7 @@ declare global {
       adminVoteServiceInstance?: AdminVoteService;
       adminManageInstance?: adminManageService;
       logServiceInstance?: LogService;
+      imageServiceInstance?: ImageService;
     }
   }
 }
