@@ -187,7 +187,9 @@ export default class VoteService {
           return (
             placeLocation === location ||
             (location === "안양" &&
-              participation.place?._id === "640c271121863deff358f459")
+              placeLocation === "수원" &&
+              participation.place?.brand === "탐앤탐스") ||
+            placeLocation === "전체"
           );
         }
       );
