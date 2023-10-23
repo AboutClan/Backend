@@ -188,7 +188,7 @@ export default class VoteService {
             placeLocation === location ||
             (location === "안양" &&
               placeLocation === "수원" &&
-              participation.place?.brand === "탐앤탐스") ||
+              participation.place?.branch === "수원역") ||
             placeLocation === "전체"
           );
         }
