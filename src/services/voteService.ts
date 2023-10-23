@@ -135,12 +135,13 @@ export default class VoteService {
       if (!vote) {
         const places = await Place.find({ status: "active" });
         const participants = places.map((place) => {
+          const isPrivate = place.brand === "자유 신청";
           return {
             place: place._id,
             attendences: [],
             absences: [],
             invitations: [],
-            status: "pending",
+            status: !isPrivate ? "pending" : "free",
           } as any;
         });
 
