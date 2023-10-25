@@ -45,6 +45,8 @@ export default class AdminVoteService {
     try {
       if (vote?.participations.some((p) => p.status === "pending")) {
         vote?.participations?.map((participation) => {
+          //free 상태는 알고리즘에 적용하지 않음
+          if (participation.status === "free") return;
           const timeObj: voteTime[] = [];
 
           participation.attendences?.map((attendance) => {
@@ -79,8 +81,11 @@ export default class AdminVoteService {
         vote?.participations?.map((participation) => {
           if (participation.status === "dismissed") {
             participation.attendences?.map((attendance) => {
-              if (attendance.firstChoice)
+              if (attendance.firstChoice) {
+                //알고리즘에서 매칭 성공한 경우 1지망이 된것처럼, 실패한 경우 2지망으로 변경
+                attendance.firstChoice = false;
                 failure.add(attendance.user.toString());
+              }
             });
           }
         });
