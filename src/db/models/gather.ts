@@ -60,6 +60,7 @@ export interface IGatherData {
   id: number;
   date: string;
   place?: string;
+  isAdminOpen?: boolean;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -222,6 +223,9 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
         "수원/안양",
         "양천/강남",
       ],
+    },
+    isAdminOpen: {
+      type: Boolean,
     },
   },
   { timestamps: true }
