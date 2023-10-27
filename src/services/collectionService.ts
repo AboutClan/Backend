@@ -44,7 +44,7 @@ export default class CollectionService {
 
   async getCollection() {
     try {
-      const result = await DailyCheck.find(
+      const result = await Collection.find(
         { uid: this.token.uid },
         "-_id -__v"
       );

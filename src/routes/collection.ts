@@ -18,8 +18,8 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { collectionServiceInstance } = req;
     try {
-      const users = await collectionServiceInstance?.getCollection();
-      res.status(200).json(users);
+      const user = await collectionServiceInstance?.getCollection();
+      res.status(200).json(user);
     } catch (err: any) {
       next(err);
     }
@@ -29,7 +29,6 @@ router
       collectionServiceInstance,
       body: { alphabet },
     } = req;
-
     try {
       const result = await collectionServiceInstance?.setCollection(alphabet);
       if (result === "completed") {
