@@ -8,7 +8,7 @@ export default class DailyCheckService {
     this.token = token as JWT;
   }
 
-  async setDailyCheck(uid: string, name: string) {
+  async setDailyCheck() {
     try {
       await DailyCheck.create({
         uid: this.token.uid,
@@ -21,7 +21,7 @@ export default class DailyCheckService {
 
   async getAllLog() {
     try {
-      const result = await DailyCheck.find({});
+      const result = await DailyCheck.find({}, "-_id -__v");
       return result;
     } catch (err: any) {
       throw new Error(err);

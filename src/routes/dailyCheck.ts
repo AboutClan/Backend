@@ -17,11 +17,11 @@ router
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       dailyCheckServiceInstance,
-      body: { uid, name },
+      body: {},
     } = req;
 
     try {
-      await dailyCheckServiceInstance?.setDailyCheck(uid, name);
+      await dailyCheckServiceInstance?.setDailyCheck();
     } catch (err: any) {
       next(err);
     }
@@ -34,8 +34,8 @@ router
     const { dailyCheckServiceInstance } = req;
 
     try {
-      const user = await dailyCheckServiceInstance?.getAllLog();
-      res.status(200).json({ user });
+      const users = await dailyCheckServiceInstance?.getAllLog();
+      res.status(200).json(users);
     } catch (err: any) {
       next(err);
     }
