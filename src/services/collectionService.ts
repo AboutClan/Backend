@@ -15,6 +15,14 @@ export default class CollectionService {
       if (previousData) {
         if (previousData.collects.includes(alphabet)) return;
         else {
+          //알파벳 5개를 다 모은 경우
+          if (previousData.collects.length === 4) {
+            await Collection.updateOne(
+              { uid: this.token.uid },
+              { $set: { collects: [] }, $inc: { collectCnt: 1 } }
+            );
+            return "completed";
+          }
           await Collection.updateOne(
             { uid: this.token.uid },
             { $push: { collects: alphabet } }
@@ -25,16 +33,21 @@ export default class CollectionService {
           name: this.token.name,
           uid: this.token.uid,
           collects: [alphabet],
+          collectCnt: 0,
         });
       }
+      return null;
     } catch (err: any) {
       throw new Error(err);
     }
   }
 
-  async getAllLog() {
+  async getCollection() {
     try {
-      const result = await DailyCheck.find({}, "-_id -__v");
+      const result = await DailyCheck.find(
+        { uid: this.token.uid },
+        "-_id -__v"
+      );
       return result;
     } catch (err: any) {
       throw new Error(err);

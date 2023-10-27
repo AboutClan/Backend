@@ -9,6 +9,7 @@ export interface ICollection {
   name: string;
   type: string;
   collects: string[];
+  collectCnt: number;
 }
 
 const colectionSchema: Schema<ICollection> = new Schema(
@@ -22,6 +23,7 @@ const colectionSchema: Schema<ICollection> = new Schema(
     collects: {
       type: [String],
     },
+    collectCnt: Number,
   },
   { timestamps: true }
 );

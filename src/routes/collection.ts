@@ -15,6 +15,15 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router
   .route("/alphabet")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { collectionServiceInstance } = req;
+    try {
+      const users = await collectionServiceInstance?.getCollection();
+      res.status(200).json(users);
+    } catch (err: any) {
+      next(err);
+    }
+  })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       collectionServiceInstance,
@@ -22,21 +31,12 @@ router
     } = req;
 
     try {
-      await collectionServiceInstance?.setCollection(alphabet);
-    } catch (err: any) {
-      next(err);
-    }
-    return res.end();
-  });
-
-router
-  .route("/all")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { collectionServiceInstance } = req;
-
-    try {
-      const users = await collectionServiceInstance?.getAllLog();
-      res.status(200).json(users);
+      const result = await collectionServiceInstance?.setCollection(alphabet);
+      if (result === "completed") {
+        res.status(200).json({ message: "completed" });
+      } else {
+        return res.end();
+      }
     } catch (err: any) {
       next(err);
     }
