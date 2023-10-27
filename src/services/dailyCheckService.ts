@@ -11,8 +11,8 @@ export default class DailyCheckService {
   async setDailyCheck(uid: string, name: string) {
     try {
       await DailyCheck.create({
-        uid,
-        name,
+        uid: this.token.uid,
+        name: this.token.name,
       });
     } catch (err: any) {
       throw new Error(err);
