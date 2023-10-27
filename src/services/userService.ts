@@ -371,6 +371,7 @@ export default class UserService {
       return promotionData;
     } catch (err: any) {}
   }
+  
   async setPromotion(name: string) {
     try {
       const previousData = await Promotion.findOne({ name });

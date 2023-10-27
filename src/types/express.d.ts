@@ -17,6 +17,8 @@ import PlazaService from "../services/plazaService";
 import adminManageService from "../services/adminManageService";
 import NoticeService from "../services/noticeService";
 import DailyCheckService from "../services/dailyCheckService";
+import { ICollection } from "../db/models/collection";
+import CollectionService from "../services/collectionService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -37,6 +39,7 @@ declare global {
       giftServiceInstance?: StoreService;
       noticeServiceInstance?: NoticeService;
       dailyCheckServiceInstance?: DailyCheckService;
+      collectionServiceInstance?: CollectionService;
       gatherServiceInstance?: GatherService;
       registerServiceInstance?: RegisterService;
       adminLogServiceInstance?: AdminLogService;
