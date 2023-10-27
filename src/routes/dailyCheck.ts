@@ -25,7 +25,6 @@ router
     } catch (err: any) {
       next(err);
     }
-
     return res.end();
   });
 
