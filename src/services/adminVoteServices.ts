@@ -82,8 +82,8 @@ export default class AdminVoteService {
           if (participation.status === "dismissed") {
             participation.attendences?.map((attendance) => {
               if (attendance.firstChoice) {
-                //알고리즘에서 매칭 성공한 경우 1지망이 된것처럼, 실패한 경우 2지망으로 변경
-                attendance.firstChoice = false;
+                // 알고리즘에서 매칭 성공한 경우 1지망이 된것처럼, 실패한 경우 2지망으로 변경
+                // attendance.firstChoice = false;
                 failure.add(attendance.user.toString());
               }
             });
