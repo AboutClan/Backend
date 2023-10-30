@@ -44,7 +44,7 @@ export default class CollectionService {
 
   async getCollection() {
     try {
-      const result = await Collection.find(
+      const result = await Collection.findOne(
         { uid: this.token.uid },
         "-_id -__v"
       );
