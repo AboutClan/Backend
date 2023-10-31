@@ -12,16 +12,15 @@ export default class CollectionService {
 
   async setCollection(alphabet: string) {
     try {
-      const previousData = await Collection.findOne({ uid: this.token.uid });
+      const previousData = await Collection.findOne({ user: this.token.id });
       if (previousData) {
         await Collection.updateOne(
-          { uid: this.token.uid },
+          { user: this.token.id },
           { $push: { collects: alphabet } }
         );
       } else {
         await Collection.create({
-          name: this.token.name,
-          uid: this.token.uid,
+          user: this.token.id,
           collects: [alphabet],
           collectCnt: 0,
         });
@@ -34,7 +33,7 @@ export default class CollectionService {
 
   async setCollectionCompleted() {
     try {
-      const previousData = await Collection.findOne({ uid: this.token.uid });
+      const previousData = await Collection.findOne({ user: this.token.id });
       let myAlphabets = previousData?.collects;
       if (ALPHABET_COLLECTION.every((item) => myAlphabets?.includes(item))) {
         ALPHABET_COLLECTION.forEach((item) => {
@@ -42,7 +41,7 @@ export default class CollectionService {
           if (idx !== -1) myAlphabets?.splice(idx as number, 1);
         });
         await Collection.updateOne(
-          { uid: this.token.uid },
+          { user: this.token.id },
           { collects: myAlphabets }
         );
       } else {
@@ -55,10 +54,9 @@ export default class CollectionService {
 
   async getCollection() {
     try {
-      const result = await Collection.findOne(
-        { uid: this.token.uid },
-        "-_id -__v"
-      );
+      const result = await Collection.findOne({ user: this.token.id })
+        .populate("user")
+        .select("-_id");
       return result;
     } catch (err: any) {
       throw new Error(err);
@@ -67,7 +65,7 @@ export default class CollectionService {
 
   async getCollectionAll() {
     try {
-      const result = await Collection.find({}, "-_id -__v");
+      const result = await Collection.find({}, "-_id -__v").populate("user");
       return result;
     } catch (err: any) {
       throw new Error(err);

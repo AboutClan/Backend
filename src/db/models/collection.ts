@@ -3,10 +3,10 @@ import mongoose, {
   Schema,
   StringExpressionOperatorReturningBoolean,
 } from "mongoose";
+import { IUser } from "./user";
 
 export interface ICollection {
-  uid: string;
-  name: string;
+  user: string | IUser;
   type: string;
   collects: string[];
   collectCnt: number;
@@ -14,8 +14,10 @@ export interface ICollection {
 
 const colectionSchema: Schema<ICollection> = new Schema(
   {
-    uid: String,
-    name: String,
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     type: {
       type: String,
       enum: ["alphabet"],
