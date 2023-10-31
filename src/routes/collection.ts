@@ -30,12 +30,39 @@ router
       body: { alphabet },
     } = req;
     try {
-      const result = await collectionServiceInstance?.setCollection(alphabet);
-      if (result === "completed") {
-        res.status(200).json({ message: "completed" });
+      await collectionServiceInstance?.setCollection(alphabet);
+      return res.end();
+    } catch (err: any) {
+      next(err);
+    }
+  });
+
+router
+  .route("/alphabet/completed")
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      collectionServiceInstance,
+      body: {},
+    } = req;
+    try {
+      const result = await collectionServiceInstance?.setCollectionCompleted();
+      if (result === "not completed") {
+        res.status(400).json({ message: "not completed" });
       } else {
         return res.end();
       }
+    } catch (err: any) {
+      next(err);
+    }
+  });
+
+router
+  .route("/alphabet/all")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { collectionServiceInstance } = req;
+    try {
+      const user = await collectionServiceInstance?.getCollection();
+      res.status(200).json(user);
     } catch (err: any) {
       next(err);
     }

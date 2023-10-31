@@ -3,6 +3,7 @@ import { Collection } from "../db/models/collection";
 import { DailyCheck } from "../db/models/dailyCheck";
 import { Notice } from "../db/models/notice";
 
+const ALPHABET_COLLECTION = ["A", "B", "O", "U", "T"];
 export default class CollectionService {
   private token: JWT;
   constructor(token?: JWT) {
@@ -13,21 +14,10 @@ export default class CollectionService {
     try {
       const previousData = await Collection.findOne({ uid: this.token.uid });
       if (previousData) {
-        if (previousData.collects.includes(alphabet)) return;
-        else {
-          //알파벳 5개를 다 모은 경우
-          if (previousData.collects.length === 4) {
-            await Collection.updateOne(
-              { uid: this.token.uid },
-              { $set: { collects: [] }, $inc: { collectCnt: 1 } }
-            );
-            return "completed";
-          }
-          await Collection.updateOne(
-            { uid: this.token.uid },
-            { $push: { collects: alphabet } }
-          );
-        }
+        await Collection.updateOne(
+          { uid: this.token.uid },
+          { $push: { collects: alphabet } }
+        );
       } else {
         await Collection.create({
           name: this.token.name,
@@ -37,6 +27,27 @@ export default class CollectionService {
         });
       }
       return null;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async setCollectionCompleted() {
+    try {
+      const previousData = await Collection.findOne({ uid: this.token.uid });
+      let myAlphabets = previousData?.collects;
+      if (ALPHABET_COLLECTION.every((item) => myAlphabets?.includes(item))) {
+        ALPHABET_COLLECTION.forEach((item) => {
+          const idx = myAlphabets?.indexOf(item);
+          if (idx !== -1) myAlphabets?.splice(idx as number, 1);
+        });
+        await Collection.updateOne(
+          { uid: this.token.uid },
+          { collects: myAlphabets }
+        );
+      } else {
+        return "not completed";
+      }
     } catch (err: any) {
       throw new Error(err);
     }
