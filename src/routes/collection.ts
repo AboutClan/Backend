@@ -61,8 +61,8 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { collectionServiceInstance } = req;
     try {
-      const user = await collectionServiceInstance?.getCollection();
-      res.status(200).json(user);
+      const users = await collectionServiceInstance?.getCollectionAll();
+      res.status(200).json(users);
     } catch (err: any) {
       next(err);
     }
