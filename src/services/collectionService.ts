@@ -64,10 +64,10 @@ export default class CollectionService {
       throw new Error(err);
     }
   }
-  
+
   async getCollectionAll() {
     try {
-      const result = await Collection.findOne({}, "-_id -__v");
+      const result = await Collection.find({}, "-_id -__v");
       return result;
     } catch (err: any) {
       throw new Error(err);
