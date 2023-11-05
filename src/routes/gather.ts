@@ -155,18 +155,18 @@ router
   );
 
 router
-  .route("/open")
+  .route("/status")
   .patch(
     body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
         gatherServiceInstance,
-        body: { gatherId },
+        body: { gatherId, status },
       } = req;
 
       try {
-        await gatherServiceInstance?.setStatus(gatherId, "open");
+        await gatherServiceInstance?.setStatus(gatherId, status);
         res.status(200).end();
       } catch (err: any) {
         next(err);
