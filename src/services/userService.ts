@@ -345,7 +345,7 @@ export default class UserService {
     try {
       const { startDate, endDate, type, content } = info;
 
-      const user = await User.findOne({ uid: "2283035576" });
+      const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
 
       const startDay = dayjs(startDate, "YYYY-MM-DD");
@@ -371,7 +371,7 @@ export default class UserService {
       return promotionData;
     } catch (err: any) {}
   }
-  
+
   async setPromotion(name: string) {
     try {
       const previousData = await Promotion.findOne({ name });
