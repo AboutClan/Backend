@@ -352,6 +352,17 @@ export default class UserService {
       const endDay = dayjs(endDate, "YYYY-MM-DD");
       const dayDiff = endDay.diff(startDay, "day");
 
+      if (!user.rest) {
+        user.rest = {
+          type: "",
+          content: "",
+          startDate,
+          endDate,
+          restCnt: 0,
+          cumulativeSum: 0,
+        };
+      }
+
       user.rest.type = type;
       user.rest.content = content;
       user.rest.startDate = startDate;
