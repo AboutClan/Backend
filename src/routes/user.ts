@@ -252,7 +252,7 @@ router
 
     try {
       const userPoint = await userServiceInstance?.getUserInfo(["point"]);
-      return res.status(200).send(userPoint?.point);
+      return res.status(200).send(userPoint);
     } catch (err) {
       next(err);
     }
@@ -282,7 +282,7 @@ router
 
     try {
       const userScore = await userServiceInstance?.getUserInfo(["score"]);
-      return res.status(200).send(userScore.score);
+      return res.status(200).send(userScore);
     } catch (err) {
       next(err);
     }
@@ -312,7 +312,7 @@ router
 
     try {
       const userScore = await userServiceInstance?.getUserInfo(["deposit"]);
-      return res.status(200).send(userScore?.deposit);
+      return res.status(200).send(userScore);
     } catch (err) {
       next(err);
     }
