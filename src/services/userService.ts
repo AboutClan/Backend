@@ -152,11 +152,13 @@ export default class UserService {
         ])
         .toArray();
 
-      forParticipation.forEach((obj) => {
+      const filtered = forParticipation.filter((who) => who.cnt > 0);
+
+      filtered.forEach((obj) => {
         const idx = attendForm.findIndex((user) => user.uid === obj.uid);
         if (attendForm[idx]) attendForm[idx].cnt = obj.cnt;
       });
-      return attendForm;
+      return attendForm.filter((who) => who.cnt > 0);
     } catch (err: any) {
       throw new Error(err);
     }
