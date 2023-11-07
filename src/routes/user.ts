@@ -282,7 +282,7 @@ router
 
     try {
       const userScore = await userServiceInstance?.getUserInfo(["score"]);
-      return res.status(200).send(userScore);
+      return res.status(200).send(userScore.score);
     } catch (err) {
       next(err);
     }
