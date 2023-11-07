@@ -38,7 +38,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -72,7 +72,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("comment").notEmpty().withMessage("comment입력 필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -89,6 +89,40 @@ router
       }
     }
   );
+
+router
+  .route("/role")
+  .patch(
+    body("role").notEmpty().withMessage("role입력 필요."),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { role },
+      } = req;
+      try {
+        await userServiceInstance?.patchRole(role);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+router
+  .route("/rest")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: { info = "" },
+    } = req;
+
+    try {
+      await userServiceInstance?.setRest(info);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
 
 router
   .route("/participationrate/all")
@@ -221,7 +255,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("point").notEmpty().isNumeric().withMessage("point입력 필요."),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -240,22 +274,6 @@ router
   );
 
 router
-  .route("/rest")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { info = "" },
-    } = req;
-
-    try {
-      await userServiceInstance?.setRest(info);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
-    }
-  });
-
-router
   .route("/score")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
@@ -270,7 +288,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("score").notEmpty().isNumeric().withMessage("score입력 필요."),
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -303,7 +321,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("deposit").notEmpty().isNumeric().withMessage("deposit입력 필요."),
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -384,24 +402,6 @@ router
       next(err);
     }
   });
-
-router
-  .route("/role")
-  .patch(
-    body("role").notEmpty().withMessage("role입력 필요."),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { role },
-      } = req;
-      try {
-        await userServiceInstance?.patchRole(role);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    }
-  );
 
 router
   .route("/promotion")
