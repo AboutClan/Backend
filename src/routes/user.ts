@@ -13,6 +13,8 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+//userInfo의 필드 수정. post/patch/put 모두 상황마다 사용 가능할 거 같은데, 대부분의 경우 처음부터 존재하는 필드에 업데이트 하는 거고, 각 필드마다 통일성 유지를 위해서(프론트엔드에서 하위 필드 메소드 통일해서 정리하고 있어서. 일단 patch로 통일했음. 나중에 수정하고 싶으면 말씀해주세요!)
+
 router
   .route("/active")
   .get(async (req: Request, res: Response, next: NextFunction) => {
