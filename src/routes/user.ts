@@ -252,7 +252,7 @@ router
 
     try {
       const userPoint = await userServiceInstance?.getUserInfo(["point"]);
-      return res.status(200).send(userPoint);
+      return res.status(200).send(userPoint?.point);
     } catch (err) {
       next(err);
     }
@@ -281,11 +281,8 @@ router
     const { userServiceInstance } = req;
 
     try {
-      const userScore = await userServiceInstance?.getUserInfo([
-        "name",
-        "score",
-      ]);
-      return res.status(200).send(userScore);
+      const userScore = await userServiceInstance?.getUserInfo(["score"]);
+      return res.status(200).send(userScore?.score);
     } catch (err) {
       next(err);
     }
@@ -314,11 +311,8 @@ router
     const { userServiceInstance } = req;
 
     try {
-      const userScore = await userServiceInstance?.getUserInfo([
-        "name",
-        "deposit",
-      ]);
-      return res.status(200).send(userScore);
+      const userScore = await userServiceInstance?.getUserInfo(["deposit"]);
+      return res.status(200).send(userScore?.deposit);
     } catch (err) {
       next(err);
     }
