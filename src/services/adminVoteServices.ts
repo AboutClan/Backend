@@ -98,7 +98,7 @@ export default class AdminVoteService {
               ) {
                 attendance.firstChoice = true;
                 failure.delete(attendance.user.toString());
-                secondToFirst.has(attendance.user.toString());
+                secondToFirst.add(attendance.user.toString());
               }
             });
           }
@@ -136,7 +136,7 @@ export default class AdminVoteService {
               participation.attendences?.forEach((attendance) => {
                 attendance.firstChoice = true;
                 failure.delete(attendance.user.toString());
-                secondToFirst.has(attendance.user.toString());
+                secondToFirst.add(attendance.user.toString());
               });
             }
           }
@@ -150,7 +150,7 @@ export default class AdminVoteService {
                 failure.has(attendance.user.toString())
               ) {
                 attendance.firstChoice = true;
-                secondToFirst.has(attendance.user.toString());
+                secondToFirst.add(attendance.user.toString());
                 failure.delete(attendance.user.toString());
               }
             });
