@@ -165,7 +165,8 @@ router
       try {
         const participationResult =
           await userServiceInstance?.getParticipationRate(startDay, endDay);
-        return res.status(200).json(participationResult);
+        const userResult = participationResult?.[0];
+        return res.status(200).json(userResult);
       } catch (err) {
         next(err);
       }
