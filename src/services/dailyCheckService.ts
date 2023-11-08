@@ -19,6 +19,17 @@ export default class DailyCheckService {
     }
   }
 
+  async getLog() {
+    try {
+      const result = await DailyCheck.find(
+        { uid: this.token.uid },
+        "-_id -__v"
+      );
+      return result;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
   async getAllLog() {
     try {
       const result = await DailyCheck.find({}, "-_id -__v");

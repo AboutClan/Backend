@@ -14,6 +14,16 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router
   .route("/")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { dailyCheckServiceInstance } = req;
+
+    try {
+      const users = await dailyCheckServiceInstance?.getAllLog();
+      res.status(200).json(users);
+    } catch (err: any) {
+      next(err);
+    }
+  })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       dailyCheckServiceInstance,
