@@ -18,7 +18,7 @@ router
     const { dailyCheckServiceInstance } = req;
 
     try {
-      const users = await dailyCheckServiceInstance?.getAllLog();
+      const users = await dailyCheckServiceInstance?.getLog();
       res.status(200).json(users);
     } catch (err: any) {
       next(err);
