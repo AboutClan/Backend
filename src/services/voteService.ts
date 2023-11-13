@@ -184,13 +184,7 @@ export default class VoteService {
       filteredVote.participations = filteredVote?.participations.filter(
         (participation) => {
           const placeLocation = participation.place?.location;
-          return (
-            placeLocation === location ||
-            (location === "안양" &&
-              placeLocation === "수원" &&
-              participation.place?.branch === "수원역") ||
-            placeLocation === "전체"
-          );
+          return placeLocation === location || placeLocation === "전체";
         }
       );
       return filteredVote;
