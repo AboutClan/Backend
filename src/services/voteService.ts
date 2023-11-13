@@ -184,7 +184,7 @@ export default class VoteService {
       filteredVote.participations = filteredVote?.participations.filter(
         (participation) => {
           const placeLocation = participation.place?.location;
-          return placeLocation === location || placeLocation === "전체";
+          return placeLocation === location;
         }
       );
       return filteredVote;
