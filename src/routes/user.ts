@@ -479,10 +479,10 @@ router
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       userServiceInstance,
-      body: { toUid },
+      body: { toUid, message },
     } = req;
     try {
-      await userServiceInstance?.requestFriend(toUid);
+      await userServiceInstance?.requestFriend(toUid, message);
       return res.status(200).end();
     } catch (err) {
       next(err);

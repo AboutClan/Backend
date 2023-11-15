@@ -420,12 +420,13 @@ export default class UserService {
     }
   }
 
-  async requestFriend(toUid: string) {
+  async requestFriend(toUid: string, message: string) {
     try {
       await Notice.create({
         from: this.token.uid,
         to: toUid,
         type: "friend",
+        message,
       });
     } catch (err: any) {
       throw new Error(err);
