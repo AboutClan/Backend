@@ -12,6 +12,19 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router
+  .route("/")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { noticeServiceInstance } = req;
+
+    try {
+      const result = await noticeServiceInstance?.getActiveLog();
+      return res.status(200).json(result);
+    } catch (err: any) {
+      next(err);
+    }
+  });
+
+router
   .route("/like")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { noticeServiceInstance } = req;
