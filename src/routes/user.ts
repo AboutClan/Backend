@@ -425,6 +425,69 @@ router
       next(err);
     }
   });
+router
+  .route("/friend")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    try {
+      const friend = await userServiceInstance?.getUserInfo(["friend"]);
+      return res.status(200).json(friend);
+    } catch (err: any) {
+      next(err);
+    }
+  })
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: { toUid },
+    } = req;
+    try {
+      await userServiceInstance?.setFriend(toUid);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  })
+
+  .delete(
+    body("toUid").notEmpty().isString().withMessage("toUid필요"),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { toUid },
+      } = req;
+      try {
+        const friend = await userServiceInstance?.deleteFriend(toUid);
+        return res.status(200).end(friend);
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+router
+  .route("/friend/request")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    try {
+      const result = await userServiceInstance?.getFriendRequest();
+      return res.status(200).json(result);
+    } catch (err: any) {
+      next(err);
+    }
+  })
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: { toUid },
+    } = req;
+    try {
+      await userServiceInstance?.requestFriend(toUid);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
 
 router
   .route("/test")

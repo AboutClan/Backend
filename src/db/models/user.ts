@@ -32,6 +32,7 @@ export interface IUser extends Document, IRegistered {
   avatar: avatarType;
   deposit: number;
   studyPreference: preferenceType;
+  friend: string[];
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -88,7 +89,7 @@ export const UserSchema: Schema<IUser> = new Schema({
   },
   location: {
     type: String,
-    enum: ["수원", "양천", "안양","강남"],
+    enum: ["수원", "양천", "안양", "강남"],
     default: "수원",
   },
   mbti: {
@@ -158,6 +159,10 @@ export const UserSchema: Schema<IUser> = new Schema({
   deposit: {
     type: Number,
     default: 3000,
+  },
+  friend: {
+    type: [String],
+    default: [],
   },
   studyPreference: {
     type: preferenceSchema,

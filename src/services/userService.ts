@@ -5,6 +5,7 @@ import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
 import * as CryptoJS from "crypto-js";
 import { Promotion } from "../db/models/promotion";
+import { Notice } from "../db/models/notice";
 
 const logger = require("../../logger");
 
@@ -363,6 +364,69 @@ export default class UserService {
       user.rest.cumulativeSum = user.rest.cumulativeSum + dayDiff;
 
       await user.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async deleteFriend(toUid: string) {
+    try {
+      const user = await User.findOne({ uid: this.token.uid });
+      if (user && user.friend.includes(toUid)) {
+        await User.updateOne(
+          { uid: this.token.uid },
+          { $pull: { friend: toUid } }
+        );
+        return;
+      } else {
+        return "not has friend";
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async setFriend(toUid: string) {
+    try {
+      const user = await User.findOne({ uid: this.token.uid });
+      const friend = user?.friend;
+      if (friend) {
+        await User.updateOne(
+          { user: this.token.id },
+          { $push: { friend: toUid } }
+        );
+      } else {
+        await User.create({
+          user: this.token.id,
+          collects: [toUid],
+          collectCnt: 0,
+        });
+      }
+      return null;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async getFriendRequest() {
+    try {
+      const result = await Notice.find(
+        { to: this.token.uid, type: "friend" },
+        "-_id -__v"
+      );
+      return result;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async requestFriend(toUid: string) {
+    try {
+      await Notice.create({
+        from: this.token.uid,
+        to: toUid,
+        type: "friend",
+      });
     } catch (err: any) {
       throw new Error(err);
     }

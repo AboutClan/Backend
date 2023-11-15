@@ -22,7 +22,10 @@ export default class NoticeService {
 
   async getLike() {
     try {
-      const result = await Notice.find({ to: this.token.uid }, "-_id -__v");
+      const result = await Notice.find(
+        { to: this.token.uid, type: "like" },
+        "-_id -__v"
+      );
       return result;
     } catch (err: any) {
       throw new Error(err);

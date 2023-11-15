@@ -17,7 +17,7 @@ const noticeSchema: Schema<INotice> = new Schema(
     to: String,
     type: {
       type: String,
-      enum: ["like"],
+      enum: ["like", "friend"],
     },
     message: String,
   },
