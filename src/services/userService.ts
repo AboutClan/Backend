@@ -435,14 +435,15 @@ export default class UserService {
   }
   async updateRequestFriend(from: string, status: string) {
     try {
-      const result = await Notice.findOne(
-        { to: this.token.uid, from, type: "friend" },
-        "-_id -__v"
-      );
+      const result = await Notice.findOne({
+        to: this.token.uid,
+        from,
+        type: "friend",
+      });
       if (result) {
         result.status = status;
         await result.save();
-      }
+      } else return "no data";
     } catch (err: any) {
       throw new Error(err);
     }

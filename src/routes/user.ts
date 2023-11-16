@@ -494,7 +494,9 @@ router
       body: { from, status },
     } = req;
     try {
-      await userServiceInstance?.updateRequestFriend(from, status);
+      const data = await userServiceInstance?.updateRequestFriend(from, status);
+      if (data === "no data")
+        return res.status(404).json({ message: "no data found" });
       return res.status(200).end();
     } catch (err) {
       next(err);
