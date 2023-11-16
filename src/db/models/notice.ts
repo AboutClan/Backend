@@ -9,6 +9,7 @@ export interface INotice {
   to: string;
   type: string;
   message: string;
+  status?: string;
 }
 
 const noticeSchema: Schema<INotice> = new Schema(
@@ -20,6 +21,10 @@ const noticeSchema: Schema<INotice> = new Schema(
       enum: ["like", "friend"],
     },
     message: String,
+    status: {
+      type: String,
+      enum: ["pending", "refusal", "approval"],
+    },
   },
   { timestamps: true }
 );

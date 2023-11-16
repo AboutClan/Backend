@@ -540,6 +540,7 @@ export default class VoteService {
       vote.participations.forEach(async (participation) => {
         if (participation.place?._id.toString() === placeId) {
           participation.status = "free";
+          participation.attendences
           await vote.save();
         }
       });

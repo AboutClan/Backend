@@ -426,8 +426,23 @@ export default class UserService {
         from: this.token.uid,
         to: toUid,
         type: "friend",
+        status: "pending",
         message,
       });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+  async updateRequestFriend(from: string, status: string) {
+    try {
+      const result = await Notice.findOne(
+        { to: this.token.uid, from, type: "friend" },
+        "-_id -__v"
+      );
+      if (result) {
+        result.status = status;
+        await result.save();
+      }
     } catch (err: any) {
       throw new Error(err);
     }

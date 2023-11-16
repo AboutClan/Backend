@@ -487,6 +487,18 @@ router
     } catch (err) {
       next(err);
     }
+  })
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: { from, status },
+    } = req;
+    try {
+      await userServiceInstance?.updateRequestFriend(from, status);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   });
 
 router
