@@ -14,6 +14,8 @@ router.route("/delete/:day").delete(async (req, res, next) => {
 
   const { day } = req.params;
 
+  console.log(day);
+
   await adminLogServiceInstance?.deleteLog(parseInt(day));
   return res.status(200).end();
 });

@@ -233,11 +233,13 @@ router
   });
 
 router
-  .route("profile/:uid")
+  .route("/profile/:uid")
   .get(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(0);
     const { userServiceInstance } = req;
     const { uid } = req.params;
 
+    console.log(uid);
     try {
       const isActive = await userServiceInstance?.getUserWithUid(uid);
       return res.status(200).json(isActive);
