@@ -371,16 +371,15 @@ export default class UserService {
 
   async deleteFriend(toUid: string) {
     try {
-      const user = await User.findOne({ uid: this.token.uid });
-      if (user && user.friend.includes(toUid)) {
-        await User.updateOne(
-          { uid: this.token.uid },
-          { $pull: { friend: toUid } }
-        );
-        return;
-      } else {
-        return "not has friend";
-      }
+      const filterMine = { uid: this.token.uid };
+      const updateMine = { $pull: { friend: toUid } };
+      const filterRequester = { uid: toUid };
+      const updateRequester = { $pull: { friend: this.token.uid } };
+
+      await User.findOneAndUpdate(filterMine, updateMine);
+      await User.findOneAndUpdate(filterRequester, updateRequester);
+
+      return null;
     } catch (err: any) {
       throw new Error(err);
     }
