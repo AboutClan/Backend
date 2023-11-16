@@ -389,9 +389,9 @@ export default class UserService {
   async setFriend(toUid: string) {
     try {
       const filterMine = { uid: this.token.uid };
-      const updateMine = { $push: { friend: toUid } };
+      const updateMine = { $addToSet: { friend: toUid } };
       const filterRequester = { uid: toUid };
-      const updateRequester = { $push: { friend: this.token.uid } };
+      const updateRequester = { $addToSet: { friend: this.token.uid } };
       const options = { upsert: true };
 
       await User.findOneAndUpdate(filterMine, updateMine, options);
