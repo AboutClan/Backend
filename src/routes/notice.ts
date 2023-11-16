@@ -50,5 +50,17 @@ router
 
     return res.end();
   });
+router
+  .route("/like/all")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { noticeServiceInstance } = req;
+
+    try {
+      const result = await noticeServiceInstance?.getLikeAll();
+      return res.status(200).json(result);
+    } catch (err: any) {
+      next(err);
+    }
+  });
 
 module.exports = router;

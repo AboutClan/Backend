@@ -44,4 +44,12 @@ export default class NoticeService {
       throw new Error(err);
     }
   }
+  async getLikeAll() {
+    try {
+      const results = await Notice.find({ type: "like" }, "-_id -__v");
+      return results;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
 }
