@@ -389,19 +389,13 @@ export default class UserService {
   async setFriend(toUid: string) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
-      const friend = user?.friend;
-      if (friend) {
-        await User.updateOne(
-          { user: this.token.id },
-          { $push: { friend: toUid } }
-        );
-      } else {
-        await User.create({
-          user: this.token.id,
-          collects: [toUid],
-          collectCnt: 0,
-        });
-      }
+
+      const filter = { uid: this.token.uid };
+      const update = { $push: { friend: toUid } };
+      const options = { upsert: true, new: true };
+
+      await User.findOneAndUpdate(filter, update, options);
+
       return null;
     } catch (err: any) {
       throw new Error(err);
