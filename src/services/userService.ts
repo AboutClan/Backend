@@ -399,7 +399,7 @@ export default class UserService {
       await Notice.create({
         from: this.token.uid,
         to: toUid,
-        message: `${this.token.uid}님과 친구가 되었습니다.`,
+        message: `${this.token.name}님과 친구가 되었습니다.`,
         type: "friend",
         status: "response",
       });
