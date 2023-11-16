@@ -392,7 +392,7 @@ export default class UserService {
 
       const filter = { uid: this.token.uid };
       const update = { $push: { friend: toUid } };
-      const options = { upsert: true, new: true };
+      const options = { upsert: true };
 
       await User.findOneAndUpdate(filter, update, options);
 
