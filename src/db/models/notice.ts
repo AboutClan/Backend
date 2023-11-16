@@ -23,7 +23,7 @@ const noticeSchema: Schema<INotice> = new Schema(
     message: String,
     status: {
       type: String,
-      enum: ["pending", "refusal", "approval"],
+      enum: ["pending", "refusal", "approval", "response"],
     },
   },
   { timestamps: true }

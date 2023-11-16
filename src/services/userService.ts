@@ -396,6 +396,14 @@ export default class UserService {
       await User.findOneAndUpdate(filterMine, updateMine, options);
       await User.findOneAndUpdate(filterRequester, updateRequester, options);
 
+      await Notice.create({
+        from: this.token.uid,
+        to: toUid,
+        message: `${this.token.uid}님과 친구가 되었습니다.`,
+        type: "friend",
+        status: "response",
+      });
+
       return null;
     } catch (err: any) {
       throw new Error(err);
