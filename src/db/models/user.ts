@@ -33,6 +33,7 @@ export interface IUser extends Document, IRegistered {
   deposit: number;
   studyPreference: preferenceType;
   friend: string[];
+  like: number;
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -163,6 +164,10 @@ export const UserSchema: Schema<IUser> = new Schema({
   friend: {
     type: [String],
     default: [],
+  },
+  like: {
+    type: Number,
+    default: 0,
   },
   studyPreference: {
     type: preferenceSchema,

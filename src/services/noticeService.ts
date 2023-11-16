@@ -1,5 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { Notice } from "../db/models/notice";
+import { User } from "../db/models/user";
 
 export default class NoticeService {
   private token: JWT;
@@ -26,6 +27,7 @@ export default class NoticeService {
         message,
         type: "like",
       });
+      await User.findOneAndUpdate({ uid: to }, { $inc: { like: 1 } });
     } catch (err: any) {
       throw new Error(err);
     }
