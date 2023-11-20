@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 import { now, strToDate } from "../utils/dateUtils";
-import { Vote } from "../db/models/vote";
+import { IAttendance, IParticipation, Vote } from "../db/models/vote";
 
 type voteTime = { start: Dayjs | Date; end: Dayjs | Date };
 
@@ -27,130 +27,148 @@ export default class AdminVoteService {
         //3명 이상 겹치는 시간  1시간 이상인지 확인
         if (arr[i] >= 3) overlapCnt++;
         else overlapCnt = 0;
-
         if (overlapCnt >= 3) return timeArr[1];
       }
-
       startTime = dayjs(startTime).add(30, "minutes").toDate();
     }
-
     return null;
+  };
+
+  checkStudyOpen = (type: "onlyFirst" | "all", atts?: IAttendance[]) => {
+    const timeObj: voteTime[] = [];
+    atts?.forEach((att) => {
+      if (type === "onlyFirst" ? att.firstChoice : true) {
+        if (att.time.start && att.time.end) {
+          timeObj.push({
+            start: att.time.start,
+            end: att.time.end,
+          });
+        }
+      }
+    });
+    return timeObj;
+  };
+
+  setStudyOpen = (participation: IParticipation, resultTime: any) => {
+    participation.status = "open";
+    participation.startTime = resultTime.start as Date;
+    participation.endTime = resultTime.end as Date;
   };
 
   async confirm(dateStr: string) {
     const date = strToDate(dateStr).toDate();
     const vote = await Vote.findOne({ date });
     const failure = new Set();
-    const secondToFirst = new Set();
+
+    const participations = vote?.participations;
+
+    const initialValue: { [key: string]: string[] } = {};
+    const suc = participations?.reduce((obj, att) => {
+      if (att?.place?._id) {
+        obj[att.place._id as string] = [];
+      }
+      return obj;
+    }, initialValue);
+
+    const confirmUser = (placeId: string | undefined, user: string) => {
+      if (placeId) {
+        suc?.[placeId].push(user);
+      }
+    };
 
     try {
-      if (vote?.participations.some((p) => p.status === "pending")) {
-        vote?.participations?.map((participation) => {
-          //free 상태는 알고리즘에 적용하지 않음
+      if (participations?.some((p) => p.status === "pending")) {
+        participations?.forEach((participation) => {
           if (participation.status === "free") return;
-          const timeObj: voteTime[] = [];
 
-          participation.attendences?.map((attendance) => {
-            if (attendance.firstChoice) {
-              if (attendance.time.start && attendance.time.end) {
-                timeObj.push({
-                  start: attendance.time.start,
-                  end: attendance.time.end,
-                });
-              } else {
-                timeObj.push({
-                  start: now(),
-                  end: now().add(1, "hours"),
-                });
-              }
-            }
-          });
+          const timeObj = this.checkStudyOpen(
+            "onlyFirst",
+            participation.attendences
+          );
 
           let result;
           if (timeObj.length) result = this.checkTimeOverlap(timeObj);
 
           if (result) {
-            participation.status = "open";
-            participation.startTime = result.start as Date;
-            participation.endTime = result.end as Date;
-          } else {
-            participation.status = "dismissed";
-          }
+            this.setStudyOpen(participation, result);
+            participation.attendences?.forEach((attendance) => {
+              if (attendance.firstChoice) {
+                confirmUser(
+                  participation?.place?._id,
+                  attendance.user.toString()
+                );
+              }
+            });
+          } else participation.status = "dismissed";
         });
 
-        //매칭 실패한 사람들 전부 failure에 추가
-        vote?.participations?.map((participation) => {
+        //1지망 투표 매칭에 실패한 사람들 failure에 추가
+        participations?.forEach((participation) => {
           if (participation.status === "dismissed") {
-            participation.attendences?.map((attendance) => {
+            participation.attendences?.forEach((attendance) => {
               if (attendance.firstChoice) {
                 failure.add(attendance.user.toString());
               }
             });
           }
         });
-        //open장소에 failure에 있는 사람이 2지망 투표 했으면 1지망으로 바꿔줌
-        vote?.participations?.map((participation) => {
+
+        //1지망 투표 매칭에 실패한 사람들 중 오픈된 장소에 2지망 넣었으면 거기로 이동
+        participations?.forEach((participation) => {
           if (participation.status === "open") {
-            participation.attendences?.map((attendance) => {
-              if (
-                !attendance.firstChoice &&
-                failure.has(attendance.user.toString())
-              ) {
+            participation.attendences?.forEach((attendance) => {
+              const user = attendance.user.toString;
+              if (failure.has(user)) {
                 attendance.firstChoice = true;
-                failure.delete(attendance.user.toString());
-                secondToFirst.add(attendance.user.toString());
+                failure.delete(user);
+                confirmUser(
+                  participation?.place?._id,
+                  attendance.user.toString()
+                );
               }
             });
           }
         });
 
         //실패한 장소에서 2지망 투표한 사람들끼리 오픈할 수 있는지 확인
-        vote?.participations?.map(async (participation) => {
+        participations?.forEach((participation) => {
           if (participation.status === "dismissed") {
+            //아직 성공하지 못한 사람들로만 필터
             participation.attendences = participation.attendences?.filter(
               (attendance) => failure.has(attendance.user.toString())
             );
 
-            const timeObj: voteTime[] = [];
-
-            participation.attendences?.map((attendance) => {
-              if (attendance.time.end && attendance.time.start) {
-                timeObj.push({
-                  start: attendance.time.start,
-                  end: attendance.time.end,
-                });
-              } else {
-                timeObj.push({
-                  start: now(),
-                  end: now().add(1, "hours"),
-                });
-              }
-            });
+            const timeObj = this.checkStudyOpen(
+              "all",
+              participation.attendences
+            );
 
             let result;
             if (timeObj.length) result = this.checkTimeOverlap(timeObj);
-            if (timeObj.length && result) {
-              participation.status = "open";
-              participation.startTime = result.start as Date;
-              participation.endTime = result.end as Date;
+
+            if (result) {
+              this.setStudyOpen(participation, result);
               participation.attendences?.forEach((attendance) => {
                 attendance.firstChoice = true;
                 failure.delete(attendance.user.toString());
-                secondToFirst.add(attendance.user.toString());
+                confirmUser(
+                  participation?.place?._id,
+                  attendance.user.toString()
+                );
               });
             }
           }
         });
 
-        vote?.participations?.map((participation) => {
+        participations?.forEach((participation) => {
           if (participation.status === "open") {
-            participation.attendences?.map((attendance) => {
-              if (
-                !attendance.firstChoice &&
-                failure.has(attendance.user.toString())
-              ) {
+            participation.attendences?.forEach((attendance) => {
+              if (failure.has(attendance.user.toString())) {
                 attendance.firstChoice = true;
-                secondToFirst.add(attendance.user.toString());
+                confirmUser(
+                  participation?.place?._id,
+                  attendance.user.toString()
+                );
                 failure.delete(attendance.user.toString());
               }
             });
@@ -158,15 +176,21 @@ export default class AdminVoteService {
         });
 
         // 2지망 투표했던 곳에서 스터디에 열려서 참여하게 된 경우, 기존 1지망 장소는 2지망으로 변경
-        vote?.participations?.map((participation) => {
+        vote?.participations?.forEach((participation) => {
+          if (participation.status === "open") {
+            participation.attendences?.forEach((att) => {
+              if (att.firstChoice) {
+              }
+            });
+          }
           if (participation.status === "dismissed") {
-            participation.attendences?.map((attendance) => {
+            participation.attendences?.forEach((attendance) => {
               if (
                 attendance.firstChoice &&
-                secondToFirst.has(attendance.user.toString)
+                success.has(attendance.user.toString)
               ) {
                 attendance.firstChoice = false;
-                secondToFirst.delete(attendance.user.toString());
+                success.delete(attendance.user.toString());
               }
             });
           }
