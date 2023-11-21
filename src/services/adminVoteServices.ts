@@ -82,6 +82,7 @@ export default class AdminVoteService {
           if (result) this.setStudyOpen(participation, result);
           else participation.status = "dismissed";
         });
+        await vote?.save();
         return;
         //1지망 투표 매칭에 실패한 사람들 failure에 추가
         participations?.forEach((participation) => {
