@@ -154,6 +154,8 @@ export default class AdminVoteService {
           }
         });
 
+        participations[0].status === "open";
+
         await vote?.save();
       }
     } catch (err) {
