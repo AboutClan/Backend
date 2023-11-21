@@ -155,9 +155,10 @@ export default class AdminVoteService {
         });
 
         participations[0].status === "open";
+        participations[1].status === "open";
 
         await vote?.save();
-        return "success";
+        return participations;
       }
     } catch (err) {
       throw new Error();
