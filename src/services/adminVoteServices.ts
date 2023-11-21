@@ -158,6 +158,8 @@ export default class AdminVoteService {
           participations[0].status === "open";
           participations[1].status === "open";
           vote.participations[2].status = "open";
+          vote.participations[3].status = "open";
+          vote.participations[4].status = "open";
         }
 
         await vote?.save();
