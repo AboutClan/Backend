@@ -93,7 +93,7 @@ export default class AdminVoteService {
           }
         });
         await vote?.save();
-        return failure;
+        return Array.from(failure);
 
         //1지망 투표 매칭에 실패한 사람들 중 오픈된 장소에 2지망 넣었으면 거기로 이동
         participations?.forEach((participation) => {
