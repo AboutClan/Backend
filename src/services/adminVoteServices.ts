@@ -92,9 +92,7 @@ export default class AdminVoteService {
             });
           }
         });
-        await vote?.save();
-        return Array.from(failure);
-
+        
         //1지망 투표 매칭에 실패한 사람들 중 오픈된 장소에 2지망 넣었으면 거기로 이동
         participations?.forEach((participation) => {
           if (participation.status === "open") {
@@ -107,6 +105,8 @@ export default class AdminVoteService {
             });
           }
         });
+        await vote?.save();
+        return Array.from(failure);
 
         //실패한 장소에서 2지망 투표한 사람들끼리 오픈할 수 있는지 확인
         //성공한 사람들이 dismissed에 있는 경우 제거가 되지만, 순차적으로 진행되기 때문에 뒤에서 확정난 인원은 앞에서는 제거가 안되었음.
