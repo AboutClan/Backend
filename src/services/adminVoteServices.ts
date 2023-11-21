@@ -64,9 +64,8 @@ export default class AdminVoteService {
 
     try {
       if (
-        participations &&
-        participations?.length < 10 &&
-        participations?.some((p) => p.status !== "pending")
+        dayjs(dateStr).month() < 10 &&
+        participations?.some((p) => p.status === "pending")
       ) {
         //1지망만으로 매칭
         participations?.forEach((participation) => {
