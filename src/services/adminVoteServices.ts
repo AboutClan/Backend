@@ -154,8 +154,11 @@ export default class AdminVoteService {
           }
         });
 
-        participations[0].status === "open";
-        participations[1].status === "open";
+        if (vote) {
+          participations[0].status === "open";
+          participations[1].status === "open";
+          vote.participations[2].status = "open";
+        }
 
         await vote?.save();
         return participations;
