@@ -62,22 +62,9 @@ export default class AdminVoteService {
 
     const participations = vote?.participations;
 
-    const initialValue: { [key: string]: string[] } = {};
-    const suc = participations?.reduce((obj, att) => {
-      if (att?.place?._id) {
-        obj[att.place._id as string] = [];
-      }
-      return obj;
-    }, initialValue);
-
-    const confirmUser = (placeId: string | undefined, user: string) => {
-      if (placeId) {
-        suc?.[placeId].push(user);
-      }
-    };
-
     try {
       if (participations?.some((p) => p.status === "pending")) {
+        //1지망만으로 매칭
         participations?.forEach((participation) => {
           if (participation.status === "free") return;
 
@@ -89,17 +76,8 @@ export default class AdminVoteService {
           let result;
           if (timeObj.length) result = this.checkTimeOverlap(timeObj);
 
-          if (result) {
-            this.setStudyOpen(participation, result);
-            participation.attendences?.forEach((attendance) => {
-              if (attendance.firstChoice) {
-                confirmUser(
-                  participation?.place?._id,
-                  attendance.user.toString()
-                );
-              }
-            });
-          } else participation.status = "dismissed";
+          if (result) this.setStudyOpen(participation, result);
+          else participation.status = "dismissed";
         });
 
         //1지망 투표 매칭에 실패한 사람들 failure에 추가
@@ -121,19 +99,16 @@ export default class AdminVoteService {
               if (failure.has(user)) {
                 attendance.firstChoice = true;
                 failure.delete(user);
-                confirmUser(
-                  participation?.place?._id,
-                  attendance.user.toString()
-                );
               }
             });
           }
         });
 
         //실패한 장소에서 2지망 투표한 사람들끼리 오픈할 수 있는지 확인
+        //성공한 사람들이 dismissed에 있는 경우 제거가 되지만, 순차적으로 진행되기 때문에 뒤에서 확정난 인원은 앞에서는 제거가 안되었음.
         participations?.forEach((participation) => {
           if (participation.status === "dismissed") {
-            //아직 성공하지 못한 사람들로만 필터
+            //이미 성공한 사람들은 제거
             participation.attendences = participation.attendences?.filter(
               (attendance) => failure.has(attendance.user.toString())
             );
@@ -142,7 +117,6 @@ export default class AdminVoteService {
               "all",
               participation.attendences
             );
-
             let result;
             if (timeObj.length) result = this.checkTimeOverlap(timeObj);
 
@@ -151,48 +125,29 @@ export default class AdminVoteService {
               participation.attendences?.forEach((attendance) => {
                 attendance.firstChoice = true;
                 failure.delete(attendance.user.toString());
-                confirmUser(
-                  participation?.place?._id,
-                  attendance.user.toString()
-                );
               });
             }
           }
         });
 
+        //한번 더 open된 장소에 신청이 되어 있는 경우는 거기로 이동(2지망 투표자)
         participations?.forEach((participation) => {
           if (participation.status === "open") {
             participation.attendences?.forEach((attendance) => {
               if (failure.has(attendance.user.toString())) {
                 attendance.firstChoice = true;
-                confirmUser(
-                  participation?.place?._id,
-                  attendance.user.toString()
-                );
                 failure.delete(attendance.user.toString());
               }
             });
           }
         });
 
-        // 2지망 투표했던 곳에서 스터디에 열려서 참여하게 된 경우, 기존 1지망 장소는 2지망으로 변경
-        vote?.participations?.forEach((participation) => {
-          if (participation.status === "open") {
-            participation.attendences?.forEach((att) => {
-              if (att.firstChoice) {
-              }
-            });
-          }
+        //한번 더 dismissed에서 이미 성공한 사람들을 제거함. 실패한 사람들인 failure에 있는 경우들만 남김.
+        participations?.forEach((participation) => {
           if (participation.status === "dismissed") {
-            participation.attendences?.forEach((attendance) => {
-              if (
-                attendance.firstChoice &&
-                success.has(attendance.user.toString)
-              ) {
-                attendance.firstChoice = false;
-                success.delete(attendance.user.toString());
-              }
-            });
+            participation.attendences = participation.attendences?.filter(
+              (attendance) => failure.has(attendance.user.toString())
+            );
           }
         });
 
