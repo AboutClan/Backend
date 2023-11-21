@@ -127,7 +127,7 @@ export default class AdminVoteService {
                 attendance.firstChoice = true;
                 failure.delete(attendance.user.toString());
               });
-            } else participation.status = "pending";
+            } else participation.status = "dismissed";
           }
         });
 
