@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import express, { NextFunction, Request, Response } from "express";
 import AdminVoteService from "../../services/adminVoteServices";
 
@@ -29,7 +30,10 @@ router
 
     await adminVoteServiceInstance?.confirm(dateStr);
 
-    res.status(200).end();
+    // res.status(200).end();
+    res
+      .status(200)
+      .json({ message: `Confirmation successful: ${dayjs(dateStr).month()}` });
   });
 
 router
