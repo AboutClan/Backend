@@ -108,6 +108,7 @@ export default class AdminVoteService {
 
         //실패한 장소에서 2지망 투표한 사람들끼리 오픈할 수 있는지 확인
         //성공한 사람들이 dismissed에 있는 경우 제거가 되지만, 순차적으로 진행되기 때문에 뒤에서 확정난 인원은 앞에서는 제거가 안되었음.
+        const A: any[] = [];
         participations?.forEach((participation) => {
           if (participation.status === "dismissed") {
             //이미 성공한 사람들은 제거
@@ -119,6 +120,7 @@ export default class AdminVoteService {
               "all",
               participation.attendences
             );
+            A.push(timeObj);
             let result;
             if (timeObj.length) result = this.checkTimeOverlap(timeObj);
 
@@ -132,7 +134,7 @@ export default class AdminVoteService {
           }
         });
         await vote?.save();
-        return Array.from(failure);
+        return A;
         //한번 더 open된 장소에 신청이 되어 있는 경우는 거기로 이동(2지망 투표자)
         participations?.forEach((participation) => {
           if (participation.status === "open") {
