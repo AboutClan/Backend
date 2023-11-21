@@ -63,7 +63,11 @@ export default class AdminVoteService {
     const participations = vote?.participations;
 
     try {
-      if (participations?.some((p) => p.status === "pending")) {
+      if (
+        participations &&
+        participations?.length < 10 &&
+        participations?.some((p) => p.status !== "pending")
+      ) {
         //1지망만으로 매칭
         participations?.forEach((participation) => {
           if (participation.status === "free") return;
