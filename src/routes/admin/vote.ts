@@ -31,9 +31,7 @@ router
     const message = await adminVoteServiceInstance?.confirm(dateStr);
 
     // res.status(200).end();
-    res.status(200).json({
-      message: message,
-    });
+    res.status(200).json(message);
   });
 
 router
