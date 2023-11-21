@@ -32,7 +32,7 @@ router
 
     // res.status(200).end();
     res.status(200).json({
-      message: `Confirmation successful: ${dayjs(dateStr).month()}, ${message}`,
+      message: message,
     });
   });
 
