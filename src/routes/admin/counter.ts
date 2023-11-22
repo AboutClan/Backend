@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const { decodedToken } = req;
-
   const counterService = new CounterService(decodedToken);
   req.counterServiceInstance = counterService;
   next();

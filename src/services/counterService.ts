@@ -28,8 +28,7 @@ export default class CounterService {
   async getCounter(key: string, location: string) {
     try {
       const result = await Counter.findOne({ key, location });
-      if (result) return result;
-      else return "데이터가 없습니다.";
+      return result?.seq;
     } catch (err: any) {
       throw new Error(err);
     }
