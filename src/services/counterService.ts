@@ -31,7 +31,7 @@ export default class CounterService {
   async getCounter(key: string, location: string) {
     try {
       const result = await Counter.findOne({ key, location });
-      return result;
+      return "종료되었습니다.";
     } catch (err: any) {
       throw new Error(err);
     }
