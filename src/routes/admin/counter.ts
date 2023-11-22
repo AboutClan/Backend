@@ -36,7 +36,7 @@ router
     } catch (err: any) {
       next(err);
     }
-    return res.end();
+    return res.end().json("A");
   });
 
 module.exports = router;
