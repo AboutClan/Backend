@@ -38,3 +38,5 @@ router
     }
     return res.end();
   });
+
+module.exports = router;
