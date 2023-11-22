@@ -37,7 +37,7 @@ router
     } catch (err: any) {
       next(err);
     }
-    return res.end().json("A");
+    return res.status(200).json("A");
   });
 
 module.exports = router;
