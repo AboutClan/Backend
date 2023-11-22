@@ -13,12 +13,14 @@ export default class CounterService {
       const findData = await Counter.findOne({ key, location });
       if (findData) {
         await Counter.updateOne({ key, location }, { $inc: { seq: 1 } });
+        return "find";
       } else {
         await Counter.create({
           key,
           seq: 1,
           location,
         });
+        return "noFind";
       }
     } catch (err: any) {
       throw new Error(err);

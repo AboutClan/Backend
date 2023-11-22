@@ -32,7 +32,8 @@ router
       body: { key, location },
     } = req;
     try {
-      await counterServiceInstance?.setCounter(key, location);
+      const data = await counterServiceInstance?.setCounter(key, location);
+      return res.status(200).json(data);
     } catch (err: any) {
       next(err);
     }
