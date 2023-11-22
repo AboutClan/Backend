@@ -18,10 +18,13 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const {
       counterServiceInstance,
-      body: { key, location },
+      query: { key, location },
     } = req;
     try {
-      const counter = await counterServiceInstance?.getCounter(key, location);
+      const counter = await counterServiceInstance?.getCounter(
+        key as string,
+        location as string
+      );
       res.status(200).json(counter);
     } catch (err: any) {
       next(err);
