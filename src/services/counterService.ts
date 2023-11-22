@@ -25,7 +25,7 @@ export default class CounterService {
     }
   }
 
-  async getCounter(key: string, Location: string) {
+  async getCounter(key: string, location: string) {
     try {
       const result = await Counter.findOne({ key, location }, "-_id -__v");
       return result;
@@ -33,3 +33,4 @@ export default class CounterService {
       throw new Error(err);
     }
   }
+}
