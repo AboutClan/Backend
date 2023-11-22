@@ -21,7 +21,7 @@ router
     } = req;
     try {
       const counter = await counterServiceInstance?.getCounter(key, location);
-      res.status(200).json(counter);
+      res.status(200).json(10);
     } catch (err: any) {
       next(err);
     }
