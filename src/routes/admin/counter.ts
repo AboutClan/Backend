@@ -1,14 +1,15 @@
 import { count } from "console";
 import express, { NextFunction, Request, Response } from "express";
-import DailyCheckService from "../../services/dailyCheckService";
+import CounterService from "../../services/counterService";
+import CountcounterService from "../../services/dailyCheckService";
 
 const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const { decodedToken } = req;
 
-  const dailyCheckService = new DailyCheckService(decodedToken);
-  req.dailyCheckServiceInstance = dailyCheckService;
+  const counterService = new CounterService(decodedToken);
+  req.counterServiceInstance = counterService;
   next();
 });
 
@@ -36,7 +37,6 @@ router
       return res.status(200).json(data);
     } catch (err: any) {
       next(err);
-      return res.status(200).json("A");
     }
   });
 

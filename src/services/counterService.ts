@@ -9,7 +9,6 @@ export default class CounterService {
   }
 
   async setCounter(key: string, location: string) {
-    return "바로 종료";
     try {
       const findData = await Counter.findOne({ key, location });
       if (findData) {
@@ -31,7 +30,7 @@ export default class CounterService {
   async getCounter(key: string, location: string) {
     try {
       const result = await Counter.findOne({ key, location });
-      return "종료되었습니다.";
+      return result;
     } catch (err: any) {
       throw new Error(err);
     }
