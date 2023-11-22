@@ -13,14 +13,12 @@ export default class CounterService {
       const findData = await Counter.findOne({ key, location });
       if (findData) {
         await Counter.updateOne({ key, location }, { $inc: { seq: 1 } });
-        return "find";
       } else {
         await Counter.create({
           key,
           seq: 1,
           location,
         });
-        return "noFind";
       }
     } catch (err: any) {
       throw new Error(err);
@@ -30,7 +28,8 @@ export default class CounterService {
   async getCounter(key: string, location: string) {
     try {
       const result = await Counter.findOne({ key, location });
-      return result;
+      if (result) return result;
+      else return "데이터가 없습니다.";
     } catch (err: any) {
       throw new Error(err);
     }
