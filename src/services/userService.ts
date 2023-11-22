@@ -6,6 +6,7 @@ import { getProfile } from "../utils/oAuthUtils";
 import * as CryptoJS from "crypto-js";
 import { Promotion } from "../db/models/promotion";
 import { Notice } from "../db/models/notice";
+import { Counter } from "../db/models/counter";
 
 const logger = require("../../logger");
 
@@ -348,12 +349,26 @@ export default class UserService {
         "manager",
         "previliged",
         "resting",
+        "enthusiastic",
       ].includes(role)
     )
       throw new Error();
 
     try {
-      this.updateUser({ role });
+      if (role === "enthusiastic") {
+        const user = await User.findOne({ uid: this.token.uid });
+        if (user) {
+          user.role = role;
+          await user.save();
+        }
+        await Counter.updateOne(
+          {
+            key: "enthusiasticMember",
+            location: user?.location,
+          },
+          { $inc: { seq: 1 } }
+        );
+      } else await this.updateUser({ role });
     } catch (err: any) {
       throw new Error(err);
     }

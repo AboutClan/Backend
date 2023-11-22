@@ -135,7 +135,6 @@ router
   .route("/:id/role")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { adminUserServiceInstance } = req;
-
     const {
       params: { id: uid },
       body: { role },
