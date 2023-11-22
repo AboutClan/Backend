@@ -33,7 +33,7 @@ router
     } = req;
     try {
       const data = await counterServiceInstance?.setCounter(key, location);
-      return res.status(200).json("성공했다구");
+      return res.status(200).json(data);
       return res.status(200).json(data);
     } catch (err: any) {
       next(err);
