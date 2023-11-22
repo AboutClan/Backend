@@ -3,6 +3,7 @@ import mongoose, { model, Schema, Model } from "mongoose";
 export interface ICounter {
   seq: number;
   key: string;
+  location?: string;
 }
 
 export const CounterSchema: Schema<ICounter> = new Schema({
@@ -10,6 +11,9 @@ export const CounterSchema: Schema<ICounter> = new Schema({
     type: Number,
   },
   key: {
+    type: String,
+  },
+  location: {
     type: String,
   },
 });

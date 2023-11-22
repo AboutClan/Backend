@@ -19,6 +19,7 @@ import NoticeService from "../services/noticeService";
 import DailyCheckService from "../services/dailyCheckService";
 import { ICollection } from "../db/models/collection";
 import CollectionService from "../services/collectionService";
+import CounterService from "../services/counterService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -39,6 +40,7 @@ declare global {
       giftServiceInstance?: StoreService;
       noticeServiceInstance?: NoticeService;
       dailyCheckServiceInstance?: DailyCheckService;
+      counterServiceInstance?: CounterService;
       collectionServiceInstance?: CollectionService;
       gatherServiceInstance?: GatherService;
       registerServiceInstance?: RegisterService;
