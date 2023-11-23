@@ -43,7 +43,13 @@ class App {
     // middleware 설정
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(cors({}));
+    // this.app.use(cors({}));
+    this.app.use(
+      cors({
+        origin: "*", // 모든 출처 허용
+        credentials: true, // 쿠키/인증 헤더 허용
+      })
+    );
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(dbSet);
