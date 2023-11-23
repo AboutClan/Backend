@@ -32,15 +32,14 @@ export default class GatherService {
     }
   }
 
+  //place 프론트에서 데이터 전송으로 인해 생성 삭제
   async createGather(data: IGatherData) {
     const nextId = await this.getNextSequence("counterid");
-    const user = await User.findOne({ uid: this.token.uid });
 
     const gatherInfo = {
       ...data,
       user: this.token.id,
       id: nextId,
-      place: user?.location,
     };
     try {
       const gatherData = gatherInfo;

@@ -60,6 +60,7 @@ export interface IGatherData {
   id: number;
   date: string;
   place?: string;
+  isAdminOpen?: boolean;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -212,7 +213,19 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     },
     place: {
       type: String,
-      enum: ["수원", "양천", "안양", "강남", "전체"],
+      enum: [
+        "수원",
+        "양천",
+        "안양",
+        "강남",
+        "동대문",
+        "전체",
+        "수원/안양",
+        "양천/강남",
+      ],
+    },
+    isAdminOpen: {
+      type: Boolean,
     },
   },
   { timestamps: true }

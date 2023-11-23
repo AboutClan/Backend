@@ -81,7 +81,7 @@ export default class VoteService {
         ])
         .toArray();
 
-        //open 기록만 가져오는게 아닌 open 및 free 가져오는 걸로 변경
+      //open 기록만 가져오는게 아닌 open 및 free 가져오는 걸로 변경
       userArrivedInfo = userArrivedInfo.filter(
         (info) => ["open", "free"].includes(info.status) && info.arrived
       );
@@ -135,12 +135,13 @@ export default class VoteService {
       if (!vote) {
         const places = await Place.find({ status: "active" });
         const participants = places.map((place) => {
+          const isPrivate = place.brand === "자유 신청";
           return {
             place: place._id,
             attendences: [],
             absences: [],
             invitations: [],
-            status: "pending",
+            status: !isPrivate ? "pending" : "free",
           } as any;
         });
 
@@ -176,25 +177,31 @@ export default class VoteService {
     }
   }
 
+  /** 인접한 지역들은 공통된 스터디 장소를 추가하고자 함. 해당 지역들 따로 저장해서 체크하면 좋을 거 같은데 일단은 하드코딩으로 해둘게요. */
   async getFilteredVote(date: any, location: string) {
     try {
       const filteredVote = await this.getVote(date);
       filteredVote.participations = filteredVote?.participations.filter(
-        (participation) =>
-          participation.place?.location === location ||
-          (location === "안양" &&
-            participation.place?.id === "640c271121863deff358f459")
+        (participation) => {
+          const placeLocation = participation.place?.location;
+          return (
+            placeLocation === location ||
+            (location === "안양" &&
+              placeLocation === "수원" &&
+              participation.place?.branch === "수원역") ||
+            placeLocation === "전체"
+          );
+        }
       );
       return filteredVote;
     } catch (err) {
       throw new Error();
     }
   }
-  /** 인접한 지역들은 공통된 스터디 장소를 추가하고자 함. 해당 지역들 따로 저장해서 체크하면 좋을 거 같은데 일단은 하드코딩으로 해둘게요. */
 
   async setVote(date: any, studyInfo: IVoteStudyInfo) {
     try {
-      const { place, subPlace, start, end }: IVoteStudyInfo = studyInfo;
+      const { place, subPlace, start, end, memo }: IVoteStudyInfo = studyInfo;
       const isVoting = await this.isVoting(date);
       const vote = await this.getVote(date);
 
@@ -217,6 +224,8 @@ export default class VoteService {
         user: this.token.id,
       } as IAttendance;
 
+      //memo는 개인 스터디 신청에 사용 (사전에 작성)
+
       vote.participations = vote.participations.map(
         (participation: IParticipation) => {
           const placeId = (participation.place as IPlace)._id.toString();
@@ -226,7 +235,7 @@ export default class VoteService {
               ...participation,
               attendences: [
                 ...(participation.attendences || []),
-                { ...attendance, firstChoice: true },
+                { ...attendance, firstChoice: true, memo },
               ],
             };
           } else if (subPlaceIdArr?.includes(placeId)) {
@@ -234,7 +243,7 @@ export default class VoteService {
               ...participation,
               attendences: [
                 ...(participation.attendences || []),
-                { ...attendance, firstChoice: false },
+                { ...attendance, firstChoice: false, memo },
               ],
             };
           }
@@ -412,15 +421,9 @@ export default class VoteService {
             (att.user as IUser)._id.toString() === this.token.id?.toString() &&
             att.firstChoice
           ) {
-            const { start, end } = att.time;
-            const startable = dayjs(start).add(8, "hour");
-            const endable = dayjs(end).add(9, "hour");
-            if (startable <= currentTime && currentTime <= endable) {
-              att.arrived = currentTime.toDate();
-              att.memo = memo;
-            } else {
-              return false;
-            }
+            att.arrived = currentTime.toDate();
+            //memo가 빈문자열인 경우는 출석이 아닌 개인 스터디 신청에서 사용한 경우
+            if (memo) att.memo = memo;
           }
         });
       });

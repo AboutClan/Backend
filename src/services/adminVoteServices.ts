@@ -41,10 +41,13 @@ export default class AdminVoteService {
     const date = strToDate(dateStr).toDate();
     const vote = await Vote.findOne({ date });
     const failure = new Set();
+    const secondToFirst = new Set();
 
     try {
       if (vote?.participations.some((p) => p.status === "pending")) {
         vote?.participations?.map((participation) => {
+          //free 상태는 알고리즘에 적용하지 않음
+          if (participation.status === "free") return;
           const timeObj: voteTime[] = [];
 
           participation.attendences?.map((attendance) => {
@@ -79,8 +82,9 @@ export default class AdminVoteService {
         vote?.participations?.map((participation) => {
           if (participation.status === "dismissed") {
             participation.attendences?.map((attendance) => {
-              if (attendance.firstChoice)
+              if (attendance.firstChoice) {
                 failure.add(attendance.user.toString());
+              }
             });
           }
         });
@@ -94,6 +98,7 @@ export default class AdminVoteService {
               ) {
                 attendance.firstChoice = true;
                 failure.delete(attendance.user.toString());
+                secondToFirst.has(attendance.user.toString());
               }
             });
           }
@@ -131,10 +136,42 @@ export default class AdminVoteService {
               participation.attendences?.forEach((attendance) => {
                 attendance.firstChoice = true;
                 failure.delete(attendance.user.toString());
+                secondToFirst.has(attendance.user.toString());
               });
             }
           }
         });
+
+        vote?.participations?.map((participation) => {
+          if (participation.status === "open") {
+            participation.attendences?.map((attendance) => {
+              if (
+                !attendance.firstChoice &&
+                failure.has(attendance.user.toString())
+              ) {
+                attendance.firstChoice = true;
+                secondToFirst.has(attendance.user.toString());
+                failure.delete(attendance.user.toString());
+              }
+            });
+          }
+        });
+
+        // 2지망 투표했던 곳에서 스터디에 열려서 참여하게 된 경우, 기존 1지망 장소는 2지망으로 변경
+        vote?.participations?.map((participation) => {
+          if (participation.status === "dismissed") {
+            participation.attendences?.map((attendance) => {
+              if (
+                attendance.firstChoice &&
+                secondToFirst.has(attendance.user.toString)
+              ) {
+                attendance.firstChoice = false;
+                secondToFirst.delete(attendance.user.toString());
+              }
+            });
+          }
+        });
+
         await vote?.save();
       }
     } catch (err) {

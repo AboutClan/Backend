@@ -11,15 +11,18 @@ export interface INotice {
   message: string;
 }
 
-const noticeSchema: Schema<INotice> = new Schema({
-  from: String,
-  to: String,
-  type: {
-    type: String,
-    enum: ["like"],
+const noticeSchema: Schema<INotice> = new Schema(
+  {
+    from: String,
+    to: String,
+    type: {
+      type: String,
+      enum: ["like"],
+    },
+    message: String,
   },
-  message: String,
-});
+  { timestamps: true }
+);
 
 export const Notice =
   (mongoose.models.Notice as Model<INotice, {}, {}, {}>) ||

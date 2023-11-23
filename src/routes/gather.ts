@@ -155,58 +155,18 @@ router
   );
 
 router
-  .route("/open")
+  .route("/status")
   .patch(
     body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
     validateCheck,
     async (req, res, next) => {
       const {
         gatherServiceInstance,
-        body: { gatherId },
+        body: { gatherId, status },
       } = req;
 
       try {
-        await gatherServiceInstance?.setStatus(gatherId, "open");
-        res.status(200).end();
-      } catch (err: any) {
-        next(err);
-      }
-    }
-  );
-
-router
-  .route("/close")
-  .patch(
-    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
-    validateCheck,
-    async (req, res, next) => {
-      const {
-        gatherServiceInstance,
-        body: { gatherId },
-      } = req;
-
-      try {
-        await gatherServiceInstance?.setStatus(gatherId, "close");
-        res.status(200).end();
-      } catch (err: any) {
-        next(err);
-      }
-    }
-  );
-
-router
-  .route("/end")
-  .patch(
-    body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
-    validateCheck,
-    async (req, res, next) => {
-      const {
-        gatherServiceInstance,
-        body: { gatherId },
-      } = req;
-
-      try {
-        await gatherServiceInstance?.setStatus(gatherId, "end");
+        await gatherServiceInstance?.setStatus(gatherId, status);
         res.status(200).end();
       } catch (err: any) {
         next(err);

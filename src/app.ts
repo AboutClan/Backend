@@ -25,8 +25,8 @@ const plaza = require("./routes/plaza");
 const register = require("./routes/register");
 const admin = require("./routes/admin/admin");
 const notice = require("./routes/notice");
-const image = require("./routes/image");
-
+const dailyCheck = require("./routes/dailyCheck");
+const collection = require("./routes/collection");
 class App {
   private app: express.Application;
   private port: number;
@@ -64,7 +64,8 @@ class App {
     this.app.use("/gather", gather);
     this.app.use("/plaza", plaza);
     this.app.use("/notice", notice);
-    this.app.use("/image", image);
+    this.app.use("/dailyCheck", dailyCheck);
+    this.app.use("/collection", collection);
     this.app.use(ErrorHandler);
   }
 

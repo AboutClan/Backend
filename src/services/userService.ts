@@ -45,14 +45,12 @@ export default class UserService {
     }
   }
 
+  //유저의 _id도 같이 전송. 유저 로그인 정보 불일치 문제를 클라이언트에서 접속중인 session의 _id와 DB에서 호출해서 가져오는 _id의 일치여부로 판단할 것임
   async getUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
 
     try {
-      const result = await User.findOne(
-        { uid: this.token.uid },
-        "-_id" + queryString
-      );
+      const result = await User.findOne({ uid: this.token.uid }, queryString);
 
       if (result && result.telephone)
         result.telephone = await this.decodeByAES256(result.telephone);
@@ -123,9 +121,10 @@ export default class UserService {
               as: "attendences.user",
             },
           },
+          //open과 free 정보 모두
           {
             $match: {
-              status: "open",
+              $or: [{ status: "open" }, { status: "free" }],
             },
           },
           {
@@ -346,7 +345,7 @@ export default class UserService {
     try {
       const { startDate, endDate, type, content } = info;
 
-      const user = await User.findOne({ uid: "2283035576" });
+      const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
 
       const startDay = dayjs(startDate, "YYYY-MM-DD");
@@ -372,6 +371,7 @@ export default class UserService {
       return promotionData;
     } catch (err: any) {}
   }
+
   async setPromotion(name: string) {
     try {
       const previousData = await Promotion.findOne({ name });
@@ -385,11 +385,11 @@ export default class UserService {
             { name, uid: this.token.uid, lastDate: now }
           );
 
-          await this.updatePoint(50, "홍보 이벤트 참여");
+          await this.updatePoint(100, "홍보 이벤트 참여");
         }
       } else {
         await Promotion.create({ name, uid: this.token.uid, lastDate: now });
-        await this.updatePoint(50, "홍보 이벤트 참여");
+        await this.updatePoint(300, "홍보 이벤트 참여");
       }
     } catch (err: any) {
       throw new Error(err);

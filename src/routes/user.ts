@@ -13,6 +13,8 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+//userInfo의 필드 수정. post/patch/put 모두 상황마다 사용 가능할 거 같은데, 대부분의 경우 처음부터 존재하는 필드에 업데이트 하는 거고, 각 필드마다 통일성 유지를 위해서(프론트엔드에서 하위 필드 메소드 통일해서 정리하고 있어서. 일단 patch로 통일했음. 나중에 수정하고 싶으면 말씀해주세요!)
+
 router
   .route("/active")
   .get(async (req: Request, res: Response, next: NextFunction) => {
@@ -38,7 +40,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -72,7 +74,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("comment").notEmpty().withMessage("comment입력 필요"),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -89,6 +91,40 @@ router
       }
     }
   );
+
+router
+  .route("/role")
+  .patch(
+    body("role").notEmpty().withMessage("role입력 필요."),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { role },
+      } = req;
+      try {
+        await userServiceInstance?.patchRole(role);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+router
+  .route("/rest")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: { info = "" },
+    } = req;
+
+    try {
+      await userServiceInstance?.setRest(info);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
 
 router
   .route("/participationrate/all")
@@ -165,7 +201,6 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
 
-    console.log(0);
     try {
       const targetUser = await userServiceInstance?.getUserInfo([]);
       return res.status(200).json(targetUser);
@@ -222,7 +257,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("point").notEmpty().isNumeric().withMessage("point입력 필요."),
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -241,22 +276,6 @@ router
   );
 
 router
-  .route("/rest")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      userServiceInstance,
-      body: { info = "" },
-    } = req;
-
-    try {
-      await userServiceInstance?.setRest(info);
-      return res.status(200).end();
-    } catch (err) {
-      next(err);
-    }
-  });
-
-router
   .route("/score")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
@@ -271,7 +290,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("score").notEmpty().isNumeric().withMessage("score입력 필요."),
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -304,7 +323,7 @@ router
       next(err);
     }
   })
-  .post(
+  .patch(
     body("deposit").notEmpty().isNumeric().withMessage("deposit입력 필요."),
     async (req: Request, res: Response, next: NextFunction) => {
       const {
@@ -385,24 +404,6 @@ router
       next(err);
     }
   });
-
-router
-  .route("/role")
-  .patch(
-    body("role").notEmpty().withMessage("role입력 필요."),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { role },
-      } = req;
-      try {
-        await userServiceInstance?.patchRole(role);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    }
-  );
 
 router
   .route("/promotion")

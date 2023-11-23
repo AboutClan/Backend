@@ -44,7 +44,7 @@ export interface IAttendance {
   arrived?: Date;
   firstChoice: boolean;
   confirmed: boolean;
-  memo: string;
+  memo?: string;
 }
 
 export interface IAbsence {
@@ -113,7 +113,6 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
     absences: [AbsenceSchema],
     startTime: Date,
     endTime: Date,
-
     status: {
       type: Schema.Types.String,
       enum: ["pending", "waiting_confirm", "open", "dismissed", "free"],

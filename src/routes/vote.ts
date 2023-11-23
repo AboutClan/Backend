@@ -85,11 +85,11 @@ router
     }
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { place, subPlace, start, end }: IVoteStudyInfo = req.body;
+    const { place, subPlace, start, end, memo }: IVoteStudyInfo = req.body;
     const { voteServiceInstance, date } = req;
 
     try {
-      voteServiceInstance?.setVote(date, { place, subPlace, start, end });
+      voteServiceInstance?.setVote(date, { place, subPlace, start, end, memo });
       return res.status(204).end();
     } catch (err) {
       next(err);
