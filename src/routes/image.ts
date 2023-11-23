@@ -16,6 +16,7 @@ router
     // if (!req.file) {
     //   return res.status(400).send("No file");
     // }
+    return res.status(200).json("경로에 도달");
 
     await req.imageServiceInstance?.uploadImg();
     return res.status(200).end();
