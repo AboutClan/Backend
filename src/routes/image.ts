@@ -17,8 +17,8 @@ router
     //   return res.status(400).send("No file");
     // }
 
-    await req.imageServiceInstance?.uploadImg();
-    return res.status(200).end();
+    const A = await req.imageServiceInstance?.uploadImg();
+    return res.status(200).json(A);
   });
 
 module.exports = router;

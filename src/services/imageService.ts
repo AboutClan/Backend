@@ -41,6 +41,7 @@ export default class ImageService {
   }
 
   async uploadImg() {
+    return "test";
     const testObject = {
       test: "da",
     };
