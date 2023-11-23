@@ -1,8 +1,8 @@
 import { JWT } from "next-auth/jwt";
-import * as AWS from "aws-sdk";
-import * as multer from "multer";
+let AWS = require("aws-sdk");
+let multer = require("multer");
 import { Readable } from "stream";
-import * as multerS3 from "multer-s3";
+let multerS3 = require("multer-s3");
 
 export default class ImageService {
   private token: JWT;
@@ -21,7 +21,7 @@ export default class ImageService {
     // });
     this.s3 = new AWS.S3({
       accessKeyId: "AKIAUJLDUQVNLDWAWBNT",
-      secretAccessKey: "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",
+      secretAccessKey: process.env.AWS_KEY,
       region: "ap-northeast-2",
     });
 
@@ -30,10 +30,10 @@ export default class ImageService {
         s3: this.s3,
         bucket: "studyabout",
         acl: "public-read",
-        metadata: function (req, file, cb) {
+        metadata: function (req: any, file: any, cb: any) {
           cb(null, { fieldName: file.fieldname });
         },
-        key: function (req, file, cb) {
+        key: function (req: any, file: any, cb: any) {
           cb(null, Date.now());
         },
       }),
