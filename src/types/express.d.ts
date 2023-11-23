@@ -49,6 +49,7 @@ declare global {
       adminVoteServiceInstance?: AdminVoteService;
       adminManageInstance?: adminManageService;
       logServiceInstance?: LogService;
+      imageServiceInstance?: ImageService;
     }
   }
 }
