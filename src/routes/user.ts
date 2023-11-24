@@ -308,11 +308,11 @@ router
     async (req: Request, res: Response, next: NextFunction) => {
       const {
         userServiceInstance,
-        body: { score, message },
+        body: { score, message, sub },
       } = req;
 
       try {
-        await userServiceInstance?.updateScore(score, message);
+        await userServiceInstance?.updateScore(score, message, sub);
         return res.status(200).end();
       } catch (err) {
         next(err);

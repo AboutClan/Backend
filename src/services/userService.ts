@@ -287,7 +287,7 @@ export default class UserService {
     return;
   }
 
-  async updateScore(score: number, message: string) {
+  async updateScore(score: number, message: string, sub?: string) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
@@ -299,7 +299,7 @@ export default class UserService {
     }
 
     logger.logger.info(message, {
-      metadata: { type: "score", uid: this.token.uid, value: score },
+      metadata: { type: "score", sub, uid: this.token.uid, value: score },
     });
     return;
   }
