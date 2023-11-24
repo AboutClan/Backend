@@ -277,7 +277,12 @@ export default class UserService {
     }
 
     logger.logger.info(message, {
-      metadata: { type: "point", uid: this.token.uid, value: point },
+      metadata: {
+        type: "point",
+        sub: "test",
+        uid: this.token.uid,
+        value: point,
+      },
     });
     return;
   }

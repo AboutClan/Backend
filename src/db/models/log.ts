@@ -4,6 +4,7 @@ export interface ILog {
   timeStamp: Date;
   level: string;
   message: string;
+  sub?: string;
   meta: { type: string; uid: number; value: number };
 }
 
@@ -17,6 +18,7 @@ export const LogSchema: Schema<ILog> = new Schema({
   timeStamp: Date,
   level: String,
   message: String,
+  sub: String,
   meta: {
     type: metaSchema,
     enum: ["score", "point", "deposit"],
