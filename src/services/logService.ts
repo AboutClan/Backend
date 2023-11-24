@@ -14,7 +14,9 @@ export default class LogService {
           $and: [{ "meta.type": type }, { "meta.uid": this.token.uid }],
         },
         "-_id timestamp message meta"
-      );
+      )
+        .sort({ timestamp: -1 })
+        .limit(30);
 
       return logs;
     } catch (err: any) {
