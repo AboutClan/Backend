@@ -153,7 +153,6 @@ export default class AdminVoteService {
         });
 
         await vote?.save();
-        return participations;
       }
     } catch (err) {
       throw new Error();
