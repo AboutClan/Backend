@@ -276,10 +276,9 @@ export default class UserService {
       throw new Error(err);
     }
 
-    logger.logger.info(message, {
+    logger.logger.info(message, sub, {
       metadata: {
         type: "point",
-        sub,
         uid: this.token.uid,
         value: point,
       },
@@ -298,8 +297,8 @@ export default class UserService {
       throw new Error(err);
     }
 
-    logger.logger.info(message, {
-      metadata: { type: "score", sub, uid: this.token.uid, value: score },
+    logger.logger.info(message, sub, {
+      metadata: { type: "score", uid: this.token.uid, value: score },
     });
     return;
   }
