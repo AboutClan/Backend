@@ -265,7 +265,7 @@ export default class UserService {
     }
   }
 
-  async updatePoint(point: number, message: string) {
+  async updatePoint(point: number, message: string, sub?: string) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
@@ -279,7 +279,7 @@ export default class UserService {
     logger.logger.info(message, {
       metadata: {
         type: "point",
-        sub: "test",
+        sub,
         uid: this.token.uid,
         value: point,
       },

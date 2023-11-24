@@ -279,11 +279,11 @@ router
     async (req: Request, res: Response, next: NextFunction) => {
       const {
         userServiceInstance,
-        body: { point, message = "" },
+        body: { point, message = "", sub },
       } = req;
 
       try {
-        await userServiceInstance?.updatePoint(point, message);
+        await userServiceInstance?.updatePoint(point, message, sub);
         return res.status(200).end();
       } catch (err) {
         next(err);
