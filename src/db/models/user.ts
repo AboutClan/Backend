@@ -128,6 +128,7 @@ export const UserSchema: Schema<IUser> = new Schema({
       "manager",
       "previliged",
       "resting",
+      "enthusiastic",
     ],
     default: "member",
   },
