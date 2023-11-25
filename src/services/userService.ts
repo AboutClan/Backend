@@ -304,7 +304,7 @@ export default class UserService {
     return;
   }
 
-  async updateDeposit(deposit: number, message: string) {
+  async updateDeposit(deposit: number, message: string, sub?: string) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
@@ -316,7 +316,7 @@ export default class UserService {
     }
 
     logger.logger.info(message, {
-      metadata: { type: "deposit", uid: this.token.uid, value: deposit },
+      metadata: { type: "deposit", sub, uid: this.token.uid, value: deposit },
     });
     return;
   }

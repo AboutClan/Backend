@@ -338,11 +338,11 @@ router
     async (req: Request, res: Response, next: NextFunction) => {
       const {
         userServiceInstance,
-        body: { deposit, message },
+        body: { deposit, message, sub },
       } = req;
 
       try {
-        await userServiceInstance?.updateDeposit(deposit, message);
+        await userServiceInstance?.updateDeposit(deposit, message, sub);
         return res.status(200).end();
       } catch (err) {
         next(err);
