@@ -63,4 +63,42 @@ router
     }
   });
 
+router
+  .route("/friend")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+    try {
+      const result = await userServiceInstance?.getFriendRequest();
+      return res.status(200).json(result);
+    } catch (err: any) {
+      next(err);
+    }
+  })
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: { toUid, message },
+    } = req;
+    try {
+      await userServiceInstance?.requestFriend(toUid, message);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  })
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: { from, status },
+    } = req;
+    try {
+      const data = await userServiceInstance?.updateRequestFriend(from, status);
+      if (data === "no data")
+        return res.status(404).json({ message: "no data found" });
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
 module.exports = router;
