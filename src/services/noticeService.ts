@@ -69,7 +69,7 @@ export default class NoticeService {
     type: "friend" | "alphabet",
     toUid: string,
     message: string,
-    sub: string
+    sub?: string
   ) {
     try {
       await Notice.create({
