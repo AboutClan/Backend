@@ -444,50 +444,6 @@ export default class UserService {
     }
   }
 
-  async getFriendRequest() {
-    try {
-      const result = await Notice.find(
-        { to: this.token.uid, type: "friend" },
-        "-_id -__v"
-      );
-      return result;
-    } catch (err: any) {
-      throw new Error(err);
-    }
-  }
-
-  async requestFriend(toUid: string, message: string) {
-    try {
-      await Notice.create({
-        from: this.token.uid,
-        to: toUid,
-        type: "friend",
-        status: "pending",
-        message,
-      });
-      return "test";
-    } catch (err: any) {
-      throw new Error(err);
-    }
-  }
-  async updateRequestFriend(from: string, status: string) {
-    try {
-      const results = await Notice.find({
-        to: this.token.uid,
-        from,
-        type: "friend",
-      });
-      if (!results) return "no data";
-      const result = results[results.length - 1];
-      if (result) {
-        result.status = status;
-        await result.save();
-      }
-    } catch (err: any) {
-      throw new Error(err);
-    }
-  }
-
   async getPromotion() {
     try {
       const promotionData = await Promotion.find({}, "-_id -__v");
