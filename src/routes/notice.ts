@@ -50,6 +50,7 @@ router
 
     return res.end();
   });
+
 router
   .route("/like/all")
   .get(async (req: Request, res: Response, next: NextFunction) => {
@@ -80,8 +81,8 @@ router
       body: { toUid, message },
     } = req;
     try {
-      const A = await noticeServiceInstance?.requestFriend(toUid, message);
-      return res.status(200).json(A);
+      await noticeServiceInstance?.requestNotice("friend", toUid, message);
+      return res.status(200).end();
     } catch (err) {
       next(err);
     }
@@ -93,11 +94,48 @@ router
     } = req;
     try {
       const data = await noticeServiceInstance?.updateRequestFriend(
+        "friend",
         from,
         status
       );
-      if (data === "no data")
+      if (data === "no data") {
         return res.status(404).json({ message: "no data found" });
+      }
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
+  .route("/alphabet")
+
+  .post(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      noticeServiceInstance,
+      body: { toUid, message },
+    } = req;
+    try {
+      await noticeServiceInstance?.requestNotice("alphabet", toUid, message);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  })
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      noticeServiceInstance,
+      body: { from, status },
+    } = req;
+    try {
+      const data = await noticeServiceInstance?.updateRequestFriend(
+        "alphabet",
+        from,
+        status
+      );
+      if (data === "no data") {
+        return res.status(404).json({ message: "no data found" });
+      }
       return res.status(200).end();
     } catch (err) {
       next(err);

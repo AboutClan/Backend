@@ -65,12 +65,16 @@ export default class NoticeService {
     }
   }
 
-  async requestFriend(toUid: string, message: string) {
+  async requestNotice(
+    type: "friend" | "alphabet",
+    toUid: string,
+    message: string
+  ) {
     try {
       await Notice.create({
         from: this.token.uid,
         to: toUid,
-        type: "friend",
+        type,
         status: "pending",
         message,
       });
@@ -78,12 +82,16 @@ export default class NoticeService {
       throw new Error(err);
     }
   }
-  async updateRequestFriend(from: string, status: string) {
+  async updateRequestFriend(
+    type: "friend" | "alphabet",
+    from: string,
+    status: string
+  ) {
     try {
       const results = await Notice.find({
         to: this.token.uid,
         from,
-        type: "friend",
+        type,
       });
       if (!results) return "no data";
       const result = results[results.length - 1];
