@@ -109,7 +109,6 @@ router
 
 router
   .route("/alphabet")
-
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       noticeServiceInstance,
