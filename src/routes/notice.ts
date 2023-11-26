@@ -81,7 +81,7 @@ router
     } = req;
     try {
       await userServiceInstance?.requestFriend(toUid, message);
-      return res.status(200).end();
+      return res.status(200).json("테스트");
     } catch (err) {
       next(err);
     }
