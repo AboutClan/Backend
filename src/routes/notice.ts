@@ -66,9 +66,9 @@ router
 router
   .route("/friend")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+    const { noticeServiceInstance } = req;
     try {
-      const result = await userServiceInstance?.getFriendRequest();
+      const result = await noticeServiceInstance?.getFriendRequest();
       return res.status(200).json(result);
     } catch (err: any) {
       next(err);
@@ -76,11 +76,11 @@ router
   })
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
-      userServiceInstance,
+      noticeServiceInstance,
       body: { toUid, message },
     } = req;
     try {
-      const A = await userServiceInstance?.requestFriend(toUid, message);
+      const A = await noticeServiceInstance?.requestFriend(toUid, message);
       return res.status(200).json(A);
     } catch (err) {
       next(err);
@@ -88,11 +88,14 @@ router
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const {
-      userServiceInstance,
+      noticeServiceInstance,
       body: { from, status },
     } = req;
     try {
-      const data = await userServiceInstance?.updateRequestFriend(from, status);
+      const data = await noticeServiceInstance?.updateRequestFriend(
+        from,
+        status
+      );
       if (data === "no data")
         return res.status(404).json({ message: "no data found" });
       return res.status(200).end();
