@@ -112,10 +112,15 @@ router
   .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       noticeServiceInstance,
-      body: { toUid, message },
+      body: { toUid, message, sub },
     } = req;
     try {
-      await noticeServiceInstance?.requestNotice("alphabet", toUid, message);
+      await noticeServiceInstance?.requestNotice(
+        "alphabet",
+        toUid,
+        message,
+        sub
+      );
       return res.status(200).end();
     } catch (err) {
       next(err);

@@ -68,7 +68,8 @@ export default class NoticeService {
   async requestNotice(
     type: "friend" | "alphabet",
     toUid: string,
-    message: string
+    message: string,
+    sub: string
   ) {
     try {
       await Notice.create({
@@ -77,6 +78,7 @@ export default class NoticeService {
         type,
         status: "pending",
         message,
+        sub,
       });
     } catch (err: any) {
       throw new Error(err);

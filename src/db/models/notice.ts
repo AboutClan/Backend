@@ -10,6 +10,7 @@ export interface INotice {
   type: string;
   message: string;
   status?: string;
+  sub?: string;
 }
 
 const noticeSchema: Schema<INotice> = new Schema(
@@ -21,6 +22,7 @@ const noticeSchema: Schema<INotice> = new Schema(
       enum: ["like", "friend", "alphabet"],
     },
     message: String,
+    sub: String,
     status: {
       type: String,
       enum: ["pending", "refusal", "approval", "response"],
