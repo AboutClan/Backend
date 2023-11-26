@@ -465,6 +465,7 @@ export default class UserService {
         status: "pending",
         message,
       });
+      return "test";
     } catch (err: any) {
       throw new Error(err);
     }

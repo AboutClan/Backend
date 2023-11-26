@@ -80,8 +80,8 @@ router
       body: { toUid, message },
     } = req;
     try {
-      await userServiceInstance?.requestFriend(toUid, message);
-      return res.status(200).json("테스트");
+      const A = await userServiceInstance?.requestFriend(toUid, message);
+      return res.status(200).json(A);
     } catch (err) {
       next(err);
     }
