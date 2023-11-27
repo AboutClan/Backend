@@ -43,7 +43,7 @@ export default class CollectionService {
       }
       const myCollects = myAlphabets.collects;
       const opponentCollects = opponentAlphabets.collects;
-      return "test";
+
       const myIdx = myCollects.indexOf(mine);
       const opponentIdx = opponentCollects.indexOf(opponent);
       myCollects.splice(myIdx, 1);
