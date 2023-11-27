@@ -25,10 +25,7 @@ router
     }
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      collectionServiceInstance,
-      body: { alphabet },
-    } = req;
+    const { collectionServiceInstance, body: alphabet } = req;
     try {
       await collectionServiceInstance?.setCollection(alphabet);
       return res.end();
@@ -38,26 +35,28 @@ router
   });
 
 router
-  .route("/alphabet/completed")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  .route("/alphabet/change")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
     const {
       collectionServiceInstance,
-      body: {},
+      body: { mine, opponent, toUid },
     } = req;
     try {
-      const result = await collectionServiceInstance?.setCollectionCompleted();
-      if (result === "not completed") {
-        res.status(400).json({ message: "not completed" });
-      } else {
-        return res.end();
-      }
+      const result = await collectionServiceInstance?.changeCollection(
+        mine,
+        opponent,
+        toUid
+      );
+      if (result) res.status(400).json(result);
+      else res.status(200).end();
     } catch (err: any) {
       next(err);
     }
   });
+
 router
-  .route("/alphabet/change")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
+  .route("/alphabet/completed")
+  .post(async (req: Request, res: Response, next: NextFunction) => {
     const {
       collectionServiceInstance,
       body: {},
