@@ -34,7 +34,25 @@ export default class CollectionService {
     try {
       const myAlphabets = await Collection.findOne({ user: this.token.id });
       const opponentAlphabets = await Collection.findOne({ user: toUid });
-      return opponentAlphabets;
+
+      if (!myAlphabets?.collects?.includes(mine)) {
+        return "해당 알파벳을 보유하고 있지 않습니다.";
+      }
+      if (!opponentAlphabets?.collects?.includes(opponent)) {
+        return "상대가 해당 알파벳을 보유중이지 않습니다.";
+      }
+      const myCollects = myAlphabets.collects;
+      const opponentCollects = opponentAlphabets.collects;
+      return "test";
+      const myIdx = myCollects.indexOf(mine);
+      const opponentIdx = opponentCollects.indexOf(opponent);
+      myCollects.splice(myIdx, 1);
+      opponentCollects.splice(opponentIdx, 1);
+
+      myCollects.push(opponent);
+      opponentCollects.push(mine);
+
+      return null;
     } catch (err: any) {
       throw new Error(err);
     }
