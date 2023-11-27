@@ -25,10 +25,13 @@ router
     }
   })
   .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { collectionServiceInstance, body: alphabet } = req;
+    const {
+      collectionServiceInstance,
+      body: { alphabet },
+    } = req;
     try {
-      return res.status(200).json(alphabet);
-      const A = await collectionServiceInstance?.setCollection(alphabet);
+      await collectionServiceInstance?.setCollection(alphabet);
+      res.status(200).end();
     } catch (err: any) {
       next(err);
     }
