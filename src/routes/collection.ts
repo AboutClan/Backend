@@ -27,6 +27,7 @@ router
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { collectionServiceInstance, body: alphabet } = req;
     try {
+      return res.status(200).json("왜 안돼");
       await collectionServiceInstance?.setCollection(alphabet);
       res.status(200).end();
     } catch (err: any) {
