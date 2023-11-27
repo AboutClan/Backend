@@ -12,8 +12,8 @@ export default class CollectionService {
 
   async setCollection(alphabet: string) {
     try {
-      return "test";
       const previousData = await Collection.findOne({ user: this.token.id });
+      return previousData;
       if (previousData) {
         await Collection.updateOne(
           { user: this.token.id },
