@@ -46,18 +46,18 @@ export default class CollectionService {
       if (!opponentAlphabets?.collects?.includes(opponent)) {
         return "상대가 해당 알파벳을 보유중이지 않습니다.";
       }
-      const myCollects = myAlphabets.collects;
-      const opponentCollects = opponentAlphabets.collects;
+      const myCollects = myAlphabets?.collects;
+      const opponentCollects = opponentAlphabets?.collects;
 
-      const myIdx = myCollects.indexOf(mine);
-      const opponentIdx = opponentCollects.indexOf(opponent);
-      myCollects.splice(myIdx, 1);
-      opponentCollects.splice(opponentIdx, 1);
+      const myIdx = myCollects?.indexOf(mine);
+      const opponentIdx = opponentCollects?.indexOf(opponent);
+      myCollects?.splice(myIdx, 1);
+      opponentCollects?.splice(opponentIdx, 1);
 
-      myCollects.push(opponent);
-      opponentCollects.push(mine);
-      await myAlphabets.save();
-      await opponentAlphabets.save();
+      myCollects?.push(opponent);
+      opponentCollects?.push(mine);
+      await myAlphabets?.save();
+      await opponentAlphabets?.save();
       return null;
     } catch (err: any) {
       throw new Error(err);
