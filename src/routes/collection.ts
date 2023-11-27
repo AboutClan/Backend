@@ -28,7 +28,7 @@ router
     const { collectionServiceInstance, body: alphabet } = req;
     try {
       await collectionServiceInstance?.setCollection(alphabet);
-      return res.end();
+      res.status(200).end();
     } catch (err: any) {
       next(err);
     }
