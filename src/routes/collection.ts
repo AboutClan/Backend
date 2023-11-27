@@ -42,14 +42,14 @@ router
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const {
       collectionServiceInstance,
-      body: { mine, opponent, myId, toId },
+      body: { mine, opponent, myId, toUid },
     } = req;
     try {
       const result = await collectionServiceInstance?.changeCollection(
         mine,
         opponent,
         myId,
-        toId
+        toUid
       );
       if (result) res.status(400).json(result);
       else res.status(200).end();

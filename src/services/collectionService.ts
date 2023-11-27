@@ -2,6 +2,7 @@ import { JWT } from "next-auth/jwt";
 import { Collection } from "../db/models/collection";
 import { DailyCheck } from "../db/models/dailyCheck";
 import { Notice } from "../db/models/notice";
+import { User } from "../db/models/user";
 
 const ALPHABET_COLLECTION = ["A", "B", "O", "U", "T"];
 export default class CollectionService {
@@ -34,11 +35,14 @@ export default class CollectionService {
     mine: string,
     opponent: string,
     myId: string,
-    toId: string
+    toUid: string
   ) {
     try {
+      const findToUser = await User.findOne({ uid: toUid });
       const myAlphabets = await Collection.findOne({ user: myId });
-      const opponentAlphabets = await Collection.findOne({ user: toId });
+      const opponentAlphabets = await Collection.findOne({
+        user: findToUser?._id,
+      });
 
       if (!myAlphabets?.collects?.includes(mine)) {
         return "해당 알파벳을 보유하고 있지 않습니다.";
