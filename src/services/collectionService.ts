@@ -57,7 +57,7 @@ export default class CollectionService {
       opponentCollects?.push(mine);
       await myAlphabets?.save();
       await opponentAlphabets?.save();
-      return "tst";
+
       return null;
     } catch (err: any) {
       throw new Error(err);
