@@ -24,7 +24,7 @@ router
       next(err);
     }
   })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
     const {
       collectionServiceInstance,
       body: { alphabet },
@@ -40,6 +40,24 @@ router
 router
   .route("/alphabet/completed")
   .post(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      collectionServiceInstance,
+      body: {},
+    } = req;
+    try {
+      const result = await collectionServiceInstance?.setCollectionCompleted();
+      if (result === "not completed") {
+        res.status(400).json({ message: "not completed" });
+      } else {
+        return res.end();
+      }
+    } catch (err: any) {
+      next(err);
+    }
+  });
+router
+  .route("/alphabet/change")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
     const {
       collectionServiceInstance,
       body: {},
