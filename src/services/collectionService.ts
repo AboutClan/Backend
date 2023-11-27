@@ -49,7 +49,7 @@ export default class CollectionService {
       opponentCollects.splice(opponentIdx, 1);
 
       myCollects.push(opponent);
-      opponentCollects.push(opponent);
+      opponentCollects.push(mine);
       await myAlphabets.save();
       await opponentAlphabets.save();
       return null;
