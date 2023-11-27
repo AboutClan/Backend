@@ -27,8 +27,8 @@ router
   .patch(async (req: Request, res: Response, next: NextFunction) => {
     const { collectionServiceInstance, body: alphabet } = req;
     try {
+      return res.status(200).json(alphabet);
       const A = await collectionServiceInstance?.setCollection(alphabet);
-      res.status(200).json(A);
     } catch (err: any) {
       next(err);
     }
