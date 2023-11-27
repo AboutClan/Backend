@@ -53,7 +53,7 @@ export default class CollectionService {
       const opponentIdx = opponentCollects?.indexOf(opponent);
       myCollects?.splice(myIdx, 1);
       opponentCollects?.splice(opponentIdx, 1);
-
+      return "tst";
       myCollects?.push(opponent);
       opponentCollects?.push(mine);
       await myAlphabets?.save();
