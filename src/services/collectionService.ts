@@ -13,12 +13,13 @@ export default class CollectionService {
   async setCollection(alphabet: string) {
     try {
       const previousData = await Collection.findOne({ user: this.token.id });
-      return previousData;
+
       if (previousData) {
         await Collection.updateOne(
           { user: this.token.id },
           { $push: { collects: alphabet } }
         );
+        return "A";
       } else {
         await Collection.create({
           user: this.token.id,
