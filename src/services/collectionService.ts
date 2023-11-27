@@ -30,10 +30,15 @@ export default class CollectionService {
       throw new Error(err);
     }
   }
-  async changeCollection(mine: string, opponent: string, toUid: any) {
+  async changeCollection(
+    mine: string,
+    opponent: string,
+    myId: string,
+    toId: string
+  ) {
     try {
-      const myAlphabets = await Collection.findOne({ user: this.token.id });
-      const opponentAlphabets = await Collection.findOne({ user: toUid });
+      const myAlphabets = await Collection.findOne({ user: myId });
+      const opponentAlphabets = await Collection.findOne({ user: toId });
 
       if (!myAlphabets?.collects?.includes(mine)) {
         return "해당 알파벳을 보유하고 있지 않습니다.";
