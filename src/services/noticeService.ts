@@ -10,7 +10,10 @@ export default class NoticeService {
   async getActiveLog() {
     try {
       const result = await Notice.find(
-        { to: this.token.uid, $or: [{ type: "like" }, { type: "friend" }] },
+        {
+          to: this.token.uid,
+          $or: [{ type: "like" }, { type: "friend" }, { type: "alphabet" }],
+        },
         "-_id -__v"
       );
       return result;
