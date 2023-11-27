@@ -32,6 +32,7 @@ export default class CollectionService {
   }
   async changeCollection(mine: string, opponent: string, toUid: string) {
     try {
+      return this.token.id;
       const myAlphabets = await Collection.findOne({ user: this.token.id });
       const opponentAlphabets = await Collection.findOne({ user: toUid });
 
