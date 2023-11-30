@@ -303,24 +303,7 @@ export default class UserService {
     });
     return;
   }
-  async resetScore() {
-    try {
-      const users = await User.find({});
-      if (!users) throw new Error();
-
-      const operations = users.map((user) => ({
-        updateOne: {
-          filter: { _id: user._id },
-          update: { $set: { score: Math.round(user.score) } },
-        },
-      }));
-      await User.bulkWrite(operations);
-    } catch (err: any) {
-      throw new Error(err);
-    }
-
-    return;
-  }
+  
 
   async updateDeposit(deposit: number, message: string, sub?: string) {
     try {
