@@ -20,7 +20,7 @@ export default class ImageService {
     //   },
     // });
     this.s3 = new AWS.S3({
-      accessKeyId: "AKIAUJLDUQVNLDWAWBNT",
+      accessKeyId: "",
       secretAccessKey: process.env.AWS_KEY,
       region: "ap-northeast-2",
     });

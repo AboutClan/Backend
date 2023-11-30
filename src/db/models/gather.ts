@@ -61,6 +61,7 @@ export interface IGatherData {
   date: string;
   place?: string;
   isAdminOpen?: boolean;
+  image?: string;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -226,6 +227,9 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     },
     isAdminOpen: {
       type: Boolean,
+    },
+    image: {
+      type: String,
     },
   },
   { timestamps: true }
