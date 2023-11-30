@@ -311,7 +311,7 @@ export default class UserService {
       const operations = users.map((user) => ({
         updateOne: {
           filter: { _id: user._id },
-          update: { $set: { score: user.score / 10 } },
+          update: { $set: { score: Math.round(user.score) } },
         },
       }));
       await User.bulkWrite(operations);

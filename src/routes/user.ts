@@ -318,8 +318,8 @@ router
         next(err);
       }
     }
-  )
-  .patch(async (req: Request, res: Response, next: NextFunction) => {});
+  );
+
 router
   .route("/score/reset")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
