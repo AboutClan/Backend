@@ -350,6 +350,21 @@ router
   );
 
 router
+  .route("/deposit/reset")
+  .patch(body(), async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      userServiceInstance,
+      body: {},
+    } = req;
+    try {
+      await userServiceInstance?.resetDeposit();
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
   .route("/score/all")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;

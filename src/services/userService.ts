@@ -303,7 +303,6 @@ export default class UserService {
     });
     return;
   }
-  
 
   async updateDeposit(deposit: number, message: string, sub?: string) {
     try {
@@ -319,6 +318,21 @@ export default class UserService {
     logger.logger.info(message, {
       metadata: { type: "deposit", sub, uid: this.token.uid, value: deposit },
     });
+    return;
+  }
+  async resetDeposit() {
+    try {
+      const users = await User.find({});
+      if (!users) throw new Error();
+
+      users.forEach(async (user) => {
+        if (user.deposit < 2000) user.deposit = 2000;
+        await user.save();
+      });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
     return;
   }
 
