@@ -320,21 +320,6 @@ export default class UserService {
     });
     return;
   }
-  async resetDeposit() {
-    try {
-      const users = await User.find({});
-      if (!users) throw new Error();
-
-      users.forEach(async (user) => {
-        if (user.deposit < 2000) user.deposit = 2000;
-        await user.save();
-      });
-    } catch (err: any) {
-      throw new Error(err);
-    }
-
-    return;
-  }
 
   async setPreference(place: any, subPlace: any) {
     try {
@@ -394,7 +379,7 @@ export default class UserService {
     }
   }
 
-  async setRest(info: restType) {
+  async setRest(info: Omit<restType, "restCnt" | "cumulativeSum">) {
     try {
       const { startDate, endDate, type, content } = info;
 
