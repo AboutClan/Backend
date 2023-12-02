@@ -390,13 +390,23 @@ export default class UserService {
       const endDay = dayjs(endDate, "YYYY-MM-DD");
       const dayDiff = endDay.diff(startDay, "day");
 
-      user.rest.type = type;
-      user.rest.content = content;
-      user.rest.startDate = startDate;
-      user.rest.endDate = endDate;
-      user.rest.restCnt = user.rest.restCnt + 1;
-      user.rest.cumulativeSum = user.rest.cumulativeSum + dayDiff;
-
+      if (!user.rest) {
+        user.rest = {
+          type,
+          content,
+          startDate,
+          endDate,
+          restCnt: 1,
+          cumulativeSum: dayDiff,
+        };
+      } else {
+        user.rest.type = type;
+        user.rest.content = content;
+        user.rest.startDate = startDate;
+        user.rest.endDate = endDate;
+        user.rest.restCnt = user.rest.restCnt + 1;
+        user.rest.cumulativeSum = user.rest.cumulativeSum + dayDiff;
+      }
       await user.save();
     } catch (err: any) {
       throw new Error(err);
