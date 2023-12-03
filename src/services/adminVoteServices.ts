@@ -193,7 +193,7 @@ export default class AdminVoteService {
   }
   async voteStatusReset(date: any) {
     try {
-      const vote = await findOneVote(date);
+      const vote = await findOneVote(strToDate(date).toDate());
       if (!vote) throw new Error();
 
       vote.participations.forEach((participation) => {
