@@ -53,7 +53,7 @@ router
       adminVoteServiceInstance,
       params: { date: dateStr },
     } = req;
-    return res.status(200).json(dateStr);
+    return res.status(200).json(dayjs(dateStr).format("YYYYMMDD"));
     try {
       await adminVoteServiceInstance?.voteStatusReset(dateStr);
       return res.status(200).end();
