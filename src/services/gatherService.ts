@@ -50,9 +50,9 @@ export default class GatherService {
     }
   }
 
-  async updateGather(id: number, data: any) {
+  async updateGather(gather: IGatherData) {
     try {
-      await Gather.updateOne({ id }, data);
+      await Gather.updateOne({ id: gather.id }, gather);
       return;
     } catch (err: any) {
       throw new Error(err);

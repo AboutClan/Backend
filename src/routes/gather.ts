@@ -51,10 +51,10 @@ router
   .patch(async (req, res, next) => {
     const {
       gatherServiceInstance,
-      body: { id, data },
+      body: {  gather },
     } = req;
 
-    await gatherServiceInstance?.updateGather(id, data);
+    await gatherServiceInstance?.updateGather(gather);
     res.status(200).json();
   });
 
