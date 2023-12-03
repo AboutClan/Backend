@@ -240,7 +240,7 @@ export default class AdminVoteService {
           {
             $project: {
               arrived: "$attendence.arrived",
-              uid: "$user.uid",
+              name: "$user.name",
             },
           },
         ])
@@ -248,12 +248,12 @@ export default class AdminVoteService {
 
       const result = new Map();
       arriveCheckCnt.forEach((info: any) => {
-        if (info.uid[0] && info.hasOwnProperty("arrived")) {
-          if (result.has(info.uid[0])) {
-            const current = result.get(info.uid[0]);
-            result.set(info.uid[0], current + 1);
+        if (info.name[0] && info.hasOwnProperty("arrived")) {
+          if (result.has(info.name[0])) {
+            const current = result.get(info.name[0]);
+            result.set(info.name[0], current + 1);
           } else {
-            result.set(info.uid[0], 1);
+            result.set(info.name[0], 1);
           }
         }
       });
