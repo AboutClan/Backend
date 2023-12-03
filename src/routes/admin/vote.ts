@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import express, { NextFunction, Request, Response } from "express";
 import AdminVoteService from "../../services/adminVoteServices";
+import { strToDate } from "../../utils/dateUtils";
 
 const router = express.Router();
 
@@ -53,7 +54,7 @@ router
       adminVoteServiceInstance,
       params: { date: dateStr },
     } = req;
-    return res.status(200).json(dayjs(dateStr).format("YYYYMMDD"));
+    return res.status(200).json(strToDate(dateStr).toDate());
     try {
       await adminVoteServiceInstance?.voteStatusReset(dateStr);
       return res.status(200).end();
