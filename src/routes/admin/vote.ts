@@ -68,7 +68,7 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const {
       adminVoteServiceInstance,
-      params: { startDay, endDay },
+      query: { startDay, endDay },
     } = req;
     return res.status(200).json(startDay);
     try {
