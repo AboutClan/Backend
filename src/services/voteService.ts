@@ -11,7 +11,7 @@ import { findOneVote } from "../utils/voteUtils";
 import { IPlace, Place } from "../db/models/place";
 import { IUser, User } from "../db/models/user";
 import { IVoteStudyInfo } from "../types/vote";
-import { now } from "../utils/dateUtils";
+import { now, strToDate } from "../utils/dateUtils";
 
 export default class VoteService {
   private token: JWT;
@@ -558,8 +558,8 @@ export default class VoteService {
           {
             $match: {
               date: {
-                $gte: new Date("2023-12-03"),
-                $lte: new Date("2023-12-04"),
+                $gte: strToDate("2023-12-03").toDate(),
+                $lte: strToDate("2023-12-04").toDate(),
               },
             },
           },
