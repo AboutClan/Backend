@@ -558,7 +558,7 @@ export default class VoteService {
           {
             $match: {
               date: {
-                $gte: new Date("2023-12-03"),
+                $gte: new Date("2023-12-02"),
                 $lte: new Date("2023-12-03"),
               },
             },
