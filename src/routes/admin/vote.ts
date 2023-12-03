@@ -72,11 +72,11 @@ router
     } = req;
 
     try {
+      return res.status(200).json(strToDate(startDay as string).toDate());
       const result = await adminVoteServiceInstance?.getAdminStudyRecord(
         startDay as string,
         endDay as string
       );
-      return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
