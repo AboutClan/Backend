@@ -429,7 +429,6 @@ export default class VoteService {
     }
   }
 
-
   async patchConfirm(date: any) {
     try {
       const vote = await findOneVote(date);
@@ -557,7 +556,12 @@ export default class VoteService {
       const arriveCheckCnt = await Vote.collection
         .aggregate([
           {
-            $match: {},
+            $match: {
+              date: {
+                $gte: new Date("2023-12-01"),
+                $lte: new Date("2023-12-03"),
+              },
+            },
           },
           {
             $unwind: "$participations",
