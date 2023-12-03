@@ -429,6 +429,7 @@ export default class VoteService {
     }
   }
 
+
   async patchConfirm(date: any) {
     try {
       const vote = await findOneVote(date);
@@ -540,7 +541,7 @@ export default class VoteService {
       vote.participations.forEach(async (participation) => {
         if (participation.place?._id.toString() === placeId) {
           participation.status = "free";
-          participation.attendences
+          participation.attendences;
           await vote.save();
         }
       });

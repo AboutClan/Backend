@@ -46,4 +46,20 @@ router
     res.status(200).end();
   });
 
+router
+  .route("/:date/reset")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      adminVoteServiceInstance,
+      params: { date: dateStr },
+    } = req;
+
+    try {
+      await adminVoteServiceInstance?.voteStatusReset(dateStr);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
 module.exports = router;

@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 import { now, strToDate } from "../utils/dateUtils";
 import { IAttendance, IParticipation, Vote } from "../db/models/vote";
+import { findOneVote } from "../utils/voteUtils";
 
 type voteTime = { start: Dayjs | Date; end: Dayjs | Date };
 
@@ -189,5 +190,20 @@ export default class AdminVoteService {
       throw new Error();
     }
     return;
+  }
+  async voteStatusReset(date: any) {
+    try {
+      const vote = await findOneVote(date);
+      if (!vote) throw new Error();
+
+      vote.participations.forEach((participation) => {
+        if (participation.status !== "free") {
+          participation.status = "pending";
+        }
+      });
+      await vote.save();
+    } catch (err) {
+      throw new Error();
+    }
   }
 }

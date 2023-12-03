@@ -174,6 +174,7 @@ router
     }
   });
 
+
 router
   .route("/:date/confirm")
   .patch(async (req: Request, res: Response, next: NextFunction) => {
