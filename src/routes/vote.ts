@@ -54,6 +54,8 @@ router
     }
   });
 
+  
+
 router.use(
   "/:date",
   async (req: Request, res: Response, next: NextFunction) => {

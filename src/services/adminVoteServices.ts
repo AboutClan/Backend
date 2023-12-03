@@ -206,4 +206,60 @@ export default class AdminVoteService {
       throw new Error();
     }
   }
+  async getAdminStudyRecord() {
+    try {
+      const arriveCheckCnt = await Vote.collection
+        .aggregate([
+          {
+            $match: {
+              date: {
+                $gte: strToDate("2023-12-03").toDate(),
+                $lte: strToDate("2023-12-04").toDate(),
+              },
+            },
+          },
+          {
+            $unwind: "$participations",
+          },
+          {
+            $unwind: "$participations.attendences",
+          },
+          {
+            $project: {
+              attendence: "$participations.attendences",
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "attendence.user",
+              foreignField: "_id",
+              as: "user",
+            },
+          },
+          {
+            $project: {
+              arrived: "$attendence.arrived",
+              uid: "$user.uid",
+            },
+          },
+        ])
+        .toArray();
+
+      const result = new Map();
+      arriveCheckCnt.forEach((info: any) => {
+        if (info.uid[0] && info.hasOwnProperty("arrived")) {
+          if (result.has(info.uid[0])) {
+            const current = result.get(info.uid[0]);
+            result.set(info.uid[0], current + 1);
+          } else {
+            result.set(info.uid[0], 1);
+          }
+        }
+      });
+      return Object.fromEntries(result);
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
 }
