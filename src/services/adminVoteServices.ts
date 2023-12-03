@@ -208,8 +208,6 @@ export default class AdminVoteService {
   }
   async getAdminStudyRecord(startDay: string, endDay: string) {
     try {
-      return startDay;
-      return strToDate(startDay).toDate();
       const arriveCheckCnt = await Vote.collection
         .aggregate([
           {
