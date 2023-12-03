@@ -206,15 +206,15 @@ export default class AdminVoteService {
       throw new Error();
     }
   }
-  async getAdminStudyRecord() {
+  async getAdminStudyRecord(startDay: string, endDay: string) {
     try {
       const arriveCheckCnt = await Vote.collection
         .aggregate([
           {
             $match: {
               date: {
-                $gte: strToDate("2023-12-03").toDate(),
-                $lte: strToDate("2023-12-04").toDate(),
+                $gte: strToDate(startDay).toDate(),
+                $lte: strToDate(endDay).toDate(),
               },
             },
           },
