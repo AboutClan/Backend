@@ -70,7 +70,7 @@ router
       adminVoteServiceInstance,
       query: { startDay, endDay, isAttend, location },
     } = req;
-    return res.status(200).json(location);
+
     try {
       const result = await adminVoteServiceInstance?.getAdminStudyRecord(
         startDay as string,

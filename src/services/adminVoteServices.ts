@@ -248,6 +248,7 @@ export default class AdminVoteService {
             $project: {
               arrived: "$attendence.arrived",
               name: "$user.name",
+              location: "$user.location",
               status: 1,
               date: 1,
             },
@@ -257,6 +258,7 @@ export default class AdminVoteService {
               _id: { date: "$date", name: "$name" },
               arrived: { $first: "$arrived" },
               name: { $first: "$name" },
+              location: { $first: "$location" },
               status: { $first: "$status" },
             },
           },
@@ -265,7 +267,10 @@ export default class AdminVoteService {
 
       const result = new Map();
       arriveCheckCnt.forEach((info: any) => {
-        if (info.name[0] && (isAttend || info?.arrived)) {
+        if (
+          info.name[0] &&
+          (isAttend || (info?.arrived && info?.status !== "free"))
+        ) {
           if (result.has(info.name[0])) {
             const current = result.get(info.name[0]);
             result.set(info.name[0], current + 1);
