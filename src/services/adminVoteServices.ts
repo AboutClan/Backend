@@ -269,7 +269,7 @@ export default class AdminVoteService {
       arriveCheckCnt.forEach((info: any) => {
         if (
           info.name[0] &&
-          info?.location === location &&
+          info.location[0] === location &&
           (isAttend || (info?.arrived && info?.status !== "free"))
         ) {
           if (result.has(info.name[0])) {
