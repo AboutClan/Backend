@@ -206,7 +206,11 @@ export default class AdminVoteService {
       throw new Error();
     }
   }
-  async getAdminStudyRecord(startDay: string, endDay: string) {
+  async getAdminStudyRecord(
+    startDay: string,
+    endDay: string,
+    isAttend: string
+  ) {
     try {
       const arriveCheckCnt = await Vote.collection
         .aggregate([
