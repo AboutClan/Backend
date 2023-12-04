@@ -263,7 +263,7 @@ export default class AdminVoteService {
       arriveCheckCnt.forEach((info: any) => {
         if (
           info.name[0] &&
-          (isAttend === "false" || info.hasOwnProperty("arrived"))
+          (isAttend !== "true" || info.hasOwnProperty("arrived"))
         ) {
           if (result.has(info.name[0])) {
             const current = result.get(info.name[0]);
