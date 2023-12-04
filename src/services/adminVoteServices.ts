@@ -252,7 +252,10 @@ export default class AdminVoteService {
 
       const result = new Map();
       arriveCheckCnt.forEach((info: any) => {
-        if (info.name[0] && info.hasOwnProperty("arrived")) {
+        if (
+          info.name[0] &&
+          (isAttend === "false" || info.hasOwnProperty("arrived"))
+        ) {
           if (result.has(info.name[0])) {
             const current = result.get(info.name[0]);
             result.set(info.name[0], current + 1);
