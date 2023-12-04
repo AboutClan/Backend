@@ -231,6 +231,7 @@ export default class AdminVoteService {
           {
             $project: {
               attendence: "$participations.attendences",
+              date: 1,
             },
           },
           {
@@ -245,6 +246,14 @@ export default class AdminVoteService {
             $project: {
               arrived: "$attendence.arrived",
               name: "$user.name",
+              date: 1,
+            },
+          },
+          {
+            $group: {
+              _id: { date: "$date", name: "$name" },
+              arrived: { $first: "$arrived" },
+              name: { $first: "$name" },
             },
           },
         ])
