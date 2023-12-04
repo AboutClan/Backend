@@ -68,14 +68,15 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const {
       adminVoteServiceInstance,
-      query: { startDay, endDay, isAttend },
+      query: { startDay, endDay, isAttend, location },
     } = req;
-
+    return res.status(200).json(location);
     try {
       const result = await adminVoteServiceInstance?.getAdminStudyRecord(
         startDay as string,
         endDay as string,
-        isAttend as string
+        isAttend as string,
+        location as string
       );
       return res.status(200).json(result);
     } catch (err) {

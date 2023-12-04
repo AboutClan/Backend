@@ -209,7 +209,8 @@ export default class AdminVoteService {
   async getAdminStudyRecord(
     startDay: string,
     endDay: string,
-    isAttend: string
+    isAttend: string,
+    location: string
   ) {
     try {
       const arriveCheckCnt = await Vote.collection
@@ -231,6 +232,7 @@ export default class AdminVoteService {
           {
             $project: {
               attendence: "$participations.attendences",
+              status: "$participations.status",
               date: 1,
             },
           },
@@ -246,6 +248,7 @@ export default class AdminVoteService {
             $project: {
               arrived: "$attendence.arrived",
               name: "$user.name",
+              status: 1,
               date: 1,
             },
           },
@@ -254,6 +257,7 @@ export default class AdminVoteService {
               _id: { date: "$date", name: "$name" },
               arrived: { $first: "$arrived" },
               name: { $first: "$name" },
+              status: { $first: "$status" },
             },
           },
         ])
