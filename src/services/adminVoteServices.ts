@@ -273,7 +273,7 @@ export default class AdminVoteService {
       const voteResult = new Map();
       const attendResult = new Map();
       const monthAccResult = new Map();
-
+      return arriveCheckCnt;
       arriveCheckCnt.forEach((info: any) => {
         if (uid && uid !== info.uid[0]) return;
         if (info.name[0] && info.location[0] === location) {
