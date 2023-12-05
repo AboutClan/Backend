@@ -273,7 +273,7 @@ export default class AdminVoteService {
       const attendResult = new Map();
 
       arriveCheckCnt.forEach((info: any) => {
-        if (uid && uid !== info.uid) return;
+        if (uid && uid !== info.uid[0]) return;
         if (info.name[0] && info.location[0] === location) {
           if (info.arrived && info.status !== "free") {
             if (attendResult.has(info.name[0])) {
