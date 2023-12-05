@@ -286,13 +286,12 @@ export default class AdminVoteService {
               } else {
                 attendResult.set(info.name[0], 1);
               }
+            }
+            if (monthAccResult.has(info.name[0])) {
+              const current = monthAccResult.get(info.name[0]);
+              monthAccResult.set(info.name[0], current + 1);
             } else {
-              if (monthAccResult.has(info.name[0])) {
-                const current = monthAccResult.get(info.name[0]);
-                monthAccResult.set(info.name[0], current + 1);
-              } else {
-                monthAccResult.set(info.name[0], 1);
-              }
+              monthAccResult.set(info.name[0], 1);
             }
           }
           if (!isAttend) {
