@@ -210,7 +210,8 @@ export default class AdminVoteService {
     startDay: string,
     endDay: string,
     isAttend: string,
-    location: string
+    location: string,
+    uid: string
   ) {
     try {
       const arriveCheckCnt = await Vote.collection
@@ -248,6 +249,7 @@ export default class AdminVoteService {
             $project: {
               arrived: "$attendence.arrived",
               name: "$user.name",
+              uid: "$user.uid",
               location: "$user.location",
               status: 1,
               date: 1,
@@ -258,6 +260,7 @@ export default class AdminVoteService {
               _id: { date: "$date", name: "$name" },
               arrived: { $first: "$arrived" },
               name: { $first: "$name" },
+              uid: { $first: "$uid" },
               location: { $first: "$location" },
               status: { $first: "$status" },
             },
@@ -270,6 +273,7 @@ export default class AdminVoteService {
       const attendResult = new Map();
 
       arriveCheckCnt.forEach((info: any) => {
+        if (uid && uid !== info.uid) return;
         if (info.name[0] && info.location[0] === location) {
           if (info.arrived && info.status !== "free") {
             if (attendResult.has(info.name[0])) {

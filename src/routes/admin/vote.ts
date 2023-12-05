@@ -68,7 +68,7 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const {
       adminVoteServiceInstance,
-      query: { startDay, endDay, isAttend, location },
+      query: { startDay, endDay, isAttend, location, uid },
     } = req;
 
     try {
@@ -76,7 +76,8 @@ router
         startDay as string,
         endDay as string,
         isAttend as string,
-        location as string
+        location as string,
+        uid as string
       );
       return res.status(200).json(result);
     } catch (err) {
