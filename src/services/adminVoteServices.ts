@@ -219,7 +219,7 @@ export default class AdminVoteService {
           {
             $match: {
               date: {
-                $gte: strToDate(startDay).toDate(),
+                $gte: strToDate(startDay).date(1).toDate(),
                 $lte: strToDate(endDay).toDate(),
               },
             },
@@ -263,6 +263,7 @@ export default class AdminVoteService {
               uid: { $first: "$uid" },
               location: { $first: "$location" },
               status: { $first: "$status" },
+              date: { $first: "$date" },
             },
           },
         ])
@@ -271,16 +272,29 @@ export default class AdminVoteService {
       const result = new Map();
       const voteResult = new Map();
       const attendResult = new Map();
+      const monthAccResult = new Map();
 
       arriveCheckCnt.forEach((info: any) => {
         if (uid && uid !== info.uid[0]) return;
         if (info.name[0] && info.location[0] === location) {
           if (info.arrived && info.status !== "free") {
-            if (attendResult.has(info.name[0])) {
-              const current = attendResult.get(info.name[0]);
-              attendResult.set(info.name[0], current + 1);
+            if (
+              info.date[0] >= strToDate(startDay).toDate() &&
+              info.date[0] <= strToDate(endDay)
+            ) {
+              if (attendResult.has(info.name[0])) {
+                const current = attendResult.get(info.name[0]);
+                attendResult.set(info.name[0], current + 1);
+              } else {
+                attendResult.set(info.name[0], 1);
+              }
             } else {
-              attendResult.set(info.name[0], 1);
+              if (monthAccResult.has(info.name[0])) {
+                const current = monthAccResult.get(info.name[0]);
+                monthAccResult.set(info.name[0], current + 1);
+              } else {
+                monthAccResult.set(info.name[0], 1);
+              }
             }
           }
           if (!isAttend) {
@@ -297,6 +311,7 @@ export default class AdminVoteService {
         result.set(key, {
           attend: value,
           vote: voteResult.get(key) || 0, // voteResult에 값이 없으면 0을 사용
+          monthAcc: monthAccResult.get(key) || 0,
         });
       });
       return Object.fromEntries(result);
