@@ -278,10 +278,7 @@ export default class AdminVoteService {
         if (uid && uid !== info.uid[0]) return;
         if (info.name[0] && info.location[0] === location) {
           if (info.arrived && info.status !== "free") {
-            if (
-              info.date[0] >= strToDate(startDay).toDate() &&
-              info.date[0] <= strToDate(endDay)
-            ) {
+            if (true) {
               if (attendResult.has(info.name[0])) {
                 const current = attendResult.get(info.name[0]);
                 attendResult.set(info.name[0], current + 1);
