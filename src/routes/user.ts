@@ -159,12 +159,21 @@ router
     validateCheck,
     async (req: Request, res: Response, next: NextFunction) => {
       const { userServiceInstance } = req;
-      const { startDay, endDay }: { startDay: string; endDay: string } =
+      const {
+        startDay,
+        endDay,
+        isAttendRecord,
+      }: { startDay: string; endDay: string; isAttendRecord: any } =
         req.query as any;
 
       try {
         const participationResult =
-          await userServiceInstance?.getParticipationRate(startDay, endDay);
+          await userServiceInstance?.getParticipationRate(
+            startDay,
+            endDay,
+            false,
+            isAttendRecord
+          );
         const userResult = participationResult?.[0];
         return res.status(200).json(userResult);
       } catch (err) {

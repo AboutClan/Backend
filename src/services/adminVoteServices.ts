@@ -266,19 +266,34 @@ export default class AdminVoteService {
         .toArray();
 
       const result = new Map();
+      const voteResult = new Map();
+      const attendResult = new Map();
+
       arriveCheckCnt.forEach((info: any) => {
-        if (
-          info.name[0] &&
-          info.location[0] === location &&
-          (isAttend || (info?.arrived && info?.status !== "free"))
-        ) {
-          if (result.has(info.name[0])) {
-            const current = result.get(info.name[0]);
-            result.set(info.name[0], current + 1);
-          } else {
-            result.set(info.name[0], 1);
+        if (info.name[0] && info.location[0] === location) {
+          if (info.arrived && info.status !== "free") {
+            if (attendResult.has(info.name[0])) {
+              const current = attendResult.get(info.name[0]);
+              attendResult.set(info.name[0], current + 1);
+            } else {
+              attendResult.set(info.name[0], 1);
+            }
+          }
+          if (!isAttend) {
+            if (voteResult.has(info.name[0])) {
+              const current = voteResult.get(info.name[0]);
+              voteResult.set(info.name[0], current + 1);
+            } else {
+              voteResult.set(info.name[0], 1);
+            }
           }
         }
+      });
+      attendResult.forEach((value, key) => {
+        result.set(key, {
+          attend: value,
+          vote: voteResult.get(key) || 0, // voteResult에 값이 없으면 0을 사용
+        });
       });
       return Object.fromEntries(result);
     } catch (err: any) {

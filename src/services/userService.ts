@@ -102,7 +102,12 @@ export default class UserService {
     }
   }
 
-  async getParticipationRate(startDay: string, endDay: string, all?: any) {
+  async getParticipationRate(
+    startDay: string,
+    endDay: string,
+    all: boolean = false,
+    isAttendRecord?: boolean
+  ) {
     try {
       const allUser = all
         ? await User.find({ isActive: true })
