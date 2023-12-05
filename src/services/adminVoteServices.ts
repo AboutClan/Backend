@@ -2,6 +2,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { now, strToDate } from "../utils/dateUtils";
 import { IAttendance, IParticipation, Vote } from "../db/models/vote";
 import { findOneVote } from "../utils/voteUtils";
+import { start } from "repl";
 
 type voteTime = { start: Dayjs | Date; end: Dayjs | Date };
 
@@ -273,12 +274,12 @@ export default class AdminVoteService {
       const voteResult = new Map();
       const attendResult = new Map();
       const monthAccResult = new Map();
-      return arriveCheckCnt;
+
       arriveCheckCnt.forEach((info: any) => {
         if (uid && uid !== info.uid[0]) return;
         if (info.name[0] && info.location[0] === location) {
           if (info.arrived && info.status !== "free") {
-            if (true) {
+            if (info.date >= strToDate(startDay).toDate()) {
               if (attendResult.has(info.name[0])) {
                 const current = attendResult.get(info.name[0]);
                 attendResult.set(info.name[0], current + 1);
