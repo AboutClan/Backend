@@ -219,7 +219,7 @@ export default class AdminVoteService {
           {
             $match: {
               date: {
-                $gte: strToDate(startDay).date(1).toDate(),
+                $gte: strToDate(startDay).toDate(),
                 $lte: strToDate(endDay).toDate(),
               },
             },
