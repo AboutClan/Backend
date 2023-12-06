@@ -41,56 +41,59 @@ export const MajorSchema: Schema<IMajor> = new Schema(
   { _id: false, timestamps: true, strict: false }
 );
 
-export const RegisteredSchema: Schema<IRegistered> = new Schema({
-  uid: {
-    type: String,
-    required: true,
+export const RegisteredSchema: Schema<IRegistered> = new Schema(
+  {
+    uid: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    majors: {
+      type: [MajorSchema],
+      required: true,
+    },
+    interests: {
+      type: InterestSchema,
+      required: true,
+    },
+    telephone: {
+      type: String,
+      required: true,
+    },
+    location: {
+      type: String,
+      required: true,
+    },
+    comment: {
+      type: String,
+      required: true,
+    },
+    mbti: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: true,
+    },
+    profileImage: {
+      type: String,
+      required: true,
+    },
+    birth: {
+      type: String,
+      required: true,
+    },
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  majors: {
-    type: [MajorSchema],
-    required: true,
-  },
-  interests: {
-    type: InterestSchema,
-    required: true,
-  },
-  telephone: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-  comment: {
-    type: String,
-    required: true,
-  },
-  mbti: {
-    type: String,
-    required: true,
-  },
-  gender: {
-    type: String,
-    required: true,
-  },
-  profileImage: {
-    type: String,
-    required: true,
-  },
-  birth: {
-    type: String,
-    required: true,
-  },
-});
+  { timestamps: true }
+);
 
 InterestSchema.set("timestamps", false);
 MajorSchema.set("timestamps", false);
-RegisteredSchema.set("timestamps", false);
+RegisteredSchema.set("timestamps", true);
 
 export const Registered =
   (mongoose.models.REgistered as Model<IRegistered, {}, {}, {}>) ||
