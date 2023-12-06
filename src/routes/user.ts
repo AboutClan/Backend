@@ -246,7 +246,7 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
     const { uid } = req.params;
-    return res.status(200).json({ a: "a", uid });
+   
     try {
       const isActive = await userServiceInstance?.getUserWithUid(uid);
       return res.status(200).json(isActive);
