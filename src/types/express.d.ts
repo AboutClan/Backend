@@ -43,6 +43,7 @@ declare global {
       counterServiceInstance?: CounterService;
       collectionServiceInstance?: CollectionService;
       gatherServiceInstance?: GatherService;
+      groupStudyServiceInstance?: GroupStudyService;
       registerServiceInstance?: RegisterService;
       adminLogServiceInstance?: AdminLogService;
       adminUserServiceInstance?: AdminUserService;

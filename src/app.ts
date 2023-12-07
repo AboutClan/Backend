@@ -28,6 +28,8 @@ const admin = require("./routes/admin/admin");
 const notice = require("./routes/notice");
 const dailyCheck = require("./routes/dailyCheck");
 const collection = require("./routes/collection");
+const groupStudy = require("./routers/groupStudy");
+
 class App {
   private app: express.Application;
   private port: number;
@@ -68,6 +70,7 @@ class App {
     this.app.use("/image", image);
     this.app.use("/dailyCheck", dailyCheck);
     this.app.use("/collection", collection);
+    this.app.use("/groutStudy", groupStudy);
     this.app.use(ErrorHandler);
   }
 
