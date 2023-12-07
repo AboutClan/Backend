@@ -28,7 +28,7 @@ const admin = require("./routes/admin/admin");
 const notice = require("./routes/notice");
 const dailyCheck = require("./routes/dailyCheck");
 const collection = require("./routes/collection");
-const groupStudy = require("./routers/groupStudy");
+const groupStudy = require("./routes/groupStudy");
 
 class App {
   private app: express.Application;
