@@ -70,7 +70,7 @@ class App {
     this.app.use("/image", image);
     this.app.use("/dailyCheck", dailyCheck);
     this.app.use("/collection", collection);
-    this.app.use("/groutStudy", groupStudy);
+    this.app.use("/groupStudy", groupStudy);
     this.app.use(ErrorHandler);
   }
 
