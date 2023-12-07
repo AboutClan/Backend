@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Counter } from "../db/models/counter";
 import dbConnect from "../db/conn";
 
-export default class groupStudyService {
+export default class GroupStudyService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
@@ -19,9 +19,24 @@ export default class groupStudyService {
     const counter = await Counter.findOne({ key: name });
     if (counter) {
       counter.seq++;
-
       await counter.save();
       return counter.seq;
+    }
+  }
+
+  async createGroupStudy(data: IGroupStudyData) {
+    const nextId = await this.getNextSequence("groupStudyId");
+
+    const groupStudyInfo = {
+      ...data,
+      id: nextId,
+    };
+    try {
+      const groupStudyData = groupStudyInfo;
+      await GroupStudy.create(groupStudyData);
+      return;
+    } catch (err: any) {
+      throw new Error(err);
     }
   }
 }

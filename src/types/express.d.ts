@@ -20,6 +20,7 @@ import DailyCheckService from "../services/dailyCheckService";
 import { ICollection } from "../db/models/collection";
 import CollectionService from "../services/collectionService";
 import CounterService from "../services/counterService";
+import GroupStudyService from "../services/groupStudyService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
