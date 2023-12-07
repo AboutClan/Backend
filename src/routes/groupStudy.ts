@@ -31,7 +31,7 @@ router
         groupStudyServiceInstance,
         body: { groupStudy },
       } = req;
-      res.status(200).json(groupStudy?.title);
+      res.status(200).json("SUC");
       const groupStudyId = await groupStudyServiceInstance?.creategroupStudy(
         groupStudy
       );
