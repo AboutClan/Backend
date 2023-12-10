@@ -304,13 +304,21 @@ export default class AdminVoteService {
           }
         }
       });
-      attendResult.forEach((value, key) => {
-        result.set(key, {
-          attend: value,
-          vote: voteResult.get(key) || 0, // voteResult에 값이 없으면 0을 사용
-          monthAcc: monthAccResult.get(key) || 0,
+      const allNames = new Set([...voteResult.keys(), ...attendResult.keys()]);
+
+      allNames.forEach((name) => {
+        const attendCount = attendResult.get(name) || 0; // attendResult에 값이 없으면 0을 사용
+        const voteCount = voteResult.get(name) || 0; // voteResult에 값이 없으면 0을 사용
+        const monthAccCount = monthAccResult.get(name) || 0; // monthAccResult에 값이 없으면 0을 사용
+
+        result.set(name, {
+          attend: attendCount,
+          vote: voteCount,
+          monthAcc: monthAccCount,
         });
       });
+
+      return Object.fromEntries(result);
       return Object.fromEntries(result);
     } catch (err: any) {
       throw new Error(err);
