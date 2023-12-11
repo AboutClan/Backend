@@ -24,6 +24,17 @@ export default class GroupStudyService {
     }
   }
 
+  async getGroupStudy() {
+    try {
+      const gatherData = await GroupStudy.find()
+        .populate(["user", "participants.user"])
+        .select("-_id");
+      return gatherData;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async createGroupStudy(data: IGroupStudyData) {
     const nextId = await this.getNextSequence("groupStudyId");
 

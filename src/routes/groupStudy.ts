@@ -16,7 +16,13 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router
   .route("/")
+  .get(async (req, res, next) => {
+    const { groupStudyServiceInstance } = req;
+    if (!groupStudyServiceInstance) throw new Error();
 
+    const gatherData = await groupStudyServiceInstance.getGroupStudy();
+    res.status(200).json(gatherData);
+  })
   .post(
     body("groupStudy").notEmpty().withMessage("groupStudy필요"),
     validateCheck,
