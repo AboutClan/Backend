@@ -19,9 +19,9 @@ router
   .get(async (req, res, next) => {
     const { groupStudyServiceInstance } = req;
     if (!groupStudyServiceInstance) throw new Error();
-    return res.status(200).json("Conntect");
-    const gatherData = await groupStudyServiceInstance?.getGroupStudy();
-    res.status(200).json(gatherData);
+
+    const groupStudyData = await groupStudyServiceInstance?.getGroupStudy();
+    res.status(200).json(groupStudyData);
   })
   .post(
     body("groupStudy").notEmpty().withMessage("groupStudy필요"),
