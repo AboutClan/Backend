@@ -19,8 +19,8 @@ router
   .get(async (req, res, next) => {
     const { groupStudyServiceInstance } = req;
     if (!groupStudyServiceInstance) throw new Error();
-
-    const gatherData = await groupStudyServiceInstance.getGroupStudy();
+    return res.status(200).json("Conntect");
+    const gatherData = await groupStudyServiceInstance?.getGroupStudy();
     res.status(200).json(gatherData);
   })
   .post(
