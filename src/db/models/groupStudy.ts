@@ -45,6 +45,7 @@ export interface IGroupStudyData {
   id: number;
   location: string;
   image?: string;
+  isFree: boolean;
 }
 
 export const categorySchema: Schema<ICategory> = new Schema(
@@ -104,6 +105,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
   {
     title: {
       type: String,
+    },
+    isFree: {
+      type: Boolean,
     },
     category: {
       type: categorySchema,
