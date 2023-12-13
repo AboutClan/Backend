@@ -32,6 +32,7 @@ export interface IGroupStudyData {
   title: string;
   category: ICategory;
   content: string;
+  period: string;
   guide: string;
   gender: boolean;
   age: number[];
@@ -48,6 +49,12 @@ export interface IGroupStudyData {
   isFree: boolean;
   feeText?: string;
   fee?: number;
+  userRoles: IUserRole[];
+}
+
+interface IUserRole {
+  uid: string;
+  role: "admin" | "manager" | "member";
 }
 
 export const categorySchema: Schema<ICategory> = new Schema(
@@ -156,6 +163,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     id: {
       type: Number,
       default: 0,
+    },
+    period: {
+      type: String,
     },
     location: {
       type: String,
