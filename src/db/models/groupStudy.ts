@@ -20,7 +20,7 @@ export interface memberCntType {
 
 export interface participantsType {
   user: string | IUser;
-  role: string;
+  role: UserRole;
 }
 
 export interface commentType {
@@ -49,13 +49,9 @@ export interface IGroupStudyData {
   isFree: boolean;
   feeText?: string;
   fee?: number;
-  userRoles: IUserRole[];
 }
 
-interface IUserRole {
-  uid: string;
-  role: "admin" | "manager" | "member";
-}
+type UserRole = "admin" | "manager" | "member";
 
 export const categorySchema: Schema<ICategory> = new Schema(
   {
