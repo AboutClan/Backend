@@ -50,4 +50,27 @@ export default class GroupStudyService {
       throw new Error(err);
     }
   }
+  async participateGroupStudy(id: string) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      if (
+        !groupStudy.participants.some(
+          (participant) => participant.user == (this.token.id as IUser)
+        )
+      ) {
+        groupStudy.participants.push({
+          user: this.token.id as IUser,
+          role: "member",
+        });
+
+        await groupStudy?.save();
+      }
+
+      return;
+    } catch (err) {
+      throw new Error();
+    }
+  }
 }

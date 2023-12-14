@@ -38,5 +38,25 @@ router
       res.status(200).json({ groupStudyId });
     }
   );
+router
+  .route("/participate")
+  .post(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      try {
+        const {
+          groupStudyServiceInstance,
+          body: { id},
+        } = req;
+
+        await groupStudyServiceInstance?.participateGroupStudy(id);
+
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
 
 module.exports = router;
