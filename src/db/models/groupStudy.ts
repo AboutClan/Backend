@@ -143,6 +143,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     password: {
       type: String,
     },
+    questionText: {
+      type: String,
+    },
     participants: {
       type: [participantsSchema],
       ref: "User",
