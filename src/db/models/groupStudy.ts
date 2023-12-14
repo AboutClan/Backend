@@ -49,6 +49,7 @@ export interface IGroupStudyData {
   isFree: boolean;
   feeText?: string;
   fee?: number;
+  questionText?: string;
 }
 
 type UserRole = "admin" | "manager" | "member";
