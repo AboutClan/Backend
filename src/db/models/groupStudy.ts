@@ -50,7 +50,7 @@ export interface IGroupStudyData {
   feeText?: string;
   fee?: number;
   questionText?: string;
-  hashTag: string[];
+  hashTag: string;
 }
 
 type UserRole = "admin" | "manager" | "member";
@@ -126,7 +126,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
       type: categorySchema,
     },
     hashTag: {
-      type: [String],
+      type: String,
     },
     content: {
       type: String,
