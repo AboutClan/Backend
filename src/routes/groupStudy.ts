@@ -60,22 +60,6 @@ router
   );
 router
   .route("/waiting")
-  .get(
-    body("id").notEmpty().isNumeric().withMessage("id필요"),
-    validateCheck,
-    async (req, res, next) => {
-      try {
-        const {
-          groupStudyServiceInstance,
-          body: { id },
-        } = req;
-        await groupStudyServiceInstance?.getWaitingPerson(id);
-        res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    }
-  )
   .post(
     body("id").notEmpty().isNumeric().withMessage("id필요"),
     validateCheck,
@@ -94,6 +78,16 @@ router
       }
     }
   );
+
+router.route("/waiting/:id").get(async (req, res, next) => {
+  const {
+    groupStudyServiceInstance,
+    params: { id },
+  } = req;
+  if (!groupStudyServiceInstance) throw new Error();
+  const result = await groupStudyServiceInstance?.getWaitingPerson(id);
+  res.status(200).json(result);
+});
 
 router.route("/attendance/:id").get(async (req, res, next) => {
   const {
