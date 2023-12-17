@@ -67,7 +67,7 @@ router
     const groupStudyData = await groupStudyServiceInstance?.getGroupStudy();
     res.status(200).json(groupStudyData);
   })
-  .post(
+  .patch(
     body("id").notEmpty().isNumeric().withMessage("id필요"),
     validateCheck,
     async (req, res, next) => {
