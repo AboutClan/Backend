@@ -95,10 +95,11 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      const findUser = groupStudy.attendance.thisWeek.find(
-        (who) => who.uid === (this.token.uid as string)
-      );
-      return findUser || this.token.uid || "no find";
+      return groupStudy.attendance.thisWeek;
+      // const findUser = groupStudy.attendance.thisWeek.find(
+      //   (who) => who.uid === (this.token.uid as string)
+      // );
+      // return findUser || this.token.uid || "no find";
       // if (findUser) findUser.attendRecord = weekRecord;
       // else
       //   groupStudy.attendance.thisWeek.push({
