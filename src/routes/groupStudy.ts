@@ -60,6 +60,22 @@ router
   );
 router
   .route("/waiting")
+  .get(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      try {
+        const {
+          groupStudyServiceInstance,
+          body: { id },
+        } = req;
+        await groupStudyServiceInstance?.getWaitingPerson(id);
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  )
   .post(
     body("id").notEmpty().isNumeric().withMessage("id필요"),
     validateCheck,
