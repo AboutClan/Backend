@@ -47,10 +47,37 @@ router
       try {
         const {
           groupStudyServiceInstance,
-          body: { id},
+          body: { id },
         } = req;
 
         await groupStudyServiceInstance?.participateGroupStudy(id);
+
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+router
+  .route("/attendance")
+  .get(async (req, res, next) => {
+    const { groupStudyServiceInstance } = req;
+    if (!groupStudyServiceInstance) throw new Error();
+
+    const groupStudyData = await groupStudyServiceInstance?.getGroupStudy();
+    res.status(200).json(groupStudyData);
+  })
+  .post(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      try {
+        const {
+          groupStudyServiceInstance,
+          body: { id, weekRecord },
+        } = req;
+
+        await groupStudyServiceInstance?.attendGroupStudy(id, weekRecord);
 
         res.status(200).end();
       } catch (err) {

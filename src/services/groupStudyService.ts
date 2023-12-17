@@ -64,9 +64,42 @@ export default class GroupStudyService {
           user: this.token.id as IUser,
           role: "member",
         });
-
+        groupStudy.attendance.thisWeek.push({
+          uid: this.token.uid as string,
+          attendRecord: [],
+        });
+        groupStudy.attendance.lastWeek.push({
+          uid: this.token.uid as string,
+          attendRecord: [],
+        });
         await groupStudy?.save();
       }
+
+      return;
+    } catch (err) {
+      throw new Error();
+    }
+  }
+  async attendGroupStudy(id: string, weekRecord: string[]) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      if (
+        !groupStudy.participants.some(
+          (who) => who.user == (this.token.id as IUser)
+        )
+      ) {
+        return "멤버 정보를 찾을 수 없습니다.";
+      }
+
+      const findUser = groupStudy.attendance.thisWeek.find(
+        (who) => who.uid === (this.token.uid as string)
+      );
+
+      if (findUser) findUser.attendRecord = weekRecord;
+
+      await groupStudy?.save();
 
       return;
     } catch (err) {

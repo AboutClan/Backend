@@ -51,9 +51,46 @@ export interface IGroupStudyData {
   fee?: number;
   questionText?: string;
   hashTag: string;
+  attendance: IAttendance;
 }
 
 type UserRole = "admin" | "manager" | "member";
+
+interface IAttendance {
+  firstDate: string;
+  lastWeek: IWeekRecord[];
+  thisWeek: IWeekRecord[];
+}
+
+interface IWeekRecord {
+  uid: string;
+  attendRecord: string[];
+}
+
+export const weekSchema: Schema<IWeekRecord> = new Schema(
+  {
+    uid: {
+      type: String,
+    },
+    attendRecord: {
+      type: [String],
+    },
+  },
+  { _id: false }
+);
+
+export const attendanceSchema: Schema<IAttendance> = new Schema(
+  {
+    firstDate: {
+      type: String,
+    },
+    lastWeek: {
+      type: [weekSchema],
+    },
+    thisWeek: [weekSchema],
+  },
+  { _id: false }
+);
 
 export const categorySchema: Schema<ICategory> = new Schema(
   {
@@ -125,6 +162,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     category: {
       type: categorySchema,
     },
+    attendance: {
+      type: attendanceSchema,
+    },
     hashTag: {
       type: String,
     },
@@ -171,6 +211,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     period: {
       type: String,
     },
+
     location: {
       type: String,
       enum: [
