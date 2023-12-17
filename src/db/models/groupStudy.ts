@@ -52,6 +52,7 @@ export interface IGroupStudyData {
   questionText?: string;
   hashTag: string;
   attendance: IAttendance;
+  waiting: (string | IUser)[];
 }
 
 type UserRole = "admin" | "manager" | "member";
@@ -149,6 +150,13 @@ export const commentSchema: Schema<commentType> = new Schema(
   }
 );
 
+export const waitingSchema: Schema<{ user: string | IUser }> = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+});
+
 export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
   {
     title: {
@@ -156,6 +164,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     },
     isFree: {
       type: Boolean,
+    },
+    waiting: {
+      type: [waitingSchema],
     },
     fee: {
       type: Number,

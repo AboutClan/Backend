@@ -82,6 +82,22 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
+  async setWaitingPerson(id: string) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      if (groupStudy?.waiting) {
+        groupStudy.waiting.push(this.token.id as IUser);
+      } else {
+        groupStudy.waiting = [this.token.id as IUser];
+      }
+      await groupStudy?.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
   async getAttendanceGroupStudy(id: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();

@@ -58,6 +58,27 @@ router
       }
     }
   );
+router
+  .route("/waiting")
+  .post(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      try {
+        const {
+          groupStudyServiceInstance,
+          body: { id },
+        } = req;
+
+        await groupStudyServiceInstance?.setWaitingPerson(id);
+
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
 router.route("/attendance/:id").get(async (req, res, next) => {
   const {
     groupStudyServiceInstance,
