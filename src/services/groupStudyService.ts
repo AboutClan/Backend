@@ -95,7 +95,8 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      return groupStudy.attendance.thisWeek;
+      return this.token.uid;
+      // return groupStudy.attendance.thisWeek;
       // const findUser = groupStudy.attendance.thisWeek.find(
       //   (who) => who.uid === (this.token.uid as string)
       // );
