@@ -98,6 +98,11 @@ export default class GroupStudyService {
       );
 
       if (findUser) findUser.attendRecord = weekRecord;
+      else
+        groupStudy.attendance.thisWeek.push({
+          uid: this.token.uid as string,
+          attendRecord: weekRecord,
+        });
 
       await groupStudy?.save();
 
