@@ -106,7 +106,9 @@ export default class GroupStudyService {
         "/" +
         this.token.uid +
         "/" +
-        findUser?.uid
+        findUser?.uid +
+        "/" +
+        typeof this.token.uid
       );
       // if (findUser) findUser.attendRecord = weekRecord;
       // else
