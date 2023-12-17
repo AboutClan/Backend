@@ -73,6 +73,9 @@ export const weekSchema: Schema<IWeekRecord> = new Schema(
     uid: {
       type: String,
     },
+    name: {
+      type: String,
+    },
     attendRecord: {
       type: [String],
     },
