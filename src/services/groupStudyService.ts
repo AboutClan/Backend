@@ -101,7 +101,13 @@ export default class GroupStudyService {
         (who) => who.uid === (this.token.uid as string)
       );
 
-      return groupStudy.attendance.thisWeek[0].uid + "/" + this.token.uid;
+      return (
+        groupStudy.attendance.thisWeek[0].uid +
+        "/" +
+        this.token.uid +
+        "/" +
+        findUser?.uid
+      );
       // if (findUser) findUser.attendRecord = weekRecord;
       // else
       //   groupStudy.attendance.thisWeek.push({
