@@ -64,6 +64,7 @@ interface IAttendance {
 
 interface IWeekRecord {
   uid: string;
+  name: string;
   attendRecord: string[];
 }
 

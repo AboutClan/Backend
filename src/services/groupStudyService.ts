@@ -66,10 +66,12 @@ export default class GroupStudyService {
         });
         groupStudy.attendance.thisWeek.push({
           uid: this.token.uid as string,
+          name: this.token.name as string,
           attendRecord: [],
         });
         groupStudy.attendance.lastWeek.push({
           uid: this.token.uid as string,
+          name: this.token.name as string,
           attendRecord: [],
         });
         await groupStudy?.save();
@@ -102,6 +104,7 @@ export default class GroupStudyService {
       if (findUser) findUser.attendRecord = weekRecord;
       else
         groupStudy.attendance.thisWeek.push({
+          name: this.token.name as string,
           uid: this.token.uid as string,
           attendRecord: weekRecord,
         });
