@@ -96,15 +96,15 @@ export default class GroupStudyService {
 
     try {
       const findUser = groupStudy.attendance.thisWeek.find(
-        (who) => who.uid === (this.token.uid as string)
+        (who) => (who.uid = this.token.uid as string)
       );
-      return findUser?.attendRecord || this.token.uid || "no find";
-      // if (findUser) findUser.attendRecord = weekRecord;
-      // else
-      //   groupStudy.attendance.thisWeek.push({
-      //     uid: this.token.uid as string,
-      //     attendRecord: weekRecord,
-      //   });
+
+      if (findUser) findUser.attendRecord = weekRecord;
+      else
+        groupStudy.attendance.thisWeek.push({
+          uid: this.token.uid as string,
+          attendRecord: weekRecord,
+        });
 
       await groupStudy?.save();
 
