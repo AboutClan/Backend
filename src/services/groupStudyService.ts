@@ -80,6 +80,16 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
+  async getAttendanceGroupStudy(id: string) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      return groupStudy.attendance;
+    } catch (err) {
+      throw new Error();
+    }
+  }
   async attendGroupStudy(id: string, weekRecord: string[]) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
