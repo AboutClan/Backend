@@ -98,7 +98,7 @@ export default class GroupStudyService {
 
     try {
       const findUser = groupStudy.attendance.thisWeek.find(
-        (who) => (who.uid = this.token.uid as string)
+        (who) => who.uid === (this.token.uid as string)
       );
 
       if (findUser) findUser.attendRecord = weekRecord;
