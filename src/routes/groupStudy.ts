@@ -77,9 +77,12 @@ router
           body: { id, weekRecord },
         } = req;
 
-        await groupStudyServiceInstance?.attendGroupStudy(id, weekRecord);
+        const result = await groupStudyServiceInstance?.attendGroupStudy(
+          id,
+          weekRecord
+        );
 
-        res.status(200).end();
+        res.status(200).json(result);
       } catch (err) {
         next(err);
       }
