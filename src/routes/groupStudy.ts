@@ -84,6 +84,8 @@ router.route("/waiting/:id").get(async (req, res, next) => {
     groupStudyServiceInstance,
     params: { id },
   } = req;
+  res.status(200).json(id);
+  return;
   if (!groupStudyServiceInstance) throw new Error();
   const result = await groupStudyServiceInstance?.getWaitingPerson(id);
   res.status(200).json(result);
