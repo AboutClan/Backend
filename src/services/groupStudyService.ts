@@ -85,14 +85,6 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      if (
-        !groupStudy.participants.some(
-          (who) => who.user == (this.token.id as IUser)
-        )
-      ) {
-        return "멤버 정보를 찾을 수 없습니다.";
-      }
-
       const findUser = groupStudy.attendance.thisWeek.find(
         (who) => who.uid === (this.token.uid as string)
       );
