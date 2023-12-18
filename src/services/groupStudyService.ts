@@ -167,9 +167,12 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      const findUser = groupStudy.attendance.thisWeek.find(
-        (who) => who.uid === this.token.uid + ""
-      );
+      const weekData =
+        type === "this"
+          ? groupStudy.attendance.thisWeek
+          : groupStudy.attendance.lastWeek;
+
+      const findUser = weekData.find((who) => who.uid === this.token.uid + "");
 
       if (findUser) findUser.attendRecord = weekRecord;
       else {
@@ -178,9 +181,9 @@ export default class GroupStudyService {
           uid: this.token.uid as string,
           attendRecord: weekRecord,
         };
-        return { a: type, b: type === "last" };
-        // if (type === "this") groupStudy.attendance.thisWeek.push(data);
-        // if (type === "last") groupStudy.attendance.lastWeek.push(data);
+
+        if (type === "this") groupStudy.attendance.thisWeek.push(data);
+        if (type === "last") groupStudy.attendance.lastWeek.push(data);
       }
 
       await groupStudy?.save();
