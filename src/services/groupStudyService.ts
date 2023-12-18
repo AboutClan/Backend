@@ -179,7 +179,7 @@ export default class GroupStudyService {
           attendRecord: weekRecord,
         };
         if (type === "this") groupStudy.attendance.thisWeek.push(data);
-        else groupStudy.attendance.lastWeek.push(data);
+        if (type === "last") groupStudy.attendance.lastWeek.push(data);
       }
 
       await groupStudy?.save();
