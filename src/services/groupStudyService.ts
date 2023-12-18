@@ -141,12 +141,12 @@ export default class GroupStudyService {
         groupStudy.participants.push({ user: userId, role: "member" });
       }
 
-      await groupStudy?.save();
       return {
         a: groupStudy.waiting[0].user,
         b: userId,
         c: groupStudy.waiting[0].user.toString() === userId,
       };
+      await groupStudy?.save();
     } catch (err) {
       throw new Error();
     }
