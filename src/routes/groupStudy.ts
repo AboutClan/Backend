@@ -108,9 +108,13 @@ router
           body: { id, status, userId },
         } = req;
 
-        await groupStudyServiceInstance?.agreeWaitingPerson(id, userId, status);
+        const result = await groupStudyServiceInstance?.agreeWaitingPerson(
+          id,
+          userId,
+          status
+        );
 
-        res.status(200).end();
+        res.status(200).json(result);
       } catch (err) {
         next(err);
       }

@@ -142,6 +142,11 @@ export default class GroupStudyService {
       }
 
       await groupStudy?.save();
+      return {
+        a: groupStudy.waiting[0].user,
+        b: userId,
+        c: groupStudy.waiting[0].user === userId,
+      };
     } catch (err) {
       throw new Error();
     }
