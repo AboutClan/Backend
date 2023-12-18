@@ -162,7 +162,7 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
-  async attendGroupStudy(id: string, weekRecord: string[]) {
+  async attendGroupStudy(id: string, weekRecord: string[], type: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
 
@@ -172,12 +172,15 @@ export default class GroupStudyService {
       );
 
       if (findUser) findUser.attendRecord = weekRecord;
-      else
-        groupStudy.attendance.thisWeek.push({
+      else {
+        const data = {
           name: this.token.name as string,
           uid: this.token.uid as string,
           attendRecord: weekRecord,
-        });
+        };
+        if (type === "this") groupStudy.attendance.thisWeek.push(data);
+        else groupStudy.attendance.lastWeek.push(data);
+      }
 
       await groupStudy?.save();
 
