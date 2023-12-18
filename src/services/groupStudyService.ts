@@ -100,9 +100,9 @@ export default class GroupStudyService {
 
     try {
       if (groupStudy?.waiting) {
-        groupStudy.waiting.push(this.token.id as IUser);
+        groupStudy.waiting.push({ user: this.token.id as IUser });
       } else {
-        groupStudy.waiting = [this.token.id as IUser];
+        groupStudy.waiting = [{ user: this.token.id as IUser }];
       }
       await groupStudy?.save();
     } catch (err) {
