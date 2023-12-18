@@ -142,6 +142,7 @@ export default class GroupStudyService {
       }
 
       await groupStudy?.save();
+      
     } catch (err) {
       throw new Error();
     }
