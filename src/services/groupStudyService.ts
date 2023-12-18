@@ -134,6 +134,7 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
+      return groupStudy.waiting[0].user.toString();
       groupStudy.waiting = groupStudy.waiting.filter(
         (who) => who.user !== userId
       );
