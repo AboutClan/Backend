@@ -84,7 +84,9 @@ export default class GroupStudyService {
   }
   async getWaitingPerson(id: string) {
     try {
-      const data = await GroupStudy.findOne({ id }).populate(["waiting.user"]);
+      const data = await GroupStudy.findOne({ id })
+        .populate(["waiting.user"])
+        .select("-_id");
 
       return data;
     } catch (err: any) {
