@@ -145,7 +145,7 @@ export default class GroupStudyService {
       return {
         a: groupStudy.waiting[0].user,
         b: userId,
-        c: groupStudy.waiting[0].user === userId,
+        c: (groupStudy.waiting[0].user as string) === userId,
       };
     } catch (err) {
       throw new Error();
