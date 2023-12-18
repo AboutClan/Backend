@@ -8,6 +8,7 @@ import { IUser, User } from "../db/models/user";
 import { v4 as uuidv4 } from "uuid";
 import { Counter } from "../db/models/counter";
 import dbConnect from "../db/conn";
+import { group } from "console";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -99,10 +100,14 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
+      const user = { user: this.token.id as IUser };
       if (groupStudy?.waiting) {
-        groupStudy.waiting.push({ user: this.token.id as IUser });
+        if (groupStudy.waiting.includes(user)) {
+          return;
+        }
+        groupStudy.waiting.push(user);
       } else {
-        groupStudy.waiting = [{ user: this.token.id as IUser }];
+        groupStudy.waiting = [user];
       }
       await groupStudy?.save();
     } catch (err) {
