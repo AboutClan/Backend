@@ -173,7 +173,7 @@ router
         groupStudyServiceInstance,
         body: { id, comment },
       } = req;
-      res.status(200).json({ id, comment });
+
       try {
         await groupStudyServiceInstance?.createComment(id, comment);
         res.status(200).end();

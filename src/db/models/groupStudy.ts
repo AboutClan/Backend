@@ -239,7 +239,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     period: {
       type: String,
     },
-
+    comment: {
+      typs: [commentSchema],
+    },
     location: {
       type: String,
       enum: [
