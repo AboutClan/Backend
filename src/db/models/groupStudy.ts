@@ -240,7 +240,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
       type: String,
     },
     comment: {
-      typs: [commentSchema],
+      type: [commentSchema],
     },
     location: {
       type: String,
