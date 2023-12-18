@@ -178,8 +178,9 @@ export default class GroupStudyService {
           uid: this.token.uid as string,
           attendRecord: weekRecord,
         };
-        if (type === "this") groupStudy.attendance.thisWeek.push(data);
-        if (type === "last") groupStudy.attendance.lastWeek.push(data);
+        return { a: type, b: type === "last" };
+        // if (type === "this") groupStudy.attendance.thisWeek.push(data);
+        // if (type === "last") groupStudy.attendance.lastWeek.push(data);
       }
 
       await groupStudy?.save();
