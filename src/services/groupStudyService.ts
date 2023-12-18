@@ -135,7 +135,7 @@ export default class GroupStudyService {
 
     try {
       groupStudy.waiting = groupStudy.waiting.filter(
-        (who) => who.user !== userId
+        (who) => who.user.toString() !== userId
       );
       if (status === "agree") {
         groupStudy.participants.push({ user: userId, role: "member" });
@@ -145,7 +145,7 @@ export default class GroupStudyService {
       return {
         a: groupStudy.waiting[0].user,
         b: userId,
-        c: (groupStudy.waiting[0].user as string) === userId,
+        c: groupStudy.waiting[0].user.toString() === userId,
       };
     } catch (err) {
       throw new Error();
