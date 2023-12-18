@@ -3,6 +3,7 @@ import groupStudyService from "../services/groupStudyService";
 import { body } from "express-validator";
 import validateCheck from "../middlewares/validator";
 import GroupStudyService from "../services/groupStudyService";
+import { stat } from "fs";
 
 const router: Router = express.Router();
 
@@ -88,6 +89,26 @@ router
         } = req;
 
         await groupStudyServiceInstance?.setWaitingPerson(id, answer);
+
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+router
+  .route("/waiting/status")
+  .post(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      try {
+        const {
+          groupStudyServiceInstance,
+          body: { id, status, userId },
+        } = req;
+
+        await groupStudyServiceInstance?.agreeWaitingPerson(id, userId, status);
 
         res.status(200).end();
       } catch (err) {

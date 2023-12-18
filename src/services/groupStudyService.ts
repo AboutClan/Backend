@@ -129,6 +129,23 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
+  async agreeWaitingPerson(id: string, userId: string, status: string) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      groupStudy.waiting = groupStudy.waiting.filter(
+        (who) => who.user !== userId
+      );
+      if (status === "agree") {
+        groupStudy.participants.push({ user: userId, role: "member" });
+      }
+
+      await groupStudy?.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
 
   async getAttendanceGroupStudy(id: string) {
     const groupStudy = await GroupStudy.findOne({ id });
