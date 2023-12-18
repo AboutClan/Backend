@@ -139,8 +139,8 @@ router.route("/attendance/:id").get(async (req, res, next) => {
   } = req;
   if (!groupStudyServiceInstance) throw new Error();
 
-  const result = await groupStudyServiceInstance?.getAttendanceGroupStudy(id);
-  res.status(200).json(result);
+  await groupStudyServiceInstance?.getAttendanceGroupStudy(id);
+  res.status(200).end();
 });
 
 router
