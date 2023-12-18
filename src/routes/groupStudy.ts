@@ -162,5 +162,62 @@ router
       }
     }
   );
+router
+  .route("/comment")
+  .post(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    body("comment").notEmpty().isString().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      const {
+        groupStudyServiceInstance,
+        body: { id, comment },
+      } = req;
+
+      try {
+        await groupStudyServiceInstance?.createComment(id, comment);
+        res.status(200).end();
+      } catch (err: any) {
+        next(err);
+      }
+    }
+  )
+  .delete(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    body("commentId").notEmpty().withMessage("commentId필요"),
+    validateCheck,
+    async (req, res, next) => {
+      const {
+        groupStudyServiceInstance,
+        body: { id, commentId },
+      } = req;
+
+      try {
+        await groupStudyServiceInstance?.deleteComment(id, commentId);
+        res.status(200).end();
+      } catch (err: any) {
+        next(err);
+      }
+    }
+  )
+  .patch(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    body("comment").notEmpty().isString().withMessage("string필요"),
+    body("commentId").notEmpty().withMessage("commentId필요"),
+    validateCheck,
+    async (req, res, next) => {
+      const {
+        groupStudyServiceInstance,
+        body: { id, commentId, comment },
+      } = req;
+
+      try {
+        await groupStudyServiceInstance?.patchComment(id, commentId, comment);
+        res.status(200).end();
+      } catch (err: any) {
+        next(err);
+      }
+    }
+  );
 
 module.exports = router;
