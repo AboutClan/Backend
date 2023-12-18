@@ -97,7 +97,7 @@ export const attendanceSchema: Schema<IAttendance> = new Schema(
     lastWeek: {
       type: [weekSchema],
     },
-    thisWeek: [weekSchema],
+    thisWeek: { type: [weekSchema] },
   },
   { _id: false }
 );

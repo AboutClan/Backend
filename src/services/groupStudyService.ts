@@ -46,6 +46,11 @@ export default class GroupStudyService {
 
     const groupStudyInfo = {
       ...data,
+      attendance: {
+        firstDate: null,
+        lastWeek: [],
+        thisWeek: [],
+      },
       id: nextId,
     };
     try {
