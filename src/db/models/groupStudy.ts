@@ -23,6 +23,10 @@ export interface participantsType {
   role: UserRole;
 }
 
+interface IWaiting {
+  user: string | IUser;
+}
+
 export interface commentType {
   user: string | IUser;
   comment: string;
@@ -150,7 +154,7 @@ export const commentSchema: Schema<commentType> = new Schema(
   }
 );
 
-export const waitingSchema: Schema<{ user: string | IUser }> = new Schema({
+export const waitingSchema: Schema<IWaiting> = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -167,6 +171,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     },
     waiting: {
       type: [waitingSchema],
+      ref: "User",
     },
     fee: {
       type: Number,
