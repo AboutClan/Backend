@@ -25,6 +25,7 @@ export interface participantsType {
 
 interface IWaiting {
   user: string | IUser;
+  answer?: string;
 }
 
 export interface commentType {
@@ -159,6 +160,9 @@ export const waitingSchema: Schema<IWaiting> = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
+    },
+    answer: {
+      type: String,
     },
   },
   { _id: false }

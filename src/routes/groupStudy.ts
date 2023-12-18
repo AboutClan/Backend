@@ -84,10 +84,10 @@ router
       try {
         const {
           groupStudyServiceInstance,
-          body: { id },
+          body: { id, answer },
         } = req;
 
-        await groupStudyServiceInstance?.setWaitingPerson(id);
+        await groupStudyServiceInstance?.setWaitingPerson(id, answer);
 
         res.status(200).end();
       } catch (err) {
