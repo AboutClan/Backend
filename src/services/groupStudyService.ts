@@ -83,6 +83,21 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
+  async deleteParticipate(id: string) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      groupStudy.participants = groupStudy.participants.filter(
+        (participant) => participant.user != (this.token.id as IUser)
+      );
+      await groupStudy.save();
+    } catch (err) {
+      throw new Error();
+    }
+    return;
+  }
+
   async getWaitingPerson(id: string) {
     try {
       const data = await GroupStudy.findOne({ id })

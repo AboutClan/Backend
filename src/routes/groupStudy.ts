@@ -57,6 +57,23 @@ router
         next(err);
       }
     }
+  )
+  .delete(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      const {
+        groupStudyServiceInstance,
+        body: { id },
+      } = req;
+
+      try {
+        await groupStudyServiceInstance?.deleteParticipate(id);
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
   );
 router
   .route("/waiting")
