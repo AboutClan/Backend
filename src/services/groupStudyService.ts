@@ -28,7 +28,7 @@ export default class GroupStudyService {
   async getGroupStudy() {
     try {
       const gatherData = await GroupStudy.find()
-        .populate(["organizer", "participants.user"])
+        .populate(["organizer", "participants.user", "waiting.user"])
         .select("-_id");
       return gatherData;
     } catch (err: any) {
