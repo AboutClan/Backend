@@ -135,18 +135,18 @@ export default class GroupStudyService {
 
     try {
       groupStudy.waiting = groupStudy.waiting.filter(
-        (who) => who.user.toString() !== userId
+        (who) => who.user !== userId
       );
       if (status === "agree") {
         groupStudy.participants.push({ user: userId, role: "member" });
       }
 
+      await groupStudy?.save();
       return {
         a: groupStudy.waiting[0].user,
         b: userId,
-        c: groupStudy.waiting[0].user.toString() === userId,
+        c: (groupStudy.waiting[0].user as string) === userId,
       };
-      await groupStudy?.save();
     } catch (err) {
       throw new Error();
     }
