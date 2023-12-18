@@ -27,10 +27,10 @@ export default class GroupStudyService {
 
   async getGroupStudy() {
     try {
-      const gruGroupStudyData = await GroupStudy.find()
+      const groupStudyData = await GroupStudy.find()
         .populate(["organizer", "participants.user", "waiting.user"])
         .select("-_id");
-      return gruGroupStudyData;
+      return groupStudyData;
     } catch (err: any) {
       throw new Error(err);
     }
@@ -182,50 +182,55 @@ export default class GroupStudyService {
     }
   }
 
-  async createComment(gruGroupStudyId: string, comment: string) {
-    const gruGroupStudy = await GroupStudy.findOne({ id: gruGroupStudyId });
-    if (!gruGroupStudy) throw new Error();
+  async createComment(groupStudyId: string, comment: string) {
+    const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
+    if (!groupStudy) throw new Error();
 
     try {
-      gruGroupStudy.comment.push({
-        user: this.token.id as IUser,
-        comment,
-      });
+      if (groupStudy?.comment) {
+        groupStudy.comment.push({
+          user: this.token.id as IUser,
+          comment,
+        });
+      } else {
+        groupStudy.comment = [
+          {
+            user: this.token.id as IUser,
+            comment,
+          },
+        ];
+      }
 
-      await gruGroupStudy.save();
+      await groupStudy.save();
     } catch (err) {
       throw new Error();
     }
   }
 
-  async deleteComment(gruGroupStudyId: string, commentId: string) {
-    const gruGroupStudy = await GroupStudy.findOne({ id: gruGroupStudyId });
-    if (!gruGroupStudy) throw new Error();
+  async deleteComment(groupStudyId: string, commentId: string) {
+    const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
+    if (!groupStudy) throw new Error();
 
     try {
-      gruGroupStudy.comment = gruGroupStudy.comment.filter(
+      groupStudy.comment = groupStudy.comment.filter(
         (com: any) => (com._id as string) != commentId
       );
 
-      await gruGroupStudy.save();
+      await groupStudy.save();
     } catch (err) {
       throw new Error();
     }
   }
 
-  async patchComment(
-    gruGroupStudyId: string,
-    commentId: string,
-    comment: string
-  ) {
-    const gruGroupStudy = await GroupStudy.findOne({ id: gruGroupStudyId });
-    if (!gruGroupStudy) throw new Error();
+  async patchComment(groupStudyId: string, commentId: string, comment: string) {
+    const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
+    if (!groupStudy) throw new Error();
 
     try {
-      gruGroupStudy.comment.forEach(async (com: any) => {
+      groupStudy.comment.forEach(async (com: any) => {
         if ((com._id as string) == commentId) {
           com.comment = comment;
-          await gruGroupStudy.save();
+          await groupStudy.save();
         }
       });
       return;
