@@ -168,6 +168,26 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
+
+  async patchAttendanceWeek(id: string) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      const firstDate = dayjs()
+        .startOf("week")
+        .add(1, "day")
+        .format("YYYY-MM-DD");
+
+      groupStudy.attendance.firstDate = firstDate;
+      groupStudy.attendance.lastWeek = groupStudy.attendance.thisWeek;
+      groupStudy.attendance.thisWeek = [];
+
+      await groupStudy.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
   async attendGroupStudy(id: string, weekRecord: string[], type: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();

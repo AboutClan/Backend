@@ -164,6 +164,26 @@ router
     }
   );
 router
+  .route("/attendance/confirm")
+  .patch(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      try {
+        const {
+          groupStudyServiceInstance,
+          body: { id },
+        } = req;
+
+        const result = await groupStudyServiceInstance?.patchAttendanceWeek(id);
+
+        res.status(200).json(result);
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+router
   .route("/comment")
   .post(
     body("id").notEmpty().isNumeric().withMessage("id필요"),
