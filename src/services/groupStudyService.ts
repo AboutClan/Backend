@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Counter } from "../db/models/counter";
 import dbConnect from "../db/conn";
 import { group } from "console";
+import dayjs from "dayjs";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -172,6 +173,13 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
+      const firstDate = dayjs()
+        .startOf("week")
+        .add(1, "day")
+        .format("YYYY-MM-DD");
+
+      if (type === "this") groupStudy.attendance.firstDate = firstDate;
+
       const weekData =
         type === "this"
           ? groupStudy.attendance.thisWeek
