@@ -26,6 +26,7 @@ export interface participantsType {
 interface IWaiting {
   user: string | IUser;
   answer?: string;
+  pointType: string;
 }
 
 export interface commentType {
@@ -162,6 +163,9 @@ export const waitingSchema: Schema<IWaiting> = new Schema(
       ref: "User",
     },
     answer: {
+      type: String,
+    },
+    pointType: {
       type: String,
     },
   },

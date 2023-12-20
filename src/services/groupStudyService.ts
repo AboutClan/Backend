@@ -121,12 +121,12 @@ export default class GroupStudyService {
     }
   }
 
-  async setWaitingPerson(id: string, answer?: string) {
+  async setWaitingPerson(id: string, pointType: string, answer?: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
 
     try {
-      const user = { user: this.token.id as IUser, answer };
+      const user = { user: this.token.id as IUser, answer, pointType };
       if (groupStudy?.waiting) {
         if (groupStudy.waiting.includes(user)) {
           return;
