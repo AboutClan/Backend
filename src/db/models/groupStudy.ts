@@ -6,7 +6,7 @@ import mongoose, {
 } from "mongoose";
 import { IUser } from "./user";
 
-export type GroupStudyStatus = "pending" | "open" | "close" | "end";
+export type GroupStudyStatus = "pending" | "pre" | "open" | "close" | "end";
 
 interface ICategory {
   main: string;
