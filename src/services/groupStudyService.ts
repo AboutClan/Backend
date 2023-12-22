@@ -45,21 +45,21 @@ export default class GroupStudyService {
   async createGroupStudy(data: IGroupStudyData) {
     const nextId = await this.getNextSequence("groupStudyId");
 
-    const groupStudyInfo = {
+    const groupStudyInfo: IGroupStudyData = {
       ...data,
       participants: [
-        // {
-        //   user: data.organizer._id,
-        //   role: "admin",
-        //   attendCnt: 0,
-        // },
+        {
+          user: data.organizer._id,
+          role: "admin",
+          attendCnt: 0,
+        },
       ],
       attendance: {
-        firstDate: null,
+        firstDate: undefined,
         lastWeek: [],
         thisWeek: [],
       },
-      id: nextId,
+      id: nextId as number,
     };
     try {
       const groupStudyData = groupStudyInfo;

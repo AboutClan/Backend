@@ -65,7 +65,7 @@ export interface IGroupStudyData {
 type UserRole = "admin" | "manager" | "member";
 
 interface IAttendance {
-  firstDate: string;
+  firstDate?: string;
   lastWeek: IWeekRecord[];
   thisWeek: IWeekRecord[];
 }
@@ -136,7 +136,7 @@ export const participantsSchema: Schema<participantsType> = new Schema(
     },
     role: {
       type: String,
-      enum: ["member", "manager", "human"],
+      enum: ["admin", "member", "manager", "human"],
     },
     attendCnt: {
       type: Number,
