@@ -21,6 +21,7 @@ export interface memberCntType {
 export interface participantsType {
   user: string | IUser;
   role: UserRole;
+  attendCnt: number;
 }
 
 interface IWaiting {
@@ -136,6 +137,9 @@ export const participantsSchema: Schema<participantsType> = new Schema(
     role: {
       type: String,
       enum: ["member", "manager", "human"],
+    },
+    attendCnt: {
+      type: Number,
     },
   },
   { _id: false }

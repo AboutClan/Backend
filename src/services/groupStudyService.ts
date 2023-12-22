@@ -47,6 +47,13 @@ export default class GroupStudyService {
 
     const groupStudyInfo = {
       ...data,
+      participants: [
+        {
+          user: data.organizer,
+          role: "admin",
+          attendCnt: 0,
+        },
+      ],
       attendance: {
         firstDate: null,
         lastWeek: [],
@@ -75,6 +82,7 @@ export default class GroupStudyService {
         groupStudy.participants.push({
           user: this.token.id as IUser,
           role: "member",
+          attendCnt: 0,
         });
         groupStudy.attendance.thisWeek.push({
           uid: this.token.uid as string,
@@ -149,7 +157,11 @@ export default class GroupStudyService {
         (who) => who.user.toString() !== userId
       );
       if (status === "agree") {
-        groupStudy.participants.push({ user: userId, role: "member" });
+        groupStudy.participants.push({
+          user: userId,
+          role: "member",
+          attendCnt: 0,
+        });
       }
 
       await groupStudy?.save();
@@ -206,16 +218,28 @@ export default class GroupStudyService {
           : groupStudy.attendance.lastWeek;
 
       const findUser = weekData.find((who) => who.uid === this.token.uid + "");
+      const findMember = groupStudy.participants.find(
+        (who) => who.user.toString() === (this.token.id as string)
+      );
 
-      if (findUser) findUser.attendRecord = weekRecord;
-      else {
+      if (findUser) {
+        const beforeCnt = findUser.attendRecord.length;
+        if (findMember) {
+          findMember.attendCnt += -beforeCnt + weekRecord.length;
+        }
+        findUser.attendRecord = weekRecord;
+      } else {
         const data = {
           name: this.token.name as string,
           uid: this.token.uid as string,
           attendRecord: weekRecord,
         };
-
-        if (type === "this") groupStudy.attendance.thisWeek.push(data);
+        if (findMember) {
+          findMember.attendCnt += weekRecord.length;
+        }
+        if (type === "this") {
+          groupStudy.attendance.thisWeek.push(data);
+        }
         if (type === "last") groupStudy.attendance.lastWeek.push(data);
       }
 
