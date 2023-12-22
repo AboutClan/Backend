@@ -48,11 +48,11 @@ export default class GroupStudyService {
     const groupStudyInfo = {
       ...data,
       participants: [
-        {
-          user: data.organizer._id,
-          role: "admin",
-          attendCnt: 0,
-        },
+        // {
+        //   user: data.organizer._id,
+        //   role: "admin",
+        //   attendCnt: 0,
+        // },
       ],
       attendance: {
         firstDate: null,
