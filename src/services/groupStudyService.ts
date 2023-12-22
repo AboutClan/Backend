@@ -49,7 +49,7 @@ export default class GroupStudyService {
       ...data,
       participants: [
         {
-          user: data.organizer,
+          user: data.organizer._id,
           role: "admin",
           attendCnt: 0,
         },
