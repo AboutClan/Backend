@@ -218,6 +218,7 @@ export default class GroupStudyService {
 
     try {
       const firstDate = dayjs()
+        .subtract(1, "day")
         .startOf("week")
         .add(1, "day")
         .format("YYYY-MM-DD");
