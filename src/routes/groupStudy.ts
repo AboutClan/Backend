@@ -38,7 +38,21 @@ router
       );
       res.status(200).json({ groupStudyId });
     }
+  )
+  .patch(
+    body("groupStudy").notEmpty().withMessage("groupStudy필요"),
+    validateCheck,
+    async (req, res, next) => {
+      const {
+        groupStudyServiceInstance,
+        body: { groupStudy },
+      } = req;
+
+      await groupStudyServiceInstance?.updateGroupStudy(groupStudy);
+      res.status(200).end();
+    }
   );
+
 router
   .route("/participate")
   .post(

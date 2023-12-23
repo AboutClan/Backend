@@ -69,6 +69,17 @@ export default class GroupStudyService {
       throw new Error(err);
     }
   }
+  async updateGroupStudy(data: IGroupStudyData) {
+    const groupStudy = await GroupStudy.findOne({ id: data.id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      Object.assign(groupStudy, data);
+      await groupStudy.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
   async participateGroupStudy(id: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
