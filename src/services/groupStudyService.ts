@@ -129,6 +129,7 @@ export default class GroupStudyService {
         (who) => who.uid !== (this.token.uid as string)
       );
       await groupStudy.save();
+      return { a: attendance.thisWeek, b: this.token.uid };
     } catch (err) {
       throw new Error();
     }
