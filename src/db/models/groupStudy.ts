@@ -38,6 +38,7 @@ export interface commentType {
 export interface IGroupStudyData {
   title: string;
   category: ICategory;
+  rules: string[];
   content: string;
   period: string;
   guide: string;
@@ -190,6 +191,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     },
     feeText: {
       type: String,
+    },
+    rules: {
+      type: [String],
     },
     category: {
       type: categorySchema,
