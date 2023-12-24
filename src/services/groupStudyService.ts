@@ -121,6 +121,13 @@ export default class GroupStudyService {
       groupStudy.participants = groupStudy.participants.filter(
         (participant) => participant.user != (this.token.id as IUser)
       );
+      const attendance = groupStudy.attendance;
+      attendance.lastWeek = attendance.lastWeek.filter(
+        (who) => who.uid !== this.token.uid
+      );
+      attendance.thisWeek = attendance.lastWeek.filter(
+        (who) => who.uid !== this.token.uid
+      );
       await groupStudy.save();
     } catch (err) {
       throw new Error();
