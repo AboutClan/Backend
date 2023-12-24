@@ -123,10 +123,10 @@ export default class GroupStudyService {
       );
       const attendance = groupStudy.attendance;
       attendance.lastWeek = attendance.lastWeek.filter(
-        (who) => who.uid !== this.token.uid
+        (who) => who.uid !== (this.token.uid as string)
       );
       attendance.thisWeek = attendance.thisWeek.filter(
-        (who) => who.uid !== this.token.uid
+        (who) => who.uid !== (this.token.uid as string)
       );
       await groupStudy.save();
     } catch (err) {
