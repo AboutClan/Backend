@@ -125,7 +125,7 @@ export default class GroupStudyService {
       attendance.lastWeek = attendance.lastWeek.filter(
         (who) => who.uid !== this.token.uid
       );
-      attendance.thisWeek = attendance.lastWeek.filter(
+      attendance.thisWeek = attendance.thisWeek.filter(
         (who) => who.uid !== this.token.uid
       );
       await groupStudy.save();
