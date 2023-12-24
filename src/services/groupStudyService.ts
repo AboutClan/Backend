@@ -121,15 +121,15 @@ export default class GroupStudyService {
       groupStudy.participants = groupStudy.participants.filter(
         (participant) => participant.user != (this.token.id as IUser)
       );
-      const attendance = groupStudy.attendance;
-      attendance.lastWeek = attendance.lastWeek.filter(
+
+      groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
         (who) => who.uid !== (this.token.uid as string)
       );
-      attendance.thisWeek = attendance.thisWeek.filter(
+      groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
         (who) => who.uid !== (this.token.uid as string)
       );
       await groupStudy.save();
-      return { a: attendance.thisWeek, b: this.token.uid };
+      return { a: groupStudy.attendance.thisWeek, b: this.token.uid };
     } catch (err) {
       throw new Error();
     }
