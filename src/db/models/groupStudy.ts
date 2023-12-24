@@ -38,6 +38,7 @@ export interface commentType {
 export interface IGroupStudyData {
   title: string;
   category: ICategory;
+  challenge?: string;
   rules: string[];
   content: string;
   period: string;
@@ -188,6 +189,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
 
     fee: {
       type: Number,
+    },
+    challenge: {
+      type: String,
     },
     feeText: {
       type: String,
