@@ -83,8 +83,8 @@ router
       } = req;
 
       try {
-        const result = await groupStudyServiceInstance?.deleteParticipate(id);
-        res.status(200).json(result);
+        await groupStudyServiceInstance?.deleteParticipate(id);
+        res.status(200).end();
       } catch (err) {
         next(err);
       }
