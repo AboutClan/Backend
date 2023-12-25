@@ -166,13 +166,14 @@ router
       try {
         const {
           groupStudyServiceInstance,
-          body: { id, weekRecord, type },
+          body: { id, weekRecord, type, weekRecordSub },
         } = req;
 
         const result = await groupStudyServiceInstance?.attendGroupStudy(
           id,
           weekRecord,
-          type
+          type,
+          weekRecordSub
         );
 
         res.status(200).json(result);

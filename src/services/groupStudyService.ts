@@ -219,7 +219,12 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
-  async attendGroupStudy(id: string, weekRecord: string[], type: string) {
+  async attendGroupStudy(
+    id: string,
+    weekRecord: string[],
+    type: string,
+    weekRecordSub?: string[]
+  ) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
 
@@ -248,11 +253,13 @@ export default class GroupStudyService {
           findMember.attendCnt += -beforeCnt + weekRecord.length;
         }
         findUser.attendRecord = weekRecord;
+        findUser.attendRecordSub = weekRecordSub;
       } else {
         const data = {
           name: this.token.name as string,
           uid: this.token.uid as string,
           attendRecord: weekRecord,
+          attendRecordSub: weekRecordSub,
         };
         if (findMember) {
           findMember.attendCnt += weekRecord.length;
