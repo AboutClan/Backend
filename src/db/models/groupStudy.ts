@@ -76,6 +76,7 @@ interface IWeekRecord {
   uid: string;
   name: string;
   attendRecord: string[];
+  attendRecordSub?: string[];
 }
 
 export const weekSchema: Schema<IWeekRecord> = new Schema(
@@ -87,6 +88,9 @@ export const weekSchema: Schema<IWeekRecord> = new Schema(
       type: String,
     },
     attendRecord: {
+      type: [String],
+    },
+    attendRecordSub: {
       type: [String],
     },
   },
