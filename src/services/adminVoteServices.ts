@@ -279,19 +279,22 @@ export default class AdminVoteService {
       arriveCheckCnt.forEach((info: any) => {
         if (uid && uid !== info.uid[0]) return;
         if (info.name[0] && info.location[0] === location) {
-          if (info.arrived && info.status !== "free") {
+          if (info.arrived) {
             if (info.date >= strToDate(startDay).toDate()) {
-              if (attendResult.has(info.name[0])) {
-                const current = attendResult.get(info.name[0]);
-                attendResult.set(info.name[0], current + 1);
-              } else {
-                attendResult.set(info.name[0], 1);
+              if (info.status !== "free") {
+                if (attendResult.has(info.name[0])) {
+                  const current = attendResult.get(info.name[0]);
+                  attendResult.set(info.name[0], current + 1);
+                } else {
+                  attendResult.set(info.name[0], 1);
+                }
               }
+              const cnt = info.status !== "free" ? 1 : 0.5;
               if (monthAccResult.has(info.name[0])) {
                 const current = monthAccResult.get(info.name[0]);
-                monthAccResult.set(info.name[0], current + 1);
+                monthAccResult.set(info.name[0], current + cnt);
               } else {
-                monthAccResult.set(info.name[0], 1);
+                monthAccResult.set(info.name[0], cnt);
               }
             }
           }
