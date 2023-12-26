@@ -305,7 +305,12 @@ export default class AdminVoteService {
         }
       });
       const allNames = new Set([...voteResult.keys(), ...attendResult.keys()]);
-      return { a: attendResult, b: voteResult, c: monthAccResult };
+      return {
+        a: attendResult,
+        b: voteResult,
+        c: monthAccResult,
+        d: arriveCheckCnt,
+      };
       allNames.forEach((name) => {
         const attendCount = attendResult.get(name) || 0; // attendResult에 값이 없으면 0을 사용
         const voteCount = voteResult.get(name) || 0; // voteResult에 값이 없으면 0을 사용
