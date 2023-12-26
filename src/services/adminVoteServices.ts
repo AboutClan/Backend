@@ -274,6 +274,7 @@ export default class AdminVoteService {
       const voteResult = new Map();
       const attendResult = new Map();
       const monthAccResult = new Map();
+      const freeAttendResult = new Map();
 
       arriveCheckCnt.forEach((info: any) => {
         if (uid && uid !== info.uid[0]) return;
@@ -286,14 +287,15 @@ export default class AdminVoteService {
               } else {
                 attendResult.set(info.name[0], 1);
               }
-            }
-            if (monthAccResult.has(info.name[0])) {
-              const current = monthAccResult.get(info.name[0]);
-              monthAccResult.set(info.name[0], current + 1);
-            } else {
-              monthAccResult.set(info.name[0], 1);
+              if (monthAccResult.has(info.name[0])) {
+                const current = monthAccResult.get(info.name[0]);
+                monthAccResult.set(info.name[0], current + 1);
+              } else {
+                monthAccResult.set(info.name[0], 1);
+              }
             }
           }
+
           if (!isAttend) {
             if (voteResult.has(info.name[0])) {
               const current = voteResult.get(info.name[0]);
