@@ -289,13 +289,13 @@ export default class AdminVoteService {
                   attendResult.set(info.name[0], 1);
                 }
               }
-              const cnt = info.status !== "free" ? 1 : 0.5;
-              if (monthAccResult.has(info.name[0])) {
-                const current = monthAccResult.get(info.name[0]);
-                monthAccResult.set(info.name[0], current + cnt);
-              } else {
-                monthAccResult.set(info.name[0], cnt);
-              }
+            }
+            const cnt = info.status !== "free" ? 1 : 0.5;
+            if (monthAccResult.has(info.name[0])) {
+              const current = monthAccResult.get(info.name[0]);
+              monthAccResult.set(info.name[0], current + cnt);
+            } else {
+              monthAccResult.set(info.name[0], cnt);
             }
           }
 
