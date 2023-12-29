@@ -61,6 +61,7 @@ export interface IGroupStudyData {
   questionText?: string;
   hashTag: string;
   attendance: IAttendance;
+  link?: string;
   waiting: IWaiting[];
 }
 
@@ -261,6 +262,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     },
     comment: {
       type: [commentSchema],
+    },
+    link: {
+      type: String,
     },
     location: {
       type: String,
