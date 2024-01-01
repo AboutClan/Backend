@@ -81,7 +81,7 @@ export default class CollectionService {
         });
         await Collection.updateOne(
           { user: this.token.id },
-          { $set: { collects: myAlphabets }, $inc: { num: 1 } }
+          { $set: { collects: myAlphabets }, $inc: { collectCnt: 1 } }
         );
       } else {
         return "not completed";
