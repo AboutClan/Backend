@@ -71,7 +71,9 @@ export default class CollectionService {
   async setCollectionCompleted() {
     try {
       const previousData = await Collection.findOne({ user: this.token.id });
-      let myAlphabets = previousData?.collects;
+      const myAlphabets = previousData?.collects?.length
+        ? [...previousData?.collects]
+        : null;
       if (ALPHABET_COLLECTION.every((item) => myAlphabets?.includes(item))) {
         ALPHABET_COLLECTION.forEach((item) => {
           const idx = myAlphabets?.indexOf(item);
@@ -79,7 +81,7 @@ export default class CollectionService {
         });
         await Collection.updateOne(
           { user: this.token.id },
-          { collects: myAlphabets }
+          { $set: { collects: myAlphabets }, $inc: { num: 1 } }
         );
       } else {
         return "not completed";
