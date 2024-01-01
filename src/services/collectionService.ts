@@ -3,7 +3,7 @@ import { Collection } from "../db/models/collection";
 import { DailyCheck } from "../db/models/dailyCheck";
 import { Notice } from "../db/models/notice";
 import { User } from "../db/models/user";
-
+import { Request } from "../db/models/request";
 const ALPHABET_COLLECTION = ["A", "B", "O", "U", "T"];
 export default class CollectionService {
   private token: JWT;
@@ -83,6 +83,14 @@ export default class CollectionService {
           { user: this.token.id },
           { $set: { collects: myAlphabets }, $inc: { collectCnt: 1 } }
         );
+        await Request.create({
+          category: "건의",
+          title: "알파벳 완성",
+          writer: this.token.name,
+          content: `${this.token.name}/${
+            previousData?.collectCnt ? previousData.collectCnt + 1 : 0
+          }`,
+        });
       } else {
         return "not completed";
       }
