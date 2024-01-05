@@ -32,7 +32,18 @@ export const RequestSchema: Schema<IRequestData> = new Schema(
   {
     category: {
       type: String,
-      enum: ["건의","신고", "홍보", "휴식", "충전", "탈퇴","출석","배지","불참","조모임"],
+      enum: [
+        "건의",
+        "신고",
+        "홍보",
+        "휴식",
+        "충전",
+        "탈퇴",
+        "출석",
+        "배지",
+        "불참",
+        "조모임",
+      ],
     },
     title: {
       type: String,
@@ -48,7 +59,7 @@ export const RequestSchema: Schema<IRequestData> = new Schema(
     },
     location: {
       type: String,
-      enum: ["수원", "양천", "안양","강남"],
+      enum: ["수원", "양천", "안양", "강남", "동대문"],
       default: "수원",
     },
   },
