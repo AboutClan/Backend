@@ -11,6 +11,8 @@ export interface IPlace extends Document {
   priority?: number;
   _id: string;
   location: string;
+  locationText?: string;
+  time?: string;
 }
 
 export const PlaceSchema: Schema<IPlace> = new Schema({
@@ -37,10 +39,16 @@ export const PlaceSchema: Schema<IPlace> = new Schema({
     type: Number,
     required: true,
   },
+  locationText: {
+    type: String,
+  },
+  time: {
+    type: String,
+  },
   priority: Number,
   location: {
     type: String,
-    enum: ["수원", "양천"],
+    enum: ["수원", "양천", "강남", "동대문", "안양"],
     default: "수원",
   },
 });
