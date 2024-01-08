@@ -59,6 +59,7 @@ export default class AdminManageService {
       const users = await User.find({
         $or: [{ role: "human" }, { role: "member" }],
       });
+      return users;
 
       const fUsers = users.filter((user) => {
         const thisMonth = dayjs().get("M") + 1;
@@ -82,7 +83,7 @@ export default class AdminManageService {
           lastMonthEnd,
           true
         );
-      return fUsers;
+
       const notPartUsers: any[] = [];
       fUsers.forEach((user) => {
         const idx = participationRate.findIndex(
