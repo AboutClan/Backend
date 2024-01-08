@@ -103,7 +103,7 @@ export default class AdminManageService {
           metadata: {
             type: "deposit",
             sub: null,
-            uid: this.token.uid,
+            uid: uid,
             value: -1000,
           },
         });
