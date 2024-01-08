@@ -7,7 +7,7 @@ import { strToDate } from "../utils/dateUtils";
 import { IUser, User, UserSchema } from "../db/models/user";
 import UserService from "./userService";
 import { JWT } from "next-auth/jwt";
-
+const logger = require("../../logger");
 export default class AdminManageService {
   private token: JWT;
   voteServiceInstance: VoteService;
@@ -99,7 +99,14 @@ export default class AdminManageService {
         if (!user) {
           throw new Error();
         }
-
+        logger.logger.info("월별 참여 정산", {
+          metadata: {
+            type: "deposit",
+            sub: null,
+            uid: this.token.uid,
+            value: -1000,
+          },
+        });
         user.deposit -= 1000;
         await user.save();
       });
