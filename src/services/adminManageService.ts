@@ -60,7 +60,6 @@ export default class AdminManageService {
         $or: [{ role: "human" }, { role: "member" }],
       });
 
-      return users;
       const fUsers = users.filter((user) => {
         const thisMonth = dayjs().get("M") + 1;
         const regMonth = dayjs(user.registerDate).get("M") + 1;
@@ -95,7 +94,7 @@ export default class AdminManageService {
             notPartUsers.push(participationRate[idx].uid);
         }
       });
-
+      return notPartUsers;
       notPartUsers.forEach(async (uid) => {
         const user = await User.findOne({ uid });
         if (!user) {
