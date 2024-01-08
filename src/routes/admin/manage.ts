@@ -36,7 +36,7 @@ router
       next(err);
     }
 
-    return res.status(200).end();
+    return res.status(200).json("SUCCESS");
   });
 
 module.exports = router;
