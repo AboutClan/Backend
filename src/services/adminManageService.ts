@@ -59,8 +59,8 @@ export default class AdminManageService {
       const users = await User.find({
         $or: [{ role: "human" }, { role: "member" }],
       });
-      return users;
 
+      return users;
       const fUsers = users.filter((user) => {
         const thisMonth = dayjs().get("M") + 1;
         const regMonth = dayjs(user.registerDate).get("M") + 1;

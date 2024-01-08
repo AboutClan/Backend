@@ -31,12 +31,12 @@ router
     const { adminManageInstance } = req;
 
     try {
-      const res = await adminManageInstance?.monthCalc();
+      const rest = await adminManageInstance?.monthCalc();
+      return res.status(200).json(rest);
     } catch (err) {
       next(err);
     }
-
-    return res.status(200).json(res);
+    return res.status(200).json("FAIL");
   });
 
 module.exports = router;
