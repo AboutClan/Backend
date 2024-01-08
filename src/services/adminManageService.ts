@@ -82,7 +82,7 @@ export default class AdminManageService {
           lastMonthEnd,
           true
         );
-
+      return fUsers;
       const notPartUsers: any[] = [];
       fUsers.forEach((user) => {
         const idx = participationRate.findIndex(
