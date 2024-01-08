@@ -90,8 +90,7 @@ export default class AdminManageService {
         );
 
         if (idx !== -1) {
-          if (!participationRate?.[idx]?.cnt)
-            notPartUsers.push(participationRate[idx].uid);
+          if (!participationRate?.[idx]?.cnt) notPartUsers.push(user?.uid);
         }
       });
       return notPartUsers;
