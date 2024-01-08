@@ -93,7 +93,7 @@ export default class AdminManageService {
           if (!participationRate?.[idx]?.cnt) notPartUsers.push(user?.uid);
         }
       });
-      return notPartUsers;
+
       notPartUsers.forEach(async (uid) => {
         const user = await User.findOne({ uid });
         if (!user) {
