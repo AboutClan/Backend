@@ -89,7 +89,7 @@ export default class AdminManageService {
           (participant) => user.uid == participant.uid
         );
 
-        if (idx !== -1) {
+        if (idx === -1) {
           if (!participationRate?.[idx]?.cnt) notPartUsers.push(user?.uid);
         }
       });
