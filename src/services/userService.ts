@@ -104,7 +104,7 @@ export default class UserService {
 
   async setUserInactive() {
     try {
-      const users = await User.find({ location: "강남" });
+      const users = await User.find({ location: "양천" });
       const NAME_DONG = [
         "권수민",
         "권하임",
@@ -164,9 +164,56 @@ export default class UserService {
         "혜성",
       ];
 
+      const NAME_YANG = [
+        "강동훈",
+        "강은진",
+        "국찬민",
+        "김다현",
+        "김민교",
+        "김선민",
+        "김예나",
+        "김유진",
+        "김주혁",
+        "김현준",
+        "김휘동",
+        "도건우",
+        "모정연",
+        "민경준",
+        "박기범",
+        "박명수",
+        "박민영",
+        "박석준",
+        "박유미",
+        "배예나",
+        "신혜경",
+        "안수빈",
+        "유장혁",
+        "이기문",
+        "이선호",
+        "이승준",
+        "이윤경",
+        "이인규",
+        "이혁준",
+        "이혜빈",
+        "임성진",
+        "장형권",
+        "재욱",
+        "정다연",
+        "정지우",
+        "정철주",
+        "조수민",
+        "준석",
+        "지은",
+        "지혜",
+        "최명지",
+        "최연호",
+        "최홍준",
+        "황두경",
+      ];
+
       if (!users) throw new Error();
       users?.forEach((item) => {
-        if (NAME_GANG.includes(item?.name)) {
+        if (NAME_YANG.includes(item?.name)) {
           item.isActive = true;
         } else item.isActive = false;
         item.save();
