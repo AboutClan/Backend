@@ -102,6 +102,51 @@ export default class UserService {
     }
   }
 
+  async setUserInactive() {
+    try {
+      const users = await User.find({ location: "동대문" });
+      const NAME_DONG = [
+        "권수민",
+        "권하임",
+        "김도하",
+        "김민준",
+        "김정우",
+        "김정환",
+        "나하영",
+        "단비",
+        "류지수",
+        "박건율",
+        "박선우",
+        "박윤영",
+        "박해원",
+        "송승윤",
+        "심유담",
+        "오태경",
+        "우세빈",
+        "이동희",
+        "이성원",
+        "이정재",
+        "이준기",
+        "임지수",
+        "장수연",
+        "정수연",
+        "정태진",
+        "정환",
+        "조재현",
+        "최은수",
+        "최혜원",
+        "배규민",
+      ];
+      users?.forEach((item) => {
+        if (NAME_DONG.includes(item?.name)) {
+          item.isActive = true;
+        } else item.isActive = false;
+      });
+    } catch (err: any) {
+      throw new Error();
+    }
+  }
+
   async getParticipationRate(
     startDay: string,
     endDay: string,

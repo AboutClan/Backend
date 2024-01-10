@@ -246,7 +246,7 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
     const { uid } = req.params;
-   
+
     try {
       const isActive = await userServiceInstance?.getUserWithUid(uid);
       return res.status(200).json(isActive);
@@ -264,6 +264,19 @@ router
       const results = await userServiceInstance?.getUsersWithUids(
         uids as string[]
       );
+      return res.status(200).json(results);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
+  .route("/changeInactive")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+
+    try {
+      const results = await userServiceInstance?.setUserInactive();
       return res.status(200).json(results);
     } catch (err) {
       next(err);
