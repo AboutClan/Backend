@@ -104,7 +104,7 @@ export default class UserService {
 
   async setUserInactive() {
     try {
-      const users = await User.find({ location: "양천" });
+      const users = await User.find({ location: "안양" });
       const NAME_DONG = [
         "권수민",
         "권하임",
@@ -209,6 +209,18 @@ export default class UserService {
         "최연호",
         "최홍준",
         "황두경",
+      ];
+
+      const NAME_AN = [
+        "김동욱",
+        "류하경",
+        "박주은",
+        "송유진",
+        "정우빈",
+        "윤승희",
+        "임하람",
+        "소람",
+        "태근",
       ];
 
       if (!users) throw new Error();
