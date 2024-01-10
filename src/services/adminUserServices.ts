@@ -11,7 +11,7 @@ export default class AdminUserService {
 
   async getAllUser() {
     try {
-      const users = await User.find({});
+      const users = await User.find({ isActive: true });
       return users;
     } catch (err) {
       throw new Error();
