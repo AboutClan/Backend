@@ -137,10 +137,12 @@ export default class UserService {
         "최혜원",
         "배규민",
       ];
+      if (!users) throw new Error();
       users?.forEach((item) => {
         if (NAME_DONG.includes(item?.name)) {
           item.isActive = true;
         } else item.isActive = false;
+        item.save();
       });
     } catch (err: any) {
       throw new Error();
