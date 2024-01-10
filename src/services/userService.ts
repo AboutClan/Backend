@@ -225,7 +225,7 @@ export default class UserService {
 
       if (!users) throw new Error();
       users?.forEach((item) => {
-        if (NAME_YANG.includes(item?.name)) {
+        if (NAME_AN.includes(item?.name)) {
           item.isActive = true;
         } else item.isActive = false;
         item.save();
