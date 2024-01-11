@@ -125,20 +125,21 @@ export default class UserService {
       ];
 
       const temp2 = [
-        "김선주",
-        "김정현",
-        "박태연",
-        "안소민",
-        "양지은",
-        "유현주",
-        "이상원",
-        "이서진",
-        "이세인",
-        "조석희",
-        "혜성",
-        "조정빈",
-        "구자준",
-        "조범래",
+        "권하임",
+        "김민준",
+        "김정우",
+        "김정환",
+        "류지수",
+        "박선우",
+        "박해원",
+        "우세빈",
+        "이성원",
+        "이정재",
+        "장수연",
+        "정수연",
+        "정환",
+        "최은수",
+        "최혜원",
       ];
       const temp3 = [
         "강동훈",
@@ -160,8 +161,8 @@ export default class UserService {
 
       if (!users) throw new Error();
       users?.forEach((item) => {
-        if (temp1.includes(item?.name)) {
-          item.belong = "동대문/A";
+        if (temp2.includes(item?.name)) {
+          item.belong = "동대문/B";
           item.isActive = true;
         }
         item.save();
