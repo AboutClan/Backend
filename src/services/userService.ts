@@ -104,23 +104,24 @@ export default class UserService {
 
   async setUserInactive() {
     try {
-      const users = await User.find({ location: "강남" });
+      const users = await User.find({ location: "동대문" });
       const temp1 = [
-        "김단아",
-        "김요은",
-        "김윤구",
-        "김현수",
-        "노태현",
-        "윤장원",
-        "이지아",
-        "이채원",
-        "전강훈",
-        "조혜승",
-        "최진호",
-        "한지예",
-        "현민",
-        "채서윤",
-        "이채원",
+        "권수민",
+        "김도하",
+        "김보경",
+        "나하영",
+        "단비",
+        "박건율",
+        "박윤영",
+        "송승윤",
+        "심유담",
+        "오태경",
+        "이동희",
+        "이준기",
+        "임지수",
+        "정태진",
+        "조재현",
+        "배규민",
       ];
 
       const temp2 = [
@@ -159,8 +160,8 @@ export default class UserService {
 
       if (!users) throw new Error();
       users?.forEach((item) => {
-        if (temp2.includes(item?.name)) {
-          item.belong = "강남/B";
+        if (temp1.includes(item?.name)) {
+          item.belong = "동대문/A";
           item.isActive = true;
         }
         item.save();
