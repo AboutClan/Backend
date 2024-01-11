@@ -122,6 +122,26 @@ export default class UserService {
         "정지우",
       ];
 
+      const temp2 = [
+        "국찬민",
+        "김선민",
+        "김예나",
+        "김주혁",
+        "도건우",
+        "박기범",
+        "박선준",
+        "박유미",
+        "안수빈",
+        "임성진",
+        "정다연",
+        "정철주",
+        "준석",
+        "지혜",
+        "CYH",
+        "최홍준",
+        "황두경",
+      ];
+
       if (!users) throw new Error();
       users?.forEach((item) => {
         if (YANG.includes(item?.name)) {
