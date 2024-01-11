@@ -34,6 +34,7 @@ export interface IUser extends Document, IRegistered {
   studyPreference: preferenceType;
   friend: string[];
   like: number;
+  belong?: string;
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -100,6 +101,9 @@ export const UserSchema: Schema<IUser> = new Schema({
   gender: {
     type: String,
     default: "",
+  },
+  belong: {
+    type: String,
   },
   profileImage: {
     type: String,
