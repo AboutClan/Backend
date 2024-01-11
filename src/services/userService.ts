@@ -141,11 +141,28 @@ export default class UserService {
         "최홍준",
         "황두경",
       ];
+      const temp3 = [
+        "강동훈",
+        "김다현",
+        "김유진",
+        "김현준",
+        "김휘동",
+        "민경준",
+        "박민영",
+        "박주성",
+        "이선호",
+        "이승준",
+        "이윤경",
+        "조수민",
+        "지은",
+        "최명지",
+        "김영우",
+      ];
 
       if (!users) throw new Error();
       users?.forEach((item) => {
         if (YANG.includes(item?.name)) {
-          item.belong = "양천/A";
+          item.belong = "양천/B";
           item.isActive = true;
         }
         item.save();
