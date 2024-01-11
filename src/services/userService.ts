@@ -161,7 +161,7 @@ export default class UserService {
 
       if (!users) throw new Error();
       users?.forEach((item) => {
-        if (YANG.includes(item?.name)) {
+        if (temp2.includes(item?.name)) {
           item.belong = "양천/B";
           item.isActive = true;
         }
