@@ -9,8 +9,12 @@ export default class AdminUserService {
     this.token = token as JWT;
   }
 
-  async getAllUser() {
+  async getAllUser(location?: string) {
     try {
+      if (location) {
+        const users = await User.find({ isActive: true, location });
+        return users;
+      }
       const users = await User.find({ isActive: true });
       return users;
     } catch (err) {

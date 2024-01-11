@@ -17,9 +17,14 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 router
   .route("/")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { adminUserServiceInstance } = req;
+    const {
+      adminUserServiceInstance,
+      query: { location },
+    } = req;
 
-    const allUser = await adminUserServiceInstance?.getAllUser();
+    const allUser = await adminUserServiceInstance?.getAllUser(
+      location as string
+    );
 
     return res.status(200).json(allUser);
   })
