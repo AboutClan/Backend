@@ -159,8 +159,8 @@ export default class UserService {
 
       if (!users) throw new Error();
       users?.forEach((item) => {
-        if (temp1.includes(item?.name)) {
-          item.belong = "강남/A";
+        if (temp2.includes(item?.name)) {
+          item.belong = "강남/B";
           item.isActive = true;
         }
         item.save();
