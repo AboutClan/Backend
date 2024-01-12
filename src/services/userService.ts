@@ -188,6 +188,10 @@ export default class UserService {
         "김웅섭",
         "정수지",
         "안효건",
+        "최지아",
+        "유정달",
+        "황유성",
+        "안효건",
       ];
 
       if (!users) throw new Error();
@@ -204,7 +208,9 @@ export default class UserService {
         }
         item.save();
       });
-      return temp as { name: string; birth: string }[];
+      return (temp as { name: string; birth: string }[])?.sort((a, b) =>
+        a.name > b.name ? 1 : -1
+      );
     } catch (err: any) {
       throw new Error();
     }
