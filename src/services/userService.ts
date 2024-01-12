@@ -106,20 +106,20 @@ export default class UserService {
     try {
       const users = await User.find({ location: "수원" });
       const temp1 = [
-        "조미준",
+        "유호선",
         "김예원",
-        "서문슬",
-        "양지훈",
-        "유나",
-        "다희",
-        "이승수",
-        "김동훈",
-        "박정언",
-        "양병연",
-        "김준형",
-        "이갑철",
-        "최재웅",
-        "김지훈",
+        "서유진",
+        "조수연",
+        "손현진",
+        "예은",
+        "유정달",
+        "차윤선",
+        "최지아",
+        "웅섭",
+        "유회령",
+        "최영현",
+        "이정호",
+        "준호",
       ];
 
       if (!users) throw new Error();
@@ -127,7 +127,7 @@ export default class UserService {
       users?.forEach((item) => {
         if (temp1.includes(item?.name)) {
           item.isActive = true;
-          item.belong = "수원/D";
+          item.belong = "수원/E";
         }
         item.save();
       });
