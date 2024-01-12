@@ -191,7 +191,7 @@ export default class UserService {
       ];
 
       if (!users) throw new Error();
-      const temp = [];
+      const temp: { name: string; birth: string }[] = [];
       users?.forEach((item) => {
         if (temp1.includes(item?.name)) {
           item.isActive = true;
@@ -204,6 +204,7 @@ export default class UserService {
         }
         item.save();
       });
+      return temp as { name: string; birth: string }[];
     } catch (err: any) {
       throw new Error();
     }
