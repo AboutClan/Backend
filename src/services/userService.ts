@@ -127,7 +127,7 @@ export default class UserService {
       users?.forEach((item) => {
         if (temp1.includes(item?.name)) {
           item.isActive = true;
-          item.belong = "수원/B";
+          item.belong = "수원/C";
         }
         item.save();
       });
