@@ -412,8 +412,7 @@ export default class VoteService {
       vote.participations.forEach((participation: any) => {
         participation.attendences.forEach((att: any) => {
           if (
-            (att?.user as IUser)._id?.toString() ===
-              this.token.id?.toString() &&
+            (att.user as IUser)._id?.toString() === this.token.id?.toString() &&
             att?.firstChoice
           ) {
             att.arrived = currentTime.toDate();
