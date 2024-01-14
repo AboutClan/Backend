@@ -407,6 +407,7 @@ export default class VoteService {
     if (!vote) throw new Error();
 
     try {
+      return "test";
       const currentTime = now().add(9, "hour");
 
       vote.participations.forEach((participation: any) => {
