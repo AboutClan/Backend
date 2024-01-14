@@ -54,8 +54,6 @@ router
     }
   });
 
-  
-
 router.use(
   "/:date",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -170,12 +168,11 @@ router
 
     try {
       await voteServiceInstance?.patchArrive(date, memo);
-      return res.status(204).end();
+      return res.status(204).json({ date, memo });
     } catch (err) {
       next(err);
     }
   });
-
 
 router
   .route("/:date/confirm")
