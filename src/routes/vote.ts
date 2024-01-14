@@ -167,7 +167,7 @@ router
     } = req;
 
     try {
-      return res.status(204).json({ test: "test", a: date, b: memo });
+      return res.status(200).json({ test: "test", a: date, b: memo });
       await voteServiceInstance?.patchArrive(date, memo);
     } catch (err) {
       next(err);
