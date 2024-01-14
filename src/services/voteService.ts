@@ -408,13 +408,13 @@ export default class VoteService {
 
     try {
       const currentTime = now().add(9, "hour");
-      let error;
+
       vote.participations.forEach((participation: any) => {
-        if (!participation?.attendences) error = participation.place;
         participation.attendences.forEach((att: any) => {
           if (
-            (att.user as IUser)._id.toString() === this.token.id?.toString() &&
-            att.firstChoice
+            (att?.user as IUser)._id?.toString() ===
+              this.token.id?.toString() &&
+            att?.firstChoice
           ) {
             att.arrived = currentTime.toDate();
             //memo가 빈문자열인 경우는 출석이 아닌 개인 스터디 신청에서 사용한 경우
@@ -422,9 +422,8 @@ export default class VoteService {
           }
         });
       });
-      return error;
+
       await vote.save();
-      return vote;
       return true;
     } catch (err) {
       throw new Error();
