@@ -423,6 +423,7 @@ export default class VoteService {
       });
 
       await vote.save();
+      return vote;
       return true;
     } catch (err) {
       throw new Error();
