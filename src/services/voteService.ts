@@ -407,10 +407,10 @@ export default class VoteService {
     if (!vote) throw new Error();
 
     try {
-      return "test";
       const currentTime = now().add(9, "hour");
-
+      let error;
       vote.participations.forEach((participation: any) => {
+        if (!participation?.attendences) error = participation.place;
         participation.attendences.forEach((att: any) => {
           if (
             (att.user as IUser)._id.toString() === this.token.id?.toString() &&
@@ -422,7 +422,7 @@ export default class VoteService {
           }
         });
       });
-
+      return error;
       await vote.save();
       return vote;
       return true;
