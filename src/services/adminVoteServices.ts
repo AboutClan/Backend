@@ -214,13 +214,12 @@ export default class AdminVoteService {
     uid: string
   ) {
     try {
-      return { startDay, endDay };
       const arriveCheckCnt = await Vote.collection
         .aggregate([
           {
             $match: {
               date: {
-                $gte: strToDate(startDay).date(1).toDate(),
+                $gte: strToDate(startDay).toDate(),
                 $lte: strToDate(endDay).toDate(),
               },
             },
