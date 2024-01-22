@@ -1,8 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
-import { now, strToDate } from "../utils/dateUtils";
 import { IAttendance, IParticipation, Vote } from "../db/models/vote";
+import { now, strToDate } from "../utils/dateUtils";
 import { findOneVote } from "../utils/voteUtils";
-import { start } from "repl";
 
 type voteTime = { start: Dayjs | Date; end: Dayjs | Date };
 
@@ -215,6 +214,7 @@ export default class AdminVoteService {
     uid: string
   ) {
     try {
+      return { startDay, endDay };
       const arriveCheckCnt = await Vote.collection
         .aggregate([
           {
