@@ -1,9 +1,7 @@
 import { JWT } from "next-auth/jwt";
-import { Gather, IGatherData, gatherStatus } from "../db/models/gather";
-import { IUser, User } from "../db/models/user";
-import { v4 as uuidv4 } from "uuid";
 import { Counter } from "../db/models/counter";
-import dbConnect from "../db/conn";
+import { Gather, gatherStatus, IGatherData } from "../db/models/gather";
+import { IUser } from "../db/models/user";
 
 export default class GatherService {
   private token: JWT;
@@ -21,12 +19,19 @@ export default class GatherService {
     }
   }
 
-  async getGather() {
+  async getGather(cursor?: number) {
     try {
       const gatherData = await Gather.find()
         .populate(["user", "participants.user", "comment.user"])
         .select("-_id");
-      return gatherData;
+
+      if (cursor) {
+        const gap = 12;
+        let start = gap + gap * cursor;
+        return gatherData.slice(-start, -start + gap + 1).reverse();
+      }
+
+      return gatherData.slice().reverse();
     } catch (err: any) {
       throw new Error(err);
     }

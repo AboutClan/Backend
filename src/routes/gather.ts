@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response, Router } from "express";
-import GatherService from "../services/gatherService";
 import { body } from "express-validator";
 import validateCheck from "../middlewares/validator";
+import GatherService from "../services/gatherService";
 
 const router: Router = express.Router();
 
@@ -17,9 +17,11 @@ router
   .route("/")
   .get(async (req, res, next) => {
     const { gatherServiceInstance } = req;
-    if (!gatherServiceInstance) throw new Error();
+    const { cursor } = req.query as { cursor: string };
+    const cursorNum = parseInt(cursor);
 
-    const gatherData = await gatherServiceInstance.getGather();
+    if (!gatherServiceInstance) throw new Error();
+    const gatherData = await gatherServiceInstance.getGather(cursorNum);
     res.status(200).json(gatherData);
   })
   .post(
@@ -51,7 +53,7 @@ router
   .patch(async (req, res, next) => {
     const {
       gatherServiceInstance,
-      body: {  gather },
+      body: { gather },
     } = req;
 
     await gatherServiceInstance?.updateGather(gather);
