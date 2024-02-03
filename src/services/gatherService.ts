@@ -1,6 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
-import { Gather, gatherStatus, IGatherData } from "../db/models/gather";
+import { Gather } from "../db/models/gather";
 import { IUser } from "../db/models/user";
 
 export default class GatherService {
@@ -19,7 +19,7 @@ export default class GatherService {
     }
   }
 
-  async getGather(cursor?: number) {
+  async getGather(cursor: number | null) {
     try {
       const gatherData = await Gather.find()
         .populate(["user", "participants.user", "comment.user"])

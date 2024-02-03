@@ -17,8 +17,8 @@ router
   .route("/")
   .get(async (req, res, next) => {
     const { gatherServiceInstance } = req;
-    const { cursor } = req.query as { cursor: string };
-    const cursorNum = parseInt(cursor);
+    const { cursor } = req.query as { cursor?: string };
+    const cursorNum = cursor ? parseInt(cursor) : null;
 
     if (!gatherServiceInstance) throw new Error();
     const gatherData = await gatherServiceInstance.getGather(cursorNum);
