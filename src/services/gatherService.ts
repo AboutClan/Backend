@@ -25,6 +25,7 @@ export default class GatherService {
         .populate(["user", "participants.user", "comment.user"])
         .select("-_id");
 
+      return cursor;
       if (cursor !== undefined) {
         const gap = 12;
         let start = gap + gap * cursor;
