@@ -189,9 +189,13 @@ export default class VoteService {
         }
       );
       //유저 정보 없는 경우 제거
-      const filteredVote2 = filteredVote?.participations?.map((par) =>
-        par?.attendences?.filter((who) => who?.user)
-      );
+      const filteredVote2 = filteredVote?.participations?.map((par) => {
+        const temp: IParticipation = {
+          ...par,
+          attendences: par?.attendences?.filter((who) => who?.user),
+        };
+        return temp;
+      });
       return filteredVote2;
     } catch (err) {
       throw new Error();
