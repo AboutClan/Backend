@@ -192,11 +192,11 @@ export default class VoteService {
       const filteredVote2 = filteredVote?.participations?.map((par) => {
         const temp: IParticipation = {
           ...par,
-          attendences: par?.attendences?.filter((who) => who?.user),
+          attendences: par.attendences?.filter((who) => who?.user),
         };
         return temp;
       });
-      return filteredVote2;
+      return filteredVote;
     } catch (err) {
       throw new Error();
     }
