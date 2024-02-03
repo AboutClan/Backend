@@ -28,7 +28,7 @@ export default class GatherService {
       if (cursor !== undefined) {
         const gap = 12;
         let start = gap + gap * cursor;
-        return { start, gap };
+        if (cursor === 0) return gatherData.slice(-start).reverse();
         return gatherData.slice(-start, -start + gap + 1).reverse();
       }
 
