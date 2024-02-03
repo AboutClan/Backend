@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
+import { IPlace, Place } from "../db/models/place";
+import { IUser, User } from "../db/models/user";
 import {
   IAbsence,
   IAttendance,
@@ -7,11 +9,9 @@ import {
   IVote,
   Vote,
 } from "../db/models/vote";
-import { findOneVote } from "../utils/voteUtils";
-import { IPlace, Place } from "../db/models/place";
-import { IUser, User } from "../db/models/user";
 import { IVoteStudyInfo } from "../types/vote";
 import { now, strToDate } from "../utils/dateUtils";
+import { findOneVote } from "../utils/voteUtils";
 
 export default class VoteService {
   private token: JWT;
@@ -181,13 +181,18 @@ export default class VoteService {
   async getFilteredVote(date: any, location: string) {
     try {
       const filteredVote = await this.getVote(date);
+
       filteredVote.participations = filteredVote?.participations.filter(
         (participation) => {
           const placeLocation = participation.place?.location;
           return placeLocation === location;
         }
       );
-      return filteredVote;
+      //유저 정보 없는 경우 제거
+      const filteredVote2 = filteredVote.participations.map((par) =>
+        par.attendences?.filter((who) => who?.user)
+      );
+      return filteredVote2;
     } catch (err) {
       throw new Error();
     }

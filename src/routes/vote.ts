@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
-import { strToDate } from "../utils/dateUtils";
-import { IVoteStudyInfo } from "../types/vote";
-import VoteService from "../services/voteService";
-import { query, body, param } from "express-validator";
+import { body, query } from "express-validator";
 import validateCheck from "../middlewares/validator";
+import VoteService from "../services/voteService";
+import { IVoteStudyInfo } from "../types/vote";
+import { strToDate } from "../utils/dateUtils";
 
 const router = express.Router();
 
