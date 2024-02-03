@@ -24,15 +24,15 @@ export default class GatherService {
       const gatherData = await Gather.find()
         .populate(["user", "participants.user", "comment.user"])
         .select("-_id");
-      return cursor;
-      if (cursor !== undefined || cursor !== null) {
-        const gap = 12;
-        let start = gap + gap * (cursor || 0);
-        if (cursor === 0) return gatherData.slice(-start).reverse();
-        return gatherData.slice(-start, -start + gap + 1).reverse();
+
+      if (cursor === null || cursor === undefined) {
+        return gatherData.slice().reverse();
       }
 
-      return gatherData.slice().reverse();
+      const gap = 12;
+      let start = gap + gap * (cursor || 0);
+      if (cursor === 0) return gatherData.slice(-start).reverse();
+      return gatherData.slice(-start, -start + gap + 1).reverse();
     } catch (err: any) {
       throw new Error(err);
     }
