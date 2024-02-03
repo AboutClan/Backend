@@ -25,11 +25,11 @@ export default class GatherService {
         .populate(["user", "participants.user", "comment.user"])
         .select("-_id");
       return cursor;
-      if (cursor) {
-        const gap = 12;
-        let start = gap + gap * cursor;
-        return gatherData.slice(-start, -start + gap + 1).reverse();
-      }
+      // if (cursor) {
+      //   const gap = 12;
+      //   let start = gap + gap * cursor;
+      //   return gatherData.slice(-start, -start + gap + 1).reverse();
+      // }
 
       return gatherData.slice().reverse();
     } catch (err: any) {
