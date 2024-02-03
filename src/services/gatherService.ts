@@ -24,8 +24,8 @@ export default class GatherService {
       const gatherData = await Gather.find()
         .populate(["user", "participants.user", "comment.user"])
         .select("-_id");
-
-      if (cursor !== undefined || cursor !== "undefined" || cursor !== null) {
+      return cursor;
+      if (cursor !== undefined || cursor !== null) {
         const gap = 12;
         let start = gap + gap * (cursor || 0);
         if (cursor === 0) return gatherData.slice(-start).reverse();
