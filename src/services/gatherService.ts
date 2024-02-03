@@ -1,6 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
-import { Gather } from "../db/models/gather";
+import { Gather, gatherStatus, IGatherData } from "../db/models/gather";
 import { IUser } from "../db/models/user";
 
 export default class GatherService {
