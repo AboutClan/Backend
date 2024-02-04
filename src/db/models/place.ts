@@ -1,4 +1,4 @@
-import mongoose, { model, Schema, Model, Document } from "mongoose";
+import mongoose, { Document, model, Model, Schema } from "mongoose";
 
 export interface IPlace extends Document {
   status: string;
@@ -13,6 +13,7 @@ export interface IPlace extends Document {
   _id: string;
   location: string;
   locationText?: string;
+  locationDetail?: string;
   time?: string;
 }
 
@@ -43,6 +44,9 @@ export const PlaceSchema: Schema<IPlace> = new Schema({
     required: true,
   },
   locationText: {
+    type: String,
+  },
+  locationDetail: {
     type: String,
   },
   time: {
