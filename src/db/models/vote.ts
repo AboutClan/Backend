@@ -108,7 +108,6 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
       ref: "Place",
     },
 
-    attendances: [AttendanceSchema],
     attendences: [AttendanceSchema],
     absences: [AbsenceSchema],
     startTime: Date,
@@ -119,7 +118,7 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
       default: "pending",
     },
   },
-  { _id: false }
+  { _id: false, strict: false }
 );
 
 const VoteSchema: Schema<IVote> = new Schema({

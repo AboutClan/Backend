@@ -42,6 +42,19 @@ router.route("/arrived").get(
 );
 
 router
+  .route("/deleteField")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+
+    try {
+      const result = await voteServiceInstance?.deleteField();
+      return res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
   .route("/arriveCnt")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
