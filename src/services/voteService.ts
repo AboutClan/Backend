@@ -407,6 +407,15 @@ export default class VoteService {
     }
   }
 
+  async deleteField() {
+    await Vote.updateMany(
+      {},
+      { $unset: { "participations.attendances": true } },
+      { strict: false }
+    );
+    console.log("finish");
+  }
+
   async patchArrive(date: any, memo: any) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
