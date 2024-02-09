@@ -47,8 +47,8 @@ router
     const { voteServiceInstance } = req;
 
     try {
-      const result = await voteServiceInstance?.deleteField();
-      return res.status(200).json(result);
+      await voteServiceInstance?.deleteField();
+      return res.status(200).end();
     } catch (err) {
       next(err);
     }

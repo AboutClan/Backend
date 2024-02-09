@@ -20,7 +20,6 @@ export interface IPlaceStatus {
 
 export interface IParticipation extends IPlaceStatus, ITimeStartToEndHM {
   place?: IPlace;
-  attendances?: IAttendance[];
   attendences?: IAttendance[];
   absences?: IAbsence[];
   startTime?: Date;
