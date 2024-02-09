@@ -67,7 +67,12 @@ export default class UserService {
     if (strArr.length) queryString = "-_id" + queryString;
 
     try {
-      const result = await User.findOne({ uid: this.token.uid }, queryString);
+      const result = await User.findOne(
+        { uid: this.token.uid },
+        queryString
+      ).select(
+        "avatar birth comment isActive location name profileImage score uid"
+      );
 
       if (result && result.telephone)
         result.telephone = await this.decodeByAES256(result.telephone);
@@ -81,7 +86,9 @@ export default class UserService {
   async getAllUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
     try {
-      const users = await User.find({}, "-_id" + queryString);
+      const users = await User.find({}, "-_id" + queryString).select(
+        "avatar birth comment isActive location name profileImage score uid"
+      );
 
       users.forEach(async (user) => {
         if (user.telephone)
