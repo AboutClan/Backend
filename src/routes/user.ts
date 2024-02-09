@@ -504,6 +504,12 @@ router
 router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    throw new Error("what?");
+    const { userServiceInstance } = req;
+    try {
+      await userServiceInstance?.test();
+      return res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   });
 module.exports = router;
