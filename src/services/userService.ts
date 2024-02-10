@@ -1,12 +1,12 @@
-import { JWT } from "next-auth/jwt";
-import { IUser, User, restType } from "../db/models/user";
+import * as CryptoJS from "crypto-js";
 import dayjs from "dayjs";
+import { JWT } from "next-auth/jwt";
+import { Counter } from "../db/models/counter";
+import { Notice } from "../db/models/notice";
+import { Promotion } from "../db/models/promotion";
+import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
-import * as CryptoJS from "crypto-js";
-import { Promotion } from "../db/models/promotion";
-import { Notice } from "../db/models/notice";
-import { Counter } from "../db/models/counter";
 
 const logger = require("../../logger");
 
@@ -67,12 +67,11 @@ export default class UserService {
     if (strArr.length) queryString = "-_id" + queryString;
 
     try {
-      const result = await User.findOne(
-        { uid: this.token.uid },
-        queryString
-      ).select(
-        "avatar birth comment isActive location name profileImage score uid"
-      );
+      const result = await User.findOne({ uid: this.token.uid }, queryString);
+
+      //   .select(
+      //   "avatar birth comment isActive location name profileImage score uid"
+      // );
 
       if (result && result.telephone)
         result.telephone = await this.decodeByAES256(result.telephone);
