@@ -1,12 +1,12 @@
-import { JWT } from "next-auth/jwt";
-import { IUser, User, restType } from "../db/models/user";
+import * as CryptoJS from "crypto-js";
 import dayjs from "dayjs";
+import { JWT } from "next-auth/jwt";
+import { Counter } from "../db/models/counter";
+import { Notice } from "../db/models/notice";
+import { Promotion } from "../db/models/promotion";
+import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
-import * as CryptoJS from "crypto-js";
-import { Promotion } from "../db/models/promotion";
-import { Notice } from "../db/models/notice";
-import { Counter } from "../db/models/counter";
 
 const logger = require("../../logger");
 
@@ -379,11 +379,12 @@ export default class UserService {
 
     return;
   }
+
+  // studyPreference도 id만 보내는 걸로 변경
   async getPreference() {
     try {
       const result = await User.findOne({ uid: this.token.uid })
-        .populate("studyPreference.place studyPreference.subPlace")
-        .select("studyPreference");
+      .select("studyPreference");
       return result;
     } catch (err: any) {
       throw new Error(err);
