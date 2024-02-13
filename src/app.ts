@@ -11,7 +11,7 @@ import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
 import { Notice } from "./db/models/notice";
-
+import swaggerFile from "../swagger/swagger-output.json";
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");
@@ -29,6 +29,9 @@ const notice = require("./routes/notice");
 const dailyCheck = require("./routes/dailyCheck");
 const collection = require("./routes/collection");
 const groupStudy = require("./routes/groupStudy");
+
+//swagger
+const swaggerUi = require("swagger-ui-express");
 
 class App {
   private app: express.Application;
@@ -71,6 +74,8 @@ class App {
     this.app.use("/dailyCheck", dailyCheck);
     this.app.use("/collection", collection);
     this.app.use("/groupStudy", groupStudy);
+    // this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
     this.app.use(ErrorHandler);
   }
 

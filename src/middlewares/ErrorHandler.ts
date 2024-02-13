@@ -6,7 +6,7 @@ const ErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Middleware Error Hadnling");
+  console.log("Middleware Error Handling");
   const errStatus = err.statusCode || 500;
   const errMsg = err.message || "Something went wrong";
   res.status(errStatus).json({

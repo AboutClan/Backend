@@ -7,7 +7,8 @@
     "postinstall": "tsc",
     "start": "node dist/src/app.js",
     "start2": "npx tsc && node dist/src/app.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\"",
+    "build": "node build"
   },
   "repository": {
     "type": "git",
@@ -46,7 +47,9 @@
     "next-auth": "^4.22.1",
     "os": "^0.1.2",
     "process": "^0.11.10",
+    "swagger-autogen": "^2.23.7",
     "swagger-cli": "^4.0.4",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.0",
     "winston": "^3.9.0",
