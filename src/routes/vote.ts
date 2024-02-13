@@ -12,6 +12,7 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
   const voteServiceInstance = new VoteService(decodedToken);
   req.voteServiceInstance = voteServiceInstance;
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   req.token = decodedToken;
   next();
 });
