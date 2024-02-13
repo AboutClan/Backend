@@ -12,7 +12,6 @@ export interface IPlace extends Document {
   priority?: number;
   _id: string;
   location: string;
-  locationText?: string;
   locationDetail?: string;
   time?: string;
 }

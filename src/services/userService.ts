@@ -408,11 +408,12 @@ export default class UserService {
 
     return;
   }
+
+  // studyPreference도 id만 보내는 걸로 변경
   async getPreference() {
     try {
       const result = await User.findOne({ uid: this.token.uid })
-        .populate("studyPreference.place studyPreference.subPlace")
-        .select("studyPreference");
+      .select("studyPreference");
       return result;
     } catch (err: any) {
       throw new Error(err);
