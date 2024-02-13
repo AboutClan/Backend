@@ -42,9 +42,6 @@ export const PlaceSchema: Schema<IPlace> = new Schema({
     type: Number,
     required: true,
   },
-  locationText: {
-    type: String,
-  },
   locationDetail: {
     type: String,
   },
