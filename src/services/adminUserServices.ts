@@ -107,4 +107,12 @@ export default class AdminUserService {
     }
     return;
   }
+
+  async updateBelong(uid: string, belong: string) {
+    try {
+      await User.updateMany({ uid }, { $set: { belong } });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
 }
