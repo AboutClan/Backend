@@ -9,6 +9,7 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const { decodedToken } = req;
 
   const userServiceInstance = new UserService(decodedToken);
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   req.userServiceInstance = userServiceInstance;
   next();
 });
@@ -22,6 +23,32 @@ router
 
     try {
       const isActive = await userServiceInstance?.getUserInfo(["isActive"]);
+      return res.status(200).json(isActive);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
+  .route("/simple")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+
+    try {
+      const isActive = await userServiceInstance?.getSimpleUserInfo();
+      return res.status(200).json(isActive);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
+  .route("/simpleAll")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+
+    try {
+      const isActive = await userServiceInstance?.getAllSimpleUserInfo();
       return res.status(200).json(isActive);
     } catch (err) {
       next(err);
@@ -504,12 +531,6 @@ router
 router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-    try {
-      await userServiceInstance?.test();
-      return res.status(200).end();
-    } catch (err: any) {
-      next(err);
-    }
+    throw new Error("what?");
   });
 module.exports = router;
