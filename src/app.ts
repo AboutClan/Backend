@@ -10,8 +10,8 @@ import dbConnect from "./db/conn";
 import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
-import { Notice } from "./db/models/notice";
-import swaggerFile from "../swagger/swagger-output.json";
+// import { Notice } from "./db/models/notice";
+// import swaggerFile from "../swagger/swagger-output.json";
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");
@@ -75,7 +75,7 @@ class App {
     this.app.use("/collection", collection);
     this.app.use("/groupStudy", groupStudy);
     // this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+    // this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
     this.app.use(ErrorHandler);
   }
 

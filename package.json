@@ -7,8 +7,7 @@
     "postinstall": "tsc",
     "start": "node dist/src/app.js",
     "start2": "npx tsc && node dist/src/app.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\"",
-    "build": "node build"
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/app.js\""
   },
   "repository": {
     "type": "git",
