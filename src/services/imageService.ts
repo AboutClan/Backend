@@ -11,16 +11,9 @@ export default class ImageService {
 
   constructor(token?: JWT) {
     this.token = token as JWT;
-    // this.upload = multer.diskStorage({
-    //   destination: function (req, file, cb) {
-    //     cb(null, "./upload/");
-    //   },
-    //   filename: function (req, file, cb) {
-    //     cb(null, Date.now() + "-" + file.originalname);
-    //   },
-    // });
+
     this.s3 = new AWS.S3({
-      accessKeyId: "",
+      accessKeyId: process.env.AWS_ACCESS_KEY,
       secretAccessKey: process.env.AWS_KEY,
       region: "ap-northeast-2",
     });
@@ -40,17 +33,13 @@ export default class ImageService {
     });
   }
 
-  async uploadImg() {
-    return "test";
-    const testObject = {
-      test: "da",
-    };
-    const stringObject = JSON.stringify(testObject);
+  async uploadImg(img: any) {
+    const stringObject = JSON.stringify(img);
     const objectStream = Readable.from([stringObject]);
 
     const params = {
       Bucket: "studyabout",
-      Key: "test",
+      Key: "test.jpg",
       Body: objectStream,
     };
 

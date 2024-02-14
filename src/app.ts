@@ -10,6 +10,7 @@ import dbConnect from "./db/conn";
 import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
+const bodyParser = require("body-parser");
 // import { Notice } from "./db/models/notice";
 // import swaggerFile from "../swagger/swagger-output.json";
 //router
@@ -46,9 +47,11 @@ class App {
 
   setupMiddlewares() {
     // middleware 설정
+    this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(bodyParser.json());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(cors({}));
+    this.app.use(cors());
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(dbSet);
