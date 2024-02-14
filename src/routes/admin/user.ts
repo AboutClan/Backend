@@ -150,6 +150,22 @@ router
   });
 
 router
+  .route("/:id/belong")
+  .patch(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      adminUserServiceInstance,
+      body: { belong },
+      params: { id: uid },
+    } = req;
+    try {
+      await adminUserServiceInstance?.updateBelong(uid, belong);
+      return res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
+  });
+
+router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     await User.updateMany({}, { role: "human" });
