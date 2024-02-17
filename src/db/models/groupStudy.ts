@@ -1,7 +1,7 @@
 import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
 
-export type GroupStudyStatus = "completed" | "open" | "end";
+export type GroupStudyStatus = "completed" | "open" | "end" | "pending";
 
 interface ICategory {
   main: string;
