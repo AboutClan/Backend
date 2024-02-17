@@ -1,12 +1,7 @@
-import mongoose, {
-  model,
-  Model,
-  Schema,
-  StringExpressionOperatorReturningBoolean,
-} from "mongoose";
+import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
 
-export type GroupStudyStatus = "pending" | "pre" | "open" | "close" | "end";
+export type GroupStudyStatus = "completed" | "open" | "end";
 
 interface ICategory {
   main: string;
