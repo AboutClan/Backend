@@ -173,7 +173,6 @@ router
         summary: boolean;
       } = req.query as any;
       try {
-        return res.status(200).json({ summary });
         const participationResult =
           await userServiceInstance?.getParticipationRate(
             startDay,

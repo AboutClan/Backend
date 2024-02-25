@@ -176,8 +176,8 @@ export default class UserService {
     startDay: string,
     endDay: string,
     all: boolean = false,
-    location: string | null,
-    summary: boolean
+    location?: string | null,
+    summary?: boolean
   ) {
     try {
       const allUser = all
