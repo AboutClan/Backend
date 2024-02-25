@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
-import UserService from "../services/userService";
 import { body, query } from "express-validator";
 import validateCheck from "../middlewares/validator";
+import UserService from "../services/userService";
 
 const router = express.Router();
 
@@ -173,6 +173,7 @@ router
         summary: boolean;
       } = req.query as any;
       try {
+        return res.status(200).json({ summary });
         const participationResult =
           await userServiceInstance?.getParticipationRate(
             startDay,
