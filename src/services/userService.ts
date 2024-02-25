@@ -176,17 +176,36 @@ export default class UserService {
     startDay: string,
     endDay: string,
     all: boolean = false,
-    isAttendRecord?: boolean
+    location: string | null,
+    summary: boolean
   ) {
     try {
       const allUser = all
         ? await User.find({ isActive: true })
         : await User.find({ isActive: true, uid: this.token.uid });
-      const attendForm = allUser.reduce((accumulator: any[], user) => {
-        return [...accumulator, { uid: user.uid, cnt: 0 }];
+      let attendForm = allUser.reduce((accumulator: any[], user) => {
+        return [
+          ...accumulator,
+          {
+            uid: user.uid,
+            cnt: 0,
+            userSummary: {
+              birth: user.birth,
+              avatar: user.avatar,
+              comment: user.comment,
+              isActive: user.isActive,
+              location: user.location,
+              name: user.name,
+              profileImage: user.profileImage,
+              score: user.score,
+              uid: user.uid,
+            },
+          },
+        ];
       }, []);
 
-      const forParticipation = await Vote.collection
+      let forParticipation: any[];
+      forParticipation = await Vote.collection
         .aggregate([
           {
             $match: {
@@ -238,17 +257,30 @@ export default class UserService {
               _id: false,
               uid: "$_id",
               cnt: "$cnt",
+              location: "$location",
             },
           },
         ])
         .toArray();
 
-      const filtered = forParticipation.filter((who) => who.cnt > 0);
+      let filtered = forParticipation.filter((who: any) => who.cnt > 0);
 
       filtered.forEach((obj) => {
         const idx = attendForm.findIndex((user) => user.uid === obj.uid);
         if (attendForm[idx]) attendForm[idx].cnt = obj.cnt;
       });
+
+      if (location) {
+        attendForm = attendForm.filter(
+          (data) => data.userSummary.location.toString() == location.toString()
+        );
+      }
+      if (!summary) {
+        attendForm.forEach((data) => {
+          delete data.userSummary;
+        });
+      }
+
       return attendForm.filter((who) => who.cnt > 0);
     } catch (err: any) {
       throw new Error(err);
