@@ -103,10 +103,14 @@ router
     const { voteServiceInstance, date } = req;
 
     try {
-      voteServiceInstance?.setVote(date, { place, subPlace, start, end, memo });
-      setTimeout(() => {
-        return res.status(204).end();
-      }, 3000);
+      await voteServiceInstance?.setVote(date, {
+        place,
+        subPlace,
+        start,
+        end,
+        memo,
+      });
+      return res.status(204).end();
     } catch (err) {
       next(err);
     }
@@ -120,7 +124,7 @@ router
       const { start, end }: IVoteStudyInfo = req.body;
 
       try {
-        voteServiceInstance?.patchVote(date, start, end);
+        await voteServiceInstance?.patchVote(date, start, end);
         return res.status(200).end();
       } catch (err) {
         next(err);
