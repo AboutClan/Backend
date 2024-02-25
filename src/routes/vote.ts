@@ -104,7 +104,9 @@ router
 
     try {
       voteServiceInstance?.setVote(date, { place, subPlace, start, end, memo });
-      return res.status(204).end();
+      setTimeout(() => {
+        return res.status(204).end();
+      }, 3000);
     } catch (err) {
       next(err);
     }
