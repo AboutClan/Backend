@@ -1,6 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
 import DailyCheckService from "../services/dailyCheckService";
-import NoticeService from "../services/noticeService";
 
 const router = express.Router();
 
@@ -31,7 +30,8 @@ router
     } = req;
 
     try {
-      await dailyCheckServiceInstance?.setDailyCheck();
+      const result = await dailyCheckServiceInstance?.setDailyCheck();
+      return res.status(404).json(result);
     } catch (err: any) {
       next(err);
     }
