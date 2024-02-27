@@ -11,7 +11,11 @@ export default class DailyCheckService {
   async setDailyCheck() {
     try {
       const findDailyCheck = await DailyCheck.findOne({ uid: this.token.uid });
-      return findDailyCheck?.updatedAt;
+      return {
+        A: findDailyCheck?.updatedAt,
+        B: dayjs(),
+        C: dayjs().isSame(dayjs(findDailyCheck?.updatedAt), "date"),
+      };
       if (dayjs().isSame(dayjs(findDailyCheck?.updatedAt), "date")) {
         return "이미 출석체크를 완료했습니다.";
       }
