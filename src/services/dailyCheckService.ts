@@ -10,7 +10,9 @@ export default class DailyCheckService {
 
   async setDailyCheck() {
     try {
-      const findDailyCheck = await DailyCheck.findOne({ uid: this.token.uid });
+      const findDailyCheck = await DailyCheck.findOne({
+        uid: this.token.uid,
+      }).sort({ updatedAt: -1 });
       return {
         A: findDailyCheck?.updatedAt,
         B: dayjs(),
