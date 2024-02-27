@@ -32,7 +32,7 @@ router
     try {
       const result = await dailyCheckServiceInstance?.setDailyCheck();
       if (result) return res.status(400).json({ message: result });
-      return res.status(200);
+      return res.status(200).end();
     } catch (err: any) {
       next(err);
     }
