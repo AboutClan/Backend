@@ -13,11 +13,7 @@ export default class DailyCheckService {
       const findDailyCheck = await DailyCheck.findOne({
         uid: this.token.uid,
       }).sort({ updatedAt: -1 });
-      return {
-        A: findDailyCheck?.updatedAt,
-        B: dayjs(),
-        C: dayjs().isSame(dayjs(findDailyCheck?.updatedAt), "date"),
-      };
+
       if (dayjs().isSame(dayjs(findDailyCheck?.updatedAt), "date")) {
         return "이미 출석체크를 완료했습니다.";
       }
