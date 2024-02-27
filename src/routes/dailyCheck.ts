@@ -30,6 +30,7 @@ router
     } = req;
 
     try {
+      return res.status(404).end();
       return res.status(200).json("test");
       const result = await dailyCheckServiceInstance?.setDailyCheck();
       // if (result) return res.status(400).json({ message: result });
