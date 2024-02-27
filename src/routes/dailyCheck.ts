@@ -31,7 +31,7 @@ router
 
     try {
       const result = await dailyCheckServiceInstance?.setDailyCheck();
-      return res.status(404).json(result);
+      return res.status(400).json(result);
     } catch (err: any) {
       next(err);
     }
