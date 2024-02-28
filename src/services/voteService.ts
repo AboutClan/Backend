@@ -228,8 +228,8 @@ export default class VoteService {
       vote.participations = vote.participations.map(
         (participation: IParticipation) => {
           const placeId = (participation.place as IPlace)._id.toString();
-          const subPlaceIdArr = subPlace?.map((place: any) => place._id);
-          if (placeId === place._id) {
+          const subPlaceIdArr = subPlace;
+          if (placeId === place) {
             return {
               ...participation,
               attendences: [
