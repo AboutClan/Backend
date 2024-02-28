@@ -75,5 +75,8 @@ export default class ImageService {
           attendence.imageUrl = imageUrl;
       });
     });
+
+    await vote?.save();
+    return;
   }
 }
