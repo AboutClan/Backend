@@ -22,7 +22,7 @@ const s3 = new AWS.S3({
 const upload2 = multer({ storage: multer.memoryStorage() });
 
 router.post(
-  "/upload",
+  "/upload/vote",
   upload2.single("image"),
   async function (req, res, next) {
     const { imageServiceInstance } = req;
