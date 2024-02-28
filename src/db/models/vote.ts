@@ -44,6 +44,7 @@ export interface IAttendance {
   firstChoice: boolean;
   confirmed: boolean;
   memo?: string;
+  imageUrl: string;
 }
 
 export interface IAbsence {
@@ -81,6 +82,7 @@ const AttendanceSchema: Schema<IAttendance> = new Schema(
       default: true,
     },
     memo: String,
+    imageUrl: String,
   },
   { _id: false, timestamps: true, strict: false }
 );
