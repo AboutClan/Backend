@@ -2,6 +2,9 @@ import { JWT } from "next-auth/jwt";
 let AWS = require("aws-sdk");
 let multer = require("multer");
 import { Readable } from "stream";
+import { findOneVote } from "../utils/voteUtils";
+import { IUser } from "../db/models/user";
+import { strToDate } from "../utils/dateUtils";
 let multerS3 = require("multer-s3");
 
 export default class ImageService {
@@ -48,5 +51,29 @@ export default class ImageService {
     });
 
     return;
+  }
+
+  getToday() {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = ("0" + (1 + date.getMonth())).slice(-2);
+    var day = ("0" + date.getDate()).slice(-2);
+
+    return year + month + day;
+  }
+
+  async saveImage(imageUrl: string) {
+    const vote = await findOneVote(strToDate(this.getToday()).toDate());
+    if (!vote) throw new Error();
+
+    vote?.participations.forEach((participation) => {
+      participation.attendences?.forEach((attendence) => {
+        if (
+          (attendence.user as IUser)?.uid.toString() ===
+          this.token.uid?.toString()
+        )
+          attendence.imageUrl = imageUrl;
+      });
+    });
   }
 }
