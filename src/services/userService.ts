@@ -594,6 +594,16 @@ export default class UserService {
     }
   }
 
+  async patchBelong(uid: number, belong: string) {
+    try {
+      console.log({ uid }, { belong });
+      await User.updateOne({ uid }, { belong });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+    return;
+  }
+
   async test() {
     throw new Error("error");
   }

@@ -545,6 +545,25 @@ router
   );
 
 router
+  .route("/belong")
+  .patch(
+    body("uid").notEmpty().withMessage("uid입력 필요."),
+    body("belong").notEmpty().withMessage("belong입력 필요."),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        userServiceInstance,
+        body: { uid, belong },
+      } = req;
+      try {
+        await userServiceInstance?.patchBelong(uid, belong);
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     throw new Error("what?");
