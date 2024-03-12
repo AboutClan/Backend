@@ -1,9 +1,7 @@
 import express, { NextFunction, Request, Response, Router } from "express";
-import groupStudyService from "../services/groupStudyService";
 import { body } from "express-validator";
 import validateCheck from "../middlewares/validator";
 import GroupStudyService from "../services/groupStudyService";
-import { stat } from "fs";
 
 const router: Router = express.Router();
 
@@ -90,6 +88,27 @@ router
       }
     }
   );
+
+router
+  .route("/participate/exile")
+  .delete(
+    body("id").notEmpty().isNumeric().withMessage("id필요"),
+    validateCheck,
+    async (req, res, next) => {
+      const {
+        groupStudyServiceInstance,
+        body: { id, toUid },
+      } = req;
+
+      try {
+        await groupStudyServiceInstance?.exileParticipate(id, toUid);
+        res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
 router
   .route("/waiting")
   .post(

@@ -1,15 +1,8 @@
-import { JWT } from "next-auth/jwt";
-import {
-  GroupStudy,
-  IGroupStudyData,
-  GroupStudyStatus,
-} from "../db/models/groupStudy";
-import { IUser, User } from "../db/models/user";
-import { v4 as uuidv4 } from "uuid";
-import { Counter } from "../db/models/counter";
-import dbConnect from "../db/conn";
-import { group } from "console";
 import dayjs from "dayjs";
+import { JWT } from "next-auth/jwt";
+import { Counter } from "../db/models/counter";
+import { GroupStudy, IGroupStudyData } from "../db/models/groupStudy";
+import { IUser } from "../db/models/user";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -127,6 +120,28 @@ export default class GroupStudyService {
       );
       groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
         (who) => who.uid !== this.token.uid + ""
+      );
+      await groupStudy.save();
+    } catch (err) {
+      throw new Error();
+    }
+    return;
+  }
+
+  async exileParticipate(id: string, toUid: string) {
+    const groupStudy = await GroupStudy.findOne({ id });
+    if (!groupStudy) throw new Error();
+
+    try {
+      groupStudy.participants = groupStudy.participants.filter(
+        (participant) => participant.user != toUid
+      );
+
+      groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
+        (who) => who.uid !== toUid + ""
+      );
+      groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
+        (who) => who.uid !== toUid + ""
       );
       await groupStudy.save();
     } catch (err) {
