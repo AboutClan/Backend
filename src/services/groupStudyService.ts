@@ -381,7 +381,7 @@ export default class GroupStudyService {
             belong &&
             who?.belong &&
             who.belong.length > 2 &&
-            who.belong + " " === belong
+            who.belong === belong
           ) {
             b = belong;
             if (
