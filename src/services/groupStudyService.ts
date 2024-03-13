@@ -374,8 +374,8 @@ export default class GroupStudyService {
 
       for (const group of groupStudies) {
         const belong = checkGroupBelong(group.hashTag);
-        a = belong as unknown as string;
-        if (!belong) continue;
+        if (!belong) return;
+        if (belong) a = belong as unknown as string;
 
         for (const who of allUser) {
           if (who?.belong) c = who.belong;
