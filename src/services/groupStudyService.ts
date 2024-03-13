@@ -377,7 +377,12 @@ export default class GroupStudyService {
 
         for (const who of allUser) {
           if (who?.belong) c = who.belong;
-          if (belong && who?.belong === belong) {
+          if (
+            belong &&
+            who?.belong &&
+            who.belong.length > 2 &&
+            who.belong + " " === belong
+          ) {
             b = belong;
             if (
               !group.participants.some(
