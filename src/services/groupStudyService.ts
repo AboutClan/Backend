@@ -368,11 +368,13 @@ export default class GroupStudyService {
     try {
       let a = "test";
       let b = "test2";
-      groupStudies.forEach((group) => {
+
+      for (const group of groupStudies) {
         const belong = checkGroupBelong(group.hashTag);
         a = belong as unknown as string;
-        if (!belong) return;
-        allUser.forEach(async (who) => {
+        if (!belong) continue;
+
+        for (const who of allUser) {
           if (who?.belong === belong) {
             b = belong;
             if (
@@ -396,10 +398,10 @@ export default class GroupStudyService {
                 attendRecord: [],
               });
             }
-            await group?.save();
+            await group.save(); // 여기서 비동기 처리가 올바르게 기다려집니다.
           }
-        });
-      });
+        }
+      }
 
       return { a, b, allUser };
     } catch (err) {
