@@ -374,6 +374,7 @@ export default class GroupStudyService {
         if (!belong) return;
         allUser.forEach(async (who) => {
           if (who?.belong === belong) {
+            b = belong;
             if (
               !group.participants.some(
                 (participant) => participant.user == who._id
@@ -400,7 +401,7 @@ export default class GroupStudyService {
         });
       });
 
-      return { a, allUser };
+      return { a, b, allUser };
     } catch (err) {
       throw new Error();
     }
