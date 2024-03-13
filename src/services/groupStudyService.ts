@@ -367,6 +367,7 @@ export default class GroupStudyService {
 
     try {
       let a = "test";
+      let b = "test2";
       groupStudies.forEach((group) => {
         const belong = checkGroupBelong(group.hashTag);
         a = belong as unknown as string;
@@ -375,7 +376,7 @@ export default class GroupStudyService {
           if (who?.belong === belong) {
             if (
               !group.participants.some(
-                (participant) => participant.user == (this.token.id as IUser)
+                (participant) => participant.user == who._id
               )
             ) {
               group.participants.push({
