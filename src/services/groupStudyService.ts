@@ -368,6 +368,7 @@ export default class GroupStudyService {
     try {
       let a = "test";
       let b = "test2";
+      let c = "test3";
 
       for (const group of groupStudies) {
         const belong = checkGroupBelong(group.hashTag);
@@ -375,7 +376,8 @@ export default class GroupStudyService {
         if (!belong) continue;
 
         for (const who of allUser) {
-          if (who?.belong === belong) {
+          c = who?.belong as unknown as string;
+          if (who?.belong + " " === belong) {
             b = belong;
             if (
               !group.participants.some(
@@ -403,7 +405,7 @@ export default class GroupStudyService {
         }
       }
 
-      return { a, b, allUser };
+      return { a, b, c, allUser };
     } catch (err) {
       throw new Error();
     }
