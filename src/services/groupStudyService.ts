@@ -366,8 +366,10 @@ export default class GroupStudyService {
     };
 
     try {
+      let a = "test";
       groupStudies.forEach((group) => {
         const belong = checkGroupBelong(group.hashTag);
+        a = belong as unknown as string;
         if (!belong) return;
         allUser.forEach(async (who) => {
           if (who?.belong === belong) {
@@ -397,7 +399,7 @@ export default class GroupStudyService {
         });
       });
 
-      return;
+      return a;
     } catch (err) {
       throw new Error();
     }
