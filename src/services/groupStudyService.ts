@@ -399,7 +399,7 @@ export default class GroupStudyService {
         });
       });
 
-      return a;
+      return { a, allUser };
     } catch (err) {
       throw new Error();
     }
