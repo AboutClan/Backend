@@ -286,8 +286,8 @@ router.route("/belong/match").patch(validateCheck, async (req, res, next) => {
       body: {},
     } = req;
 
-    await groupStudyServiceInstance?.belongToParticipateGroupStudy();
     res.status(200).end();
+    await groupStudyServiceInstance?.belongToParticipateGroupStudy();
   } catch (err) {
     next(err);
   }
