@@ -1,7 +1,12 @@
 import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
 
-export type GroupStudyStatus = "completed" | "open" | "end" | "pending";
+export type GroupStudyStatus =
+  | "completed"
+  | "open"
+  | "end"
+  | "pending"
+  | "gathering";
 
 interface ICategory {
   main: string;
@@ -244,7 +249,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "open", "close", "end"],
+      enum: ["pending", "open", "close", "end", "gathering"],
       default: "pending",
       required: true,
     },
