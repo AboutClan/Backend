@@ -131,23 +131,23 @@ export default class GroupStudyService {
   async exileParticipate(id: string, toUid: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
+    return { id, toUid, groupStudy };
+    // try {
+    //   groupStudy.participants = groupStudy.participants.filter(
+    //     (participant) => participant.user != toUid
+    //   );
 
-    try {
-      groupStudy.participants = groupStudy.participants.filter(
-        (participant) => participant.user != toUid
-      );
-
-      groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
-        (who) => who.uid !== toUid + ""
-      );
-      groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
-        (who) => who.uid !== toUid + ""
-      );
-      await groupStudy.save();
-    } catch (err) {
-      throw new Error();
-    }
-    return;
+    //   groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
+    //     (who) => who.uid !== toUid + ""
+    //   );
+    //   groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
+    //     (who) => who.uid !== toUid + ""
+    //   );
+    //   await groupStudy.save();
+    // } catch (err) {
+    //   throw new Error();
+    // }
+    // return;
   }
 
   async getWaitingPerson(id: string) {
