@@ -137,12 +137,12 @@ export default class GroupStudyService {
         (participant) => participant.user !== toUid
       );
 
-      groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
-        (who) => who.uid !== toUid + ""
-      );
-      groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
-        (who) => who.uid !== toUid + ""
-      );
+      // groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
+      //   (who) => who.uid !== toUid + ""
+      // );
+      // groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
+      //   (who) => who.uid !== toUid + ""
+      // );
       await groupStudy.save();
     } catch (err) {
       throw new Error();
