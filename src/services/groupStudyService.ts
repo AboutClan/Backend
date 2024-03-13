@@ -133,18 +133,17 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      // groupStudy.participants = groupStudy.participants.filter(
-      //   (participant) => participant.user !== toUid
-      // );
+      groupStudy.participants = groupStudy.participants.filter(
+        (participant) => participant.user != toUid
+      );
 
-      // groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
-      //   (who) => who.uid !== toUid + ""
-      // );
-      // groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
-      //   (who) => who.uid !== toUid + ""
-      // );
+      groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
+        (who) => who.uid !== toUid + ""
+      );
+      groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
+        (who) => who.uid !== toUid + ""
+      );
       await groupStudy.save();
-      return "test";
     } catch (err) {
       throw new Error();
     }

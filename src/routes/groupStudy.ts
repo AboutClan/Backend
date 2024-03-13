@@ -101,11 +101,8 @@ router
       } = req;
 
       try {
-        const result = await groupStudyServiceInstance?.exileParticipate(
-          id,
-          toUid
-        );
-        res.status(200).json(result);
+        await groupStudyServiceInstance?.exileParticipate(id, toUid);
+        res.status(200).end();
       } catch (err) {
         next(err);
       }
