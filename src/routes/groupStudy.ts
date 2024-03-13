@@ -279,4 +279,18 @@ router
     }
   );
 
+router.route("/belong/match").patch(validateCheck, async (req, res, next) => {
+  try {
+    const {
+      groupStudyServiceInstance,
+      body: {},
+    } = req;
+
+    await groupStudyServiceInstance?.belongToParticipateGroupStudy();
+    res.status(200).end();
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

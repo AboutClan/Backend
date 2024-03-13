@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { GroupStudy, IGroupStudyData } from "../db/models/groupStudy";
-import { IUser } from "../db/models/user";
+import { IUser, User } from "../db/models/user";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -344,6 +344,59 @@ export default class GroupStudyService {
           await groupStudy.save();
         }
       });
+      return;
+    } catch (err) {
+      throw new Error();
+    }
+  }
+  async belongToParticipateGroupStudy() {
+    const groupStudies = await GroupStudy.find({});
+    const allUser = await User.find({ isActive: true });
+    if (!groupStudies) throw new Error();
+
+    const checkGroupBelong = (hashArr: string) => {
+      let belong;
+      hashArr?.split("#").forEach((hash) => {
+        if (hash.match(/\/[A-Z]/)) {
+          belong = hash;
+          return;
+        }
+      });
+      return belong;
+    };
+
+    try {
+      groupStudies.forEach((group) => {
+        const belong = checkGroupBelong(group.hashTag);
+        if (!belong) return;
+        allUser.forEach(async (who) => {
+          if (who?.belong === belong) {
+            if (
+              !group.participants.some(
+                (participant) => participant.user == (this.token.id as IUser)
+              )
+            ) {
+              group.participants.push({
+                user: who._id,
+                role: "member",
+                attendCnt: 0,
+              });
+              group.attendance.thisWeek.push({
+                uid: who.uid,
+                name: who.name,
+                attendRecord: [],
+              });
+              group.attendance.lastWeek.push({
+                uid: who.uid,
+                name: who.name,
+                attendRecord: [],
+              });
+            }
+            await group?.save();
+          }
+        });
+      });
+
       return;
     } catch (err) {
       throw new Error();
