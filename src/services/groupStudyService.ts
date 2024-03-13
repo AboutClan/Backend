@@ -131,7 +131,7 @@ export default class GroupStudyService {
   async exileParticipate(id: string, toUid: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
-    return "test2";
+
     try {
       // groupStudy.participants = groupStudy.participants.filter(
       //   (participant) => participant.user !== toUid
@@ -143,7 +143,7 @@ export default class GroupStudyService {
       // groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
       //   (who) => who.uid !== toUid + ""
       // );
-      // await groupStudy.save();
+      await groupStudy.save();
       return "test";
     } catch (err) {
       throw new Error();
