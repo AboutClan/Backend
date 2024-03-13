@@ -377,7 +377,7 @@ export default class GroupStudyService {
 
         for (const who of allUser) {
           c = who?.belong as unknown as string;
-          if (who?.belong + " " === belong) {
+          if (who?.belong === belong) {
             b = belong;
             if (
               !group.participants.some(
