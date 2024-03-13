@@ -377,7 +377,7 @@ export default class GroupStudyService {
 
         for (const who of allUser) {
           if (who?.belong) c = who.belong;
-          if (belong && who?.belong && who?.belong + " " === belong) {
+          if (belong && who?.belong === belong) {
             b = belong;
             if (
               !group.participants.some(
@@ -405,7 +405,7 @@ export default class GroupStudyService {
         }
       }
 
-      return { a, b, c, allUser };
+      return { a, b, allUser };
     } catch (err) {
       throw new Error();
     }
