@@ -1,9 +1,4 @@
-import mongoose, {
-  model,
-  Model,
-  Schema,
-  StringExpressionOperatorReturningBoolean,
-} from "mongoose";
+import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
 
 export type gatherStatus = "pending" | "open" | "close" | "end";
@@ -223,6 +218,7 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
         "전체",
         "수원/안양",
         "양천/강남",
+        "인천",
       ],
     },
     isAdminOpen: {

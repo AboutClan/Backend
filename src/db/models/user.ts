@@ -1,6 +1,6 @@
-import mongoose, { model, Schema, Model, Document } from "mongoose";
-import { IRegistered, InterestSchema, MajorSchema } from "./registered";
+import mongoose, { Document, model, Model, Schema } from "mongoose";
 import { IPlace } from "./place";
+import { InterestSchema, IRegistered, MajorSchema } from "./registered";
 
 export interface restType {
   type: string;
@@ -91,7 +91,7 @@ export const UserSchema: Schema<IUser> = new Schema({
   },
   location: {
     type: String,
-    enum: ["수원", "양천", "안양", "강남", "동대문"],
+    enum: ["수원", "양천", "안양", "강남", "동대문", "인천"],
     default: "수원",
   },
   mbti: {

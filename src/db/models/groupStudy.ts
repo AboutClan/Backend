@@ -277,6 +277,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
         "전체",
         "수원/안양",
         "양천/강남",
+        "인천",
       ],
     },
 

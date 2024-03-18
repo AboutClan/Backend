@@ -59,7 +59,7 @@ export const RequestSchema: Schema<IRequestData> = new Schema(
     },
     location: {
       type: String,
-      enum: ["수원", "양천", "안양", "강남", "동대문"],
+      enum: ["수원", "양천", "안양", "강남", "동대문", "인천"],
       default: "수원",
     },
   },
