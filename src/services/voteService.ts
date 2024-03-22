@@ -185,7 +185,7 @@ export default class VoteService {
       filteredVote.participations = filteredVote?.participations.filter(
         (participation) => {
           const placeLocation = participation.place?.location;
-          return placeLocation === location;
+          return placeLocation === location || placeLocation === "전체";
         }
       );
       //유저 정보 없는 경우 제거
