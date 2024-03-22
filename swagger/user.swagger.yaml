@@ -1,0 +1,10 @@
+tags:
+  name: User
+  description: 게시판 API
+/boards:
+  get:
+  summary: 게시글 가져오기
+  tags: [user]
+  response:
+    200:
+      description: 조회 결관
