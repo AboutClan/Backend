@@ -359,7 +359,7 @@ export default class GroupStudyService {
       hashArr?.split("#").forEach((hash) => {
         // 해시태그에서 불필요한 공백 제거
         const trimmedHash = hash.trim();
-        if (trimmedHash.match(/^[A-Z]/)) {
+        if (/[A-Z]/.test(trimmedHash)) {
           belong = trimmedHash;
           return;
         }
@@ -372,12 +372,12 @@ export default class GroupStudyService {
       let b = "test2";
       let c = "test3";
 
-      for (const group of groupStudies) {
+      groupStudies.forEach(async (group) => {
         const belong = checkGroupBelong(group.hashTag);
-        if (!belong) return;
+        if (!belong || belong == "C++") return;
         if (belong) a = belong as unknown as string;
 
-        for (const who of allUser) {
+        allUser.forEach(async (who) => {
           if (who?.belong) c = who.belong;
           if (
             belong &&
@@ -391,27 +391,27 @@ export default class GroupStudyService {
                 (participant) => participant.user == who._id
               )
             ) {
-              group.participants.push({
-                user: who._id,
+              await group.participants.push({
+                user: who?._id,
                 role: "member",
                 attendCnt: 0,
               });
-              group.attendance.thisWeek.push({
-                uid: who.uid,
-                name: who.name,
+              await group.attendance.thisWeek.push({
+                uid: who?.uid,
+                name: who?.name,
                 attendRecord: [],
               });
-              group.attendance.lastWeek.push({
-                uid: who.uid,
-                name: who.name,
+              await group.attendance.lastWeek.push({
+                uid: who?.uid,
+                name: who?.name,
                 attendRecord: [],
               });
             }
-            await group.save(); // 여기서 비동기 처리가 올바르게 기다려집니다.
           }
-        }
-      }
+        });
 
+        await group.save();
+      });
       return { a, b, allUser };
     } catch (err) {
       throw new Error();
