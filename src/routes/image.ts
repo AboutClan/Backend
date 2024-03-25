@@ -32,7 +32,7 @@ router.post(
 
     const params = {
       Bucket: "studyabout",
-      Key: `${path}/${myFile}`,
+      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}`,
       Body: req.file?.buffer,
     };
     s3.upload(params, async (error: any, data: any) => {
