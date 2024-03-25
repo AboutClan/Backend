@@ -33,13 +33,13 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 tags:
-  - name: user
-    description: Everything about users
+  - name: vote
+    description: vote control
 paths:
-  /user/active:
+  /vote/active:
     put:
       tags:
-        - user
+        - vote
       summary: Get active users list
       description: Get active users list
       responses:
@@ -578,115 +578,25 @@ paths:
           description: User not found
 components:
   schemas:
-    User:
+    Vote:
       type: object
       properties:
-        uid:
-          type: string
-        name:
-          type: string
-          required: true
-        location:
-          type: string
-          enum:
-            - 수원
-            - 양천
-            - 안양
-            - 강남
-            - 동대문
-            - 인천
-        mbti:
-          type: string
-          example: 수원
-        gender:
-          type: string
-          example: approved
-        belong:
-          type: string
-        profileImage:
-          type: string
-        registerDate:
-          type: string
-        isActive:
-          type: boolean
-        birth:
-          type: string
-        role:
-          type: string
-          enum:
-            - noMember
-            - waiting
-            - human
-            - member
-            - manager
-            - previleged
-            - resting
-            - enthusiastic
-          example: member
-        point:
+        id:
           type: integer
           format: int64
-        comment:
+          example: 100000
+        username:
           type: string
-        rest:
-          type: object
-          properties:
-            type:
-              type: string
-            startDate:
-              type: string
-            endDate:
-              type: string
-            content:
-              type: string
-            restCnt:
-              type: integer
-            cumulativeSum:
-              type: integer
-        avatar:
-          type: object
-          properties:
-            type:
-              type: integer
-            bg:
-              type: integer
-        majors:
-          type: object
-          properties:
-            department:
-              type: string
-            detail:
-              type: string
-        interests:
-          type: object
-          properties:
-            first:
-              type: string
-            second:
-              type: string
-        telephone:
-          type: string
-        deposit:
-          type: integer
-        friend:
+          example: fehguy
+        address:
           type: array
+          xml:
+            name: addresses
+            wrapped: true
           items:
-            type: string
-        like:
-          type: integer
-        studyPreference:
-          type: object
-          properties:
-            subPlace:
-              type: string
-              pattern: "^[0-9a-fA-F]{24}$"
-              description: MongoDB ObjectId
-            place:
-              type: string
-              pattern: "^[0-9a-fA-F]{24}$"
-              description: MongoDB ObjectId
+            $ref: "#/components/schemas/Address"
       xml:
-        name: order
+        name: customer
   requestBodies:
     Pet:
       description: Pet object that needs to be added to the store
