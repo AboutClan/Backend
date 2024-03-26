@@ -1,0 +1,140 @@
+# swagger: "2.0"
+# info:
+#   description: "Study about api"
+#   version: "1.0.0"
+#   title: "swagger"
+# tags:
+#   - name: User
+#     description: 게시판 API
+
+# paths:
+#   /user/active:
+#     get:
+#       summary: "get active user list"
+#       tags: [user]
+#       responses:
+#         200:
+#           description: 조회 결과
+#           content:
+#             application/json: "content/type"
+
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: About api
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: user
+    description: Everything about users
+paths:
+  /user/active:
+    put:
+      tags:
+        - user
+      summary: Get active users list
+      description: Get active users list
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+components:
+  schemas:
+    Place:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: active
+        fullname:
+          type: string
+          example: a카페 b지점
+        brand:
+          type: string
+          example: a카페
+        branch:
+          type: string
+          example: b지점
+        image:
+          type: string
+          example: "http://~~"
+        coverImage:
+          type: string
+          example: "http://~~"
+        latitude:
+          type: decimal
+          example: 37.2789488
+        longitude:
+          type: decimal
+          example: 127.0429329
+        locationDetail:
+          type: string
+          example: xx시 yy동 zz구 ii번길 jj
+        time:
+          type: string
+          example: "12:00 - 22:00"
+        priority:
+          type: integer
+          example: 1
+        location:
+          type: string
+          example: "수원"
+          enum:
+            - 수원
+            - 양천
+            - 강남
+            - 동대문
+            - 안양
+            - 인천
+            - 전체
+      xml:
+        name: order
+  requestBodies:
+    Pet:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Pet"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Pet"
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
