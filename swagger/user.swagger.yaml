@@ -583,9 +583,11 @@ components:
       properties:
         uid:
           type: string
+          example: 1234567891
         name:
           type: string
           required: true
+          example: 홍길동
         location:
           type: string
           enum:
@@ -595,22 +597,28 @@ components:
             - 강남
             - 동대문
             - 인천
+          example: 수원
         mbti:
           type: string
-          example: 수원
+          example: isfp
         gender:
           type: string
-          example: approved
+          example: 남성
         belong:
           type: string
+          example: 수원/F
         profileImage:
           type: string
+          example: "http://~"
         registerDate:
           type: string
+          example: Thu Aug 01 2020 01:01:01 GMT+0900 (Korean Standard Time)
         isActive:
           type: boolean
+          example: false
         birth:
           type: string
+          example: 000101
         role:
           type: string
           enum:
@@ -626,61 +634,83 @@ components:
         point:
           type: integer
           format: int64
+          example: 100
         comment:
           type: string
+          example: "안녕하세요"
         rest:
           type: object
           properties:
             type:
               type: string
+              example: "일반"
             startDate:
               type: string
+              example: "2020-01-01T00:00:00.000+00:00"
             endDate:
               type: string
+              example: "2020-01-02T00:00:00.000+00:00"
             content:
               type: string
+              example: "abcd"
             restCnt:
               type: integer
+              example: 1
             cumulativeSum:
               type: integer
+              example: "10"
         avatar:
           type: object
           properties:
             type:
               type: integer
+              example: 10
             bg:
               type: integer
+              example: 2
         majors:
-          type: object
-          properties:
-            department:
-              type: string
-            detail:
-              type: string
+          type: array
+          items:
+            type: object
+            properties:
+              department:
+                type: string
+                example: 공학계열
+              detail:
+                type: string
+                example: 컴퓨터/통신
         interests:
           type: object
           properties:
             first:
               type: string
+              example: 코딩
             second:
               type: string
+              example: 자기계발
         telephone:
-          type: string
+          type: 23dfsda23
+          description: hashed value
         deposit:
           type: integer
+          example: 2000
         friend:
           type: array
           items:
             type: string
         like:
           type: integer
+          example: 10
         studyPreference:
           type: object
           properties:
             subPlace:
-              type: string
-              pattern: "^[0-9a-fA-F]{24}$"
-              description: MongoDB ObjectId
+              type: array
+              items:
+                type: string
+                pattern: "^[0-9a-fA-F]{24}$"
+                description: MongoDB ObjectId
+                example:
             place:
               type: string
               pattern: "^[0-9a-fA-F]{24}$"
