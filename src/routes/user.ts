@@ -209,6 +209,7 @@ router
       } = req.query as any;
 
       try {
+        console.log(12);
         const participationResult =
           await userServiceInstance?.getParticipationRate(
             startDay,
