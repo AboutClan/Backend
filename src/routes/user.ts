@@ -528,7 +528,6 @@ router
       next(err);
     }
   })
-
   .delete(
     body("toUid").notEmpty().isString().withMessage("toUid필요"),
     async (req: Request, res: Response, next: NextFunction) => {
