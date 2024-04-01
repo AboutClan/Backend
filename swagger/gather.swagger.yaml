@@ -58,7 +58,7 @@ components:
     Gather:
       type: object
       properties:
-        title: 
+        title:
           type: string,
           example: 홍대 번개
         gatherList:
@@ -68,9 +68,9 @@ components:
         content:
           type: string,
         location:
-          type: locationSchema,
+          type: locationSchema
         memberCnt:
-          type: memberCntSchema,
+          type: memberCntSchema
         age:
           type: array
           items:
@@ -82,16 +82,16 @@ components:
         password:
           type: string,
         participants:
-          type: [participantsSchema],
-        user: 
+          type: [participantsSchema]
+        user:
           type: string
           pattern: "^[0-9a-fA-F]{24}$"
           description: MongoDB ObjectId
         status:
           type: string,
-          enum: ["pending", "open", "close", "end"],
+          enum: ["pending", "open", "close", "end"]
         comment:
-          type: [commentSchema],
+          type: [commentSchema]
         id:
           type: integer,
         date:

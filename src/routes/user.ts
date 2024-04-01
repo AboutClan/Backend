@@ -209,6 +209,7 @@ router
       } = req.query as any;
 
       try {
+        console.log(12);
         const participationResult =
           await userServiceInstance?.getParticipationRate(
             startDay,
@@ -527,7 +528,6 @@ router
       next(err);
     }
   })
-
   .delete(
     body("toUid").notEmpty().isString().withMessage("toUid필요"),
     async (req: Request, res: Response, next: NextFunction) => {

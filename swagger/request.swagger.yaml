@@ -45,10 +45,6 @@ paths:
       responses:
         "200":
           description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pet"
       security:
         - petstore_auth:
             - write:pets
