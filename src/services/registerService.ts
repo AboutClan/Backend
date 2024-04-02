@@ -37,6 +37,7 @@ export default class RegisterService {
     const { telephone } = subRegisterForm;
     const encodedTel = await this.encodeByAES56(telephone);
     if (encodedTel === telephone) throw new Error("Key not exist");
+    if (encodedTel.length == 0) throw new Error("Key not exist");
 
     const registerForm = {
       uid: this.token.uid,

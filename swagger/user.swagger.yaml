@@ -733,7 +733,7 @@ paths:
       responses:
         "200":
           description: successful operation
-  /promotion:
+  /user/promotion:
     get:
       tags:
         - user
@@ -790,7 +790,7 @@ paths:
       responses:
         "200":
           description: successful operation
-  /friend:
+  /user/friend:
     get:
       tags:
         - user
@@ -844,7 +844,7 @@ paths:
       responses:
         "200":
           description: successful operation
-  /belong:
+  /user/belong:
     get:
       tags:
         - user

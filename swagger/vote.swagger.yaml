@@ -36,7 +36,7 @@ tags:
   - name: vote
     description: vote control
 paths:
-  /arrived:
+  /vote/arrived:
     get:
       tags:
         - vote
@@ -80,7 +80,260 @@ paths:
                                 type: string
                               name:
                                 type: string
-  /deleteField:
+  /vote/arriveCnt:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  1111222233:
+                    type: "integer"
+  /vote/{date}:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+    post:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: place
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+            pattern: "^[0-9a-fA-F]{24}$"
+            description: MongoDB ObjectId
+        - name: subPlace
+          in: query
+          description: type
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: "^[0-9a-fA-F]{24}$"
+              description: MongoDB ObjectId
+        - name: start
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: memo
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+    patch:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: start
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+    delete:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+  /vote/{date}/absence:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+    post:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: message
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+  /vote/{date}/arrived:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+    post:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: message
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+
 components:
   schemas:
     Vote:
