@@ -33,6 +33,8 @@ const groupStudy = require("./routes/groupStudy");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
+const openapiSpecification = require("../swagger/swaggerSpec");
+const swaggerSpec = openapiSpecification;
 
 class App {
   private app: express.Application;
@@ -55,6 +57,7 @@ class App {
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(dbSet);
+    this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     this.app.use(tokenValidator);
   }
 
@@ -77,8 +80,6 @@ class App {
     this.app.use("/dailyCheck", dailyCheck);
     this.app.use("/collection", collection);
     this.app.use("/groupStudy", groupStudy);
-    // this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    // this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
     this.app.use(ErrorHandler);
   }
 

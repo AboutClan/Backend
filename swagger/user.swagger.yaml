@@ -1,0 +1,1039 @@
+# swagger: "2.0"
+# info:
+#   description: "Study about api"
+#   version: "1.0.0"
+#   title: "swagger"
+# tags:
+#   - name: User
+#     description: 게시판 API
+
+# paths:
+#   /user/active:
+#     get:
+#       summary: "get active user list"
+#       tags: [user]
+#       responses:
+#         200:
+#           description: 조회 결과
+#           content:
+#             application/json: "content/type"
+
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: About api
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: user
+    description: Everything about users
+paths:
+  /user/active:
+    get:
+      tags:
+        - user
+      summary: Get active users list
+      description: Get active users list
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  /user/simple:
+    get:
+      tags:
+        - user
+      summary: Get simplified users list
+      description: Get simplified users list
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    example: 1234567891
+                  profileImage:
+                    type: string
+                    example: "http://~"
+                  isActive:
+                    type: boolean
+                    example: false
+                  birth:
+                    type: string
+                    example: 000101
+                  comment:
+                    type: string
+                    example: "안녕하세요"
+                  avatar:
+                    type: object
+                    properties:
+                      type:
+                        type: integer
+                        example: 10
+                      bg:
+                        type: integer
+                        example: 2
+                  name:
+                    type: string
+                    required: true
+                    example: 홍길동
+                  score:
+                    type: integer
+                    example: 10
+
+        "400":
+          description: Invalid status value
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  /user/simpleAll:
+    get:
+      tags:
+        - user
+      summary: Get simplified users list
+      description: Get simplified users list
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                      example: 1234567891
+                    profileImage:
+                      type: string
+                      example: "http://~"
+                    isActive:
+                      type: boolean
+                      example: false
+                    birth:
+                      type: string
+                      example: 000101
+                    comment:
+                      type: string
+                      example: "안녕하세요"
+                    avatar:
+                      type: object
+                      properties:
+                        type:
+                          type: integer
+                          example: 10
+                        bg:
+                          type: integer
+                          example: 2
+                    name:
+                      type: string
+                      required: true
+                      example: 홍길동
+                    score:
+                      type: integer
+                      example: 10
+
+        "400":
+          description: Invalid status value
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  /user/avatar:
+    get:
+      tags:
+        - user
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar:
+                    type: object
+                    properties:
+                      type:
+                        type: integer
+                        example: 1
+                      bg:
+                        type: integer
+                        example: 1
+
+        "400":
+          description: Invalid tag value
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+    patch:
+      tags:
+        - user
+      summary: Update user avatar data
+      description: Update user avatar data
+      parameters:
+        - name: type
+          in: body
+          description: type
+          schema:
+            type: string
+        - name: bg
+          in: body
+          description: background color
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid input
+  /user/comment:
+    get:
+      tags:
+        - user
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        avatar:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: 홍길동
+                            comment:
+                              type: string
+                              example: 안녕하세요
+
+        "400":
+          description: Invalid tag value
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+    patch:
+      tags:
+        - user
+      summary: Update user avatar data
+      description: Update user avatar data
+      parameters:
+        - name: comment
+          in: body
+          description: type
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid input
+  /user/role:
+    patch:
+      tags:
+        - user
+      summary: Update user avatar data
+      description: Update user avatar data
+      parameters:
+        - name: role
+          in: body
+          description: type
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid input
+  /user/rest:
+    patch:
+      tags:
+        - user
+      summary: Update user avatar data
+      description: Update user avatar data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                info:
+                  type: string
+      responses:
+        "400":
+          description: Invalid input
+  /user/participationrate/all:
+    get:
+      tags:
+        - user
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: startDay
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: endDay
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: summary
+          in: query
+          description: type
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                      example: 1234567891
+                    cnt:
+                      type: integer
+                      example: 1
+
+        "400":
+          description: Invalid tag value
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /user/participationrate:
+    get:
+      tags:
+        - user
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: startDay
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: endDay
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: summary
+          in: query
+          description: type
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    example: 1234567891
+                  cnt:
+                    type: integer
+                    example: 1
+
+        "400":
+          description: Invalid tag value
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  /user/voterate:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      operationId: getInventory
+      parameters:
+        - name: startDay
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: startDay
+          in: query
+          description: type
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+      security:
+        - api_key: []
+  /user/profile:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    post:
+      tags:
+        - user
+      summary: Update user avatar data
+      description: Update user avatar data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                info:
+                  type: string
+      responses:
+        "400":
+          description: Invalid input
+    patch:
+      tags:
+        - user
+      summary: Update user avatar data
+      description: Update user avatar data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                info:
+                  type: string
+      responses:
+        "400":
+          description: Invalid input
+  /user/profile/{uid}:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      parameters:
+        - name: uid
+          in: path
+          description: ID of the user profile to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /user/profiles:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      parameters:
+        - name: uids
+          in: path
+          description: ID of the user profile to retrieve
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /user/point:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  point:
+                    type: integer
+    patch:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                point:
+                  type: integer
+                message:
+                  type: string
+                sub:
+                  type: string
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid input
+  /user/score:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  point:
+                    type: integer
+    patch:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                point:
+                  type: integer
+                message:
+                  type: string
+                sub:
+                  type: string
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid input
+  /user/deposit:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  point:
+                    type: integer
+    patch:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                point:
+                  type: integer
+                message:
+                  type: string
+                sub:
+                  type: string
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid input
+  /user/score/all:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    score:
+                      type: integer
+                    location:
+                      type: string
+                    uid:
+                      type: string
+  /user/deposit/all:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    deposit:
+                      type: integer
+                    uid:
+                      type: string
+  /user/preference:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    pattern: "^[0-9a-fA-F]{24}$"
+                    description: MongoDB ObjectId
+                  studyPreference:
+                    type: object
+                    properties:
+                      subPlace:
+                        type: array
+                        items:
+                          type: string
+                          pattern: "^[0-9a-fA-F]{24}$"
+                          description: MongoDB ObjectId
+                      place:
+                        type: string
+                        pattern: "^[0-9a-fA-F]{24}$"
+                        description: MongoDB ObjectId
+    post:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place:
+                  type: string
+                  pattern: "^[0-9a-fA-F]{24}$"
+                  description: MongoDB ObjectId
+                subPlace:
+                  type: array
+                  items:
+                    type: string
+                    pattern: "^[0-9a-fA-F]{24}$"
+                    description: MongoDB ObjectId
+
+      responses:
+        "200":
+          description: successful operation
+  /user/promotion:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    pattern: "^[0-9a-fA-F]{24}$"
+                    description: MongoDB ObjectId
+                  studyPreference:
+                    type: object
+                    properties:
+                      subPlace:
+                        type: array
+                        items:
+                          type: string
+                          pattern: "^[0-9a-fA-F]{24}$"
+                          description: MongoDB ObjectId
+                      place:
+                        type: string
+                        pattern: "^[0-9a-fA-F]{24}$"
+                        description: MongoDB ObjectId
+    post:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place:
+                  type: string
+                  pattern: "^[0-9a-fA-F]{24}$"
+                  description: MongoDB ObjectId
+                subPlace:
+                  type: array
+                  items:
+                    type: string
+                    pattern: "^[0-9a-fA-F]{24}$"
+                    description: MongoDB ObjectId
+
+      responses:
+        "200":
+          description: successful operation
+  /user/friend:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example: ["1234567891", "21435465761"]
+    patch:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                toUid:
+                  type: string
+                  pattern: "^[0-9a-fA-F]{24}$"
+                  description: MongoDB ObjectId
+      responses:
+        "200":
+          description: successful operation
+    delete:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                toUid:
+                  type: string
+                  pattern: "^[0-9a-fA-F]{24}$"
+                  description: MongoDB ObjectId
+      responses:
+        "200":
+          description: successful operation
+  /user/belong:
+    get:
+      tags:
+        - user
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      parameters:
+        - name: startDay
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: endDay
+          in: query
+          description: type
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        uid:
+          type: string
+          example: 1234567891
+        name:
+          type: string
+          required: true
+          example: 홍길동
+        location:
+          type: string
+          enum:
+            - 수원
+            - 양천
+            - 안양
+            - 강남
+            - 동대문
+            - 인천
+          example: 수원
+        mbti:
+          type: string
+          example: isfp
+        gender:
+          type: string
+          example: 남성
+        belong:
+          type: string
+          example: 수원/F
+        profileImage:
+          type: string
+          example: "http://~"
+        registerDate:
+          type: string
+          example: Thu Aug 01 2020 01:01:01 GMT+0900 (Korean Standard Time)
+        isActive:
+          type: boolean
+          example: false
+        birth:
+          type: string
+          example: 000101
+        role:
+          type: string
+          enum:
+            - noMember
+            - waiting
+            - human
+            - member
+            - manager
+            - previleged
+            - resting
+            - enthusiastic
+          example: member
+        point:
+          type: integer
+          format: int64
+          example: 100
+        comment:
+          type: string
+          example: "안녕하세요"
+        rest:
+          type: object
+          properties:
+            type:
+              type: string
+              example: "일반"
+            startDate:
+              type: string
+              example: "2020-01-01T00:00:00.000+00:00"
+            endDate:
+              type: string
+              example: "2020-01-02T00:00:00.000+00:00"
+            content:
+              type: string
+              example: "abcd"
+            restCnt:
+              type: integer
+              example: 1
+            cumulativeSum:
+              type: integer
+              example: "10"
+        avatar:
+          type: object
+          properties:
+            type:
+              type: integer
+              example: 10
+            bg:
+              type: integer
+              example: 2
+        majors:
+          type: array
+          items:
+            type: object
+            properties:
+              department:
+                type: string
+                example: 공학계열
+              detail:
+                type: string
+                example: 컴퓨터/통신
+        interests:
+          type: object
+          properties:
+            first:
+              type: string
+              example: 코딩
+            second:
+              type: string
+              example: 자기계발
+        telephone:
+          type: 23dfsda23
+          description: hashed value
+        deposit:
+          type: integer
+          example: 2000
+        friend:
+          type: array
+          items:
+            type: string
+          example: ["1234567891", "21435465761"]
+        like:
+          type: integer
+          example: 10
+        studyPreference:
+          type: object
+          properties:
+            subPlace:
+              type: array
+              items:
+                type: string
+                pattern: "^[0-9a-fA-F]{24}$"
+                description: MongoDB ObjectId
+            place:
+              type: string
+              pattern: "^[0-9a-fA-F]{24}$"
+              description: MongoDB ObjectId
+      xml:
+        name: order
+  requestBodies:
+    Pet:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Pet"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Pet"
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

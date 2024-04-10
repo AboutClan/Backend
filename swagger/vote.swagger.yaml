@@ -1,0 +1,441 @@
+# swagger: "2.0"
+# info:
+#   description: "Study about api"
+#   version: "1.0.0"
+#   title: "swagger"
+# tags:
+#   - name: User
+#     description: 게시판 API
+
+# paths:
+#   /user/active:
+#     get:
+#       summary: "get active user list"
+#       tags: [user]
+#       responses:
+#         200:
+#           description: 조회 결과
+#           content:
+#             application/json: "content/type"
+
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: About api
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: vote
+    description: vote control
+paths:
+  /vote/arrived:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: startDay
+          in: query
+          description: type
+          schema:
+            type: string
+        - name: endDay
+          in: query
+          description: type
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                  arrivedInfoList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        placeId:
+                          type: string
+                          pattern: "^[0-9a-fA-F]{24}$"
+                        arrivedInfo:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              uid:
+                                type: string
+                              name:
+                                type: string
+  /vote/arriveCnt:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  1111222233:
+                    type: "integer"
+  /vote/{date}:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+    post:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: place
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+            pattern: "^[0-9a-fA-F]{24}$"
+            description: MongoDB ObjectId
+        - name: subPlace
+          in: query
+          description: type
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: "^[0-9a-fA-F]{24}$"
+              description: MongoDB ObjectId
+        - name: start
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: memo
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+    patch:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: start
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+    delete:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+  /vote/{date}/absence:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+    post:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: message
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+  /vote/{date}/arrived:
+    get:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+    post:
+      tags:
+        - vote
+      summary: Get user's avatar data
+      description: Get user's avatar data
+      parameters:
+        - name: date
+          in: path
+          description: type
+          required: true
+          schema:
+            type: string
+        - name: message
+          in: query
+          description: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    message:
+                      type: string
+
+components:
+  schemas:
+    Vote:
+      type: object
+      properties:
+        date:
+          type: string
+          example: "2022-01-01T15:00:00.000+00:00"
+        participations:
+          type: array
+          items:
+            type: object
+            properties:
+              place:
+                type: string
+                pattern: "^[0-9a-fA-F]{24}$"
+                description: MongoDB ObjectId
+              attendences:
+                type: object
+                properties:
+                  user:
+                    type: string
+                    pattern: "^[0-9a-fA-F]{24}$"
+                    description: MongoDB ObjectId
+                  time:
+                    type: object
+                    properties:
+                      start:
+                        type: string
+                        example: "2022-01-01T15:00:00.000+00:00"
+                      end:
+                        type: string
+                        example: "2022-01-01T15:00:00.000+00:00"
+                  arrived:
+                    type: string
+                    example: "2022-01-01T15:00:00.000+00:00"
+                  firstChoice:
+                    type: boolean
+                    example: true
+                  memo:
+                    type: string
+                    example: 출석
+                  imageUrl:
+                    type: string
+              absences:
+                type: object
+                properties:
+                  user:
+                    type: string
+                    pattern: "^[0-9a-fA-F]{24}$"
+                    description: MongoDB ObjectId
+                  noShow:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 불참
+              startTime:
+                type: string
+                example: "2022-01-01T15:00:00.000+00:00"
+              endTime:
+                type: string
+                example: "2022-01-01T15:00:00.000+00:00"
+              status:
+                type: string
+                enum:
+                  - perding
+                  - waiting_confirm
+                  - open
+                  - dismissed
+                  - free
+                example: open
+      xml:
+        name: customer
+  requestBodies:
+    Pet:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Pet"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Pet"
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
