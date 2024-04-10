@@ -69,10 +69,10 @@ router
       try {
         const {
           gatherServiceInstance,
-          body: { gatherId, phase },
+          body: { gatherId, phase, userId },
         } = req;
 
-        await gatherServiceInstance?.participateGather(gatherId, phase);
+        await gatherServiceInstance?.participateGather(gatherId, phase, userId);
 
         res.status(200).end();
       } catch (err) {

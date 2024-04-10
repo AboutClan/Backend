@@ -65,18 +65,16 @@ export default class GatherService {
     }
   }
 
-  async participateGather(gatherId: string, phase: string) {
+  async participateGather(gatherId: string, phase: string, userId: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) throw new Error();
 
     try {
-      if (
-        !gather.participants.some(
-          (participant) => participant.user == (this.token.id as IUser)
-        )
-      ) {
+      const id = userId ?? this.token.id;
+
+      if (!gather.participants.some((participant) => participant.user == id)) {
         gather.participants.push({
-          user: this.token.id as IUser,
+          user: id,
           phase,
         });
 
