@@ -115,14 +115,9 @@ export default class UserService {
 
   async getAllSimpleUserInfo() {
     try {
-      const users = await User.find({}, "-_id").select(
+      const users = await User.find({}).select(
         "avatar birth comment isActive location name profileImage score uid"
       );
-
-      users.forEach(async (user) => {
-        if (user.telephone)
-          user.telephone = await this.decodeByAES256(user.telephone);
-      });
 
       return users;
     } catch (err: any) {

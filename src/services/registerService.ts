@@ -39,6 +39,10 @@ export default class RegisterService {
     if (encodedTel === telephone) throw new Error("Key not exist");
     if (encodedTel.length == 0) throw new Error("Key not exist");
 
+    const a = await this.decodeByAES256(
+      "U2FsdGVkX1+Wz6uV+ErLREqYytNiVKsMU95smfwpGoo="
+    );
+    console.log(a, a.length);
     const registerForm = {
       uid: this.token.uid,
       profileImage: this.token.picture,

@@ -50,9 +50,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
       security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+        - BearerAuth: []
+
   /user/simple:
     get:
       tags:
@@ -79,6 +78,9 @@ paths:
                   birth:
                     type: string
                     example: 000101
+                  location:
+                    type: string
+                    example: "수원"
                   comment:
                     type: string
                     example: "안녕하세요"
@@ -93,7 +95,6 @@ paths:
                         example: 2
                   name:
                     type: string
-                    required: true
                     example: 홍길동
                   score:
                     type: integer
@@ -101,10 +102,6 @@ paths:
 
         "400":
           description: Invalid status value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /user/simpleAll:
     get:
       tags:
@@ -136,6 +133,9 @@ paths:
                     comment:
                       type: string
                       example: "안녕하세요"
+                    location:
+                      type: string
+                      example: "수원"
                     avatar:
                       type: object
                       properties:
@@ -147,7 +147,6 @@ paths:
                           example: 2
                     name:
                       type: string
-                      required: true
                       example: 홍길동
                     score:
                       type: integer
@@ -194,26 +193,28 @@ paths:
         - user
       summary: Update user avatar data
       description: Update user avatar data
-      parameters:
-        - name: type
-          in: body
-          description: type
-          schema:
-            type: string
-        - name: bg
-          in: body
-          description: background color
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                name:
+                  type: string
       responses:
+        "200":
+          description: successful operation
         "400":
           description: Invalid input
   /user/comment:
     get:
       tags:
         - user
-      summary: Get user's avatar data
-      description: Get user's avatar data
+      summary: Get user's comment data
+      description: Get user's comment data
       responses:
         "200":
           description: successful operation
@@ -227,15 +228,12 @@ paths:
                     items:
                       type: object
                       properties:
-                        avatar:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                              example: 홍길동
-                            comment:
-                              type: string
-                              example: 안녕하세요
+                        name:
+                          type: string
+                          example: 홍길동
+                        comment:
+                          type: string
+                          example: 안녕하세요
 
         "400":
           description: Invalid tag value
@@ -246,38 +244,48 @@ paths:
     patch:
       tags:
         - user
-      summary: Update user avatar data
-      description: Update user avatar data
-      parameters:
-        - name: comment
-          in: body
-          description: type
-          schema:
-            type: string
+      summary: Update user comment data
+      description: Update user comment data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
       responses:
+        "200":
+          description: successful operation
         "400":
           description: Invalid input
   /user/role:
     patch:
       tags:
         - user
-      summary: Update user avatar data
-      description: Update user avatar data
-      parameters:
-        - name: role
-          in: body
-          description: type
-          schema:
-            type: string
+      summary: Update user role data
+      description: Update user role data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
       responses:
+        "200":
+          description: successful operation
         "400":
           description: Invalid input
   /user/rest:
     patch:
       tags:
         - user
-      summary: Update user avatar data
-      description: Update user avatar data
+      summary: Update user rest data
+      description: Update user rest data
       requestBody:
         required: true
         content:
@@ -294,26 +302,30 @@ paths:
     get:
       tags:
         - user
-      summary: Get user's avatar data
-      description: Get user's avatar data
+      summary: Get all user's participation rate
+      description: Get all user's participation rate
       parameters:
         - name: startDay
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
         - name: endDay
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
         - name: location
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
         - name: summary
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
@@ -345,26 +357,30 @@ paths:
     get:
       tags:
         - user
-      summary: Get user's avatar data
-      description: Get user's avatar data
+      summary: Get user's participation rate
+      description: Get user's participation rate
       parameters:
         - name: startDay
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
         - name: endDay
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
         - name: location
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
         - name: summary
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
@@ -385,25 +401,23 @@ paths:
 
         "400":
           description: Invalid tag value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /user/voterate:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: get user's vote rate
+      description: get user's vote rate
       operationId: getInventory
       parameters:
         - name: startDay
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
         - name: startDay
-          in: query
+          in: path
+          required: true
           description: type
           schema:
             type: string
@@ -414,11 +428,13 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties:
-                  type: integer
-                  format: int32
-      security:
-        - api_key: []
+                properties:
+                  uid:
+                    type: string
+                    example: 1234567891
+                  cnt:
+                    type: integer
+                    example: 1
   /user/profile:
     get:
       tags:
@@ -432,28 +448,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-    post:
-      tags:
-        - user
-      summary: Update user avatar data
-      description: Update user avatar data
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                info:
-                  type: string
-      responses:
-        "400":
-          description: Invalid input
+    # post:
+    #   tags:
+    #     - user
+    #   summary: Update user avatar data
+    #   description: Update user avatar data
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           type: object
+    #           properties:
+    #             info:
+    #               type: string
+    #   responses:
+    #     "400":
+    #       description: Invalid input
     patch:
       tags:
         - user
-      summary: Update user avatar data
-      description: Update user avatar data
+      summary: Update to synchronize user accessTopen and uid
+      description: Update to synchronize user accessTopen and uid
       requestBody:
         required: true
         content:
@@ -470,13 +486,13 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: get user profile by user's uid
+      description: get user profile by user's uid
       parameters:
         - name: uid
           in: path
-          description: ID of the user profile to retrieve
           required: true
+          description: ID of the user profile to retrieve
           schema:
             type: string
       responses:
@@ -492,17 +508,19 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
-      parameters:
-        - name: uids
-          in: path
-          description: ID of the user profile to retrieve
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
+      summary: get user profile list by using uid array
+      description: get user profile list by using uid array
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uids:
+                  type: array
+                  items:
+                    type: string
       responses:
         "200":
           description: successful operation
@@ -517,8 +535,8 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: get user's point value
+      description: get user's point value
       responses:
         "200":
           description: successful operation
@@ -532,8 +550,8 @@ paths:
     patch:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Update user's point
+      description: Update user's point
       requestBody:
         required: true
         content:
@@ -556,8 +574,8 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: get user's score value
+      description: get user's score value
       responses:
         "200":
           description: successful operation
@@ -571,8 +589,8 @@ paths:
     patch:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Update user's score
+      description: Update user's score
       requestBody:
         required: true
         content:
@@ -595,8 +613,8 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Get user's deposit value
+      description: Get user's deposit value
       responses:
         "200":
           description: successful operation
@@ -610,8 +628,8 @@ paths:
     patch:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Update user's deposit value
+      description: Update user's deposit value
       requestBody:
         required: true
         content:
@@ -634,8 +652,8 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Get all users score value
+      description: Get all users score value
       responses:
         "200":
           description: successful operation
@@ -658,8 +676,8 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Get all users deposit value
+      description: Get all users deposit value
       responses:
         "200":
           description: successful operation
@@ -680,8 +698,8 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Get user's preference field
+      description: Get user's preference field
       responses:
         "200":
           description: successful operation
@@ -710,8 +728,8 @@ paths:
     post:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Update user's preference field
+      description: Update user's preference field
       requestBody:
         required: true
         content:
@@ -737,38 +755,33 @@ paths:
     get:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: get user's promotion field
+      description: get user's promotion field
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    pattern: "^[0-9a-fA-F]{24}$"
-                    description: MongoDB ObjectId
-                  studyPreference:
-                    type: object
-                    properties:
-                      subPlace:
-                        type: array
-                        items:
-                          type: string
-                          pattern: "^[0-9a-fA-F]{24}$"
-                          description: MongoDB ObjectId
-                      place:
-                        type: string
-                        pattern: "^[0-9a-fA-F]{24}$"
-                        description: MongoDB ObjectId
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: "홍길동"
+                    lastDate:
+                      type: string
+                      example: "2024-03-30T00:00:00.000Z"
+                    uid:
+                      type: string
+                      example: "1234123412"
+
     post:
       tags:
         - user
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
+      summary: Update promotion data
+      description: Update promotion data
       requestBody:
         required: true
         content:
@@ -776,17 +789,8 @@ paths:
             schema:
               type: object
               properties:
-                place:
+                name:
                   type: string
-                  pattern: "^[0-9a-fA-F]{24}$"
-                  description: MongoDB ObjectId
-                subPlace:
-                  type: array
-                  items:
-                    type: string
-                    pattern: "^[0-9a-fA-F]{24}$"
-                    description: MongoDB ObjectId
-
       responses:
         "200":
           description: successful operation
@@ -866,6 +870,10 @@ paths:
           description: successful operation
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   schemas:
     User:
       type: object
@@ -875,7 +883,6 @@ components:
           example: 1234567891
         name:
           type: string
-          required: true
           example: 홍길동
         location:
           type: string
@@ -978,8 +985,9 @@ components:
               type: string
               example: 자기계발
         telephone:
-          type: 23dfsda23
+          type: string
           description: hashed value
+          example: 23dfsda23
         deposit:
           type: integer
           example: 2000
@@ -1007,15 +1015,6 @@ components:
       xml:
         name: order
   requestBodies:
-    Pet:
-      description: Pet object that needs to be added to the store
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Pet"
-        application/xml:
-          schema:
-            $ref: "#/components/schemas/Pet"
     UserArray:
       description: List of user object
       content:
@@ -1024,16 +1023,3 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/User"
-  securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
