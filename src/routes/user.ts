@@ -49,6 +49,7 @@ router
 
     try {
       const isActive = await userServiceInstance?.getAllSimpleUserInfo();
+      console.log(321, isActive);
       return res.status(200).json(isActive);
     } catch (err) {
       next(err);
@@ -76,10 +77,10 @@ router
       } = req;
 
       try {
-        const avatar = await userServiceInstance?.updateUser({
+        await userServiceInstance?.updateUser({
           avatar: { type, bg },
         });
-        return res.status(200).json(avatar);
+        return res.status(200).end();
       } catch (err) {
         next(err);
       }
