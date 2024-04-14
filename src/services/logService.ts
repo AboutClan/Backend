@@ -11,13 +11,13 @@ export default class LogService {
     try {
       const logs = await Log.find(
         {
-          $and: [{ "meta.type": type }, { "meta.uid": this.token.uid }],
+          "meta.uid": this.token.uid,
+          "meta.type": type,
         },
         "-_id timestamp message meta"
       )
         .sort({ timestamp: -1 })
         .limit(30);
-
       return logs;
     } catch (err: any) {
       throw new Error(err);

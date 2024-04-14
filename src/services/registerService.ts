@@ -2,7 +2,6 @@ import { JWT } from "next-auth/jwt";
 import { IRegistered, Registered } from "../db/models/registered";
 import { User } from "../db/models/user";
 import * as CryptoJS from "crypto-js";
-import LogService from "./logService";
 import dbConnect from "../db/conn";
 
 const logger = require("../../logger");
