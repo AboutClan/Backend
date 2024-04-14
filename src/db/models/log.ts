@@ -9,7 +9,7 @@ export interface ILog {
 
 const metaSchema = new Schema({
   type: String,
-  uid: Number,
+  uid: String,
   value: Number,
   sub: String,
 });

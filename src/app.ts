@@ -30,6 +30,7 @@ const notice = require("./routes/notice");
 const dailyCheck = require("./routes/dailyCheck");
 const collection = require("./routes/collection");
 const groupStudy = require("./routes/groupStudy");
+const promotion = require("./routes/promotion");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
@@ -80,6 +81,7 @@ class App {
     this.app.use("/dailyCheck", dailyCheck);
     this.app.use("/collection", collection);
     this.app.use("/groupStudy", groupStudy);
+    this.app.use("/promotion", promotion);
     this.app.use(ErrorHandler);
   }
 
