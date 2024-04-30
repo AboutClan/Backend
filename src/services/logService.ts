@@ -14,7 +14,7 @@ export default class LogService {
           "meta.uid": this.token.uid,
           "meta.type": type,
         },
-        "-_id timestamp message meta"
+        "-_id timestamp message meta",
       )
         .sort({ timestamp: -1 })
         .limit(30);
@@ -28,7 +28,7 @@ export default class LogService {
     try {
       const logs = await Log.find(
         { "meta.type": type },
-        "-_id timestamp message meta"
+        "-_id timestamp message meta",
       );
 
       return logs;

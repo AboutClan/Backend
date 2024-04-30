@@ -77,7 +77,7 @@ router
         endDay as string,
         isAttend as string,
         location as string,
-        uid as string
+        uid as string,
       );
 
       return res.status(200).json(result);

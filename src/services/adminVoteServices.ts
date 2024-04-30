@@ -71,7 +71,7 @@ export default class AdminVoteService {
 
           const timeObj = this.checkStudyOpen(
             "onlyFirst",
-            participation.attendences
+            participation.attendences,
           );
 
           let result;
@@ -111,12 +111,12 @@ export default class AdminVoteService {
           if (participation.status === "dismissed") {
             //이미 성공한 사람들은 제거
             participation.attendences = participation.attendences?.filter(
-              (attendance) => failure.has(attendance.user.toString())
+              (attendance) => failure.has(attendance.user.toString()),
             );
 
             const timeObj = this.checkStudyOpen(
               "all",
-              participation.attendences
+              participation.attendences,
             );
 
             let result;
@@ -148,7 +148,7 @@ export default class AdminVoteService {
         participations?.forEach((participation) => {
           if (participation.status === "dismissed") {
             participation.attendences = participation.attendences?.filter(
-              (attendance) => failure.has(attendance.user.toString())
+              (attendance) => failure.has(attendance.user.toString()),
             );
           }
         });
@@ -211,7 +211,7 @@ export default class AdminVoteService {
     endDay: string,
     isAttend: string,
     location: string,
-    uid: string
+    uid: string,
   ) {
     try {
       const arriveCheckCnt = await Vote.collection

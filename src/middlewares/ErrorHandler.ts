@@ -4,7 +4,7 @@ const ErrorHandler = (
   err: any,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   console.log("Middleware Error Handling");
   console.log(err);

@@ -35,7 +35,7 @@ export default class AdminUserService {
     uid: string,
     value: string,
     type: "point" | "score" | "deposit",
-    message: string
+    message: string,
   ) {
     const user = await User.findOne({ uid });
     if (!user) throw new Error();
@@ -100,7 +100,7 @@ export default class AdminUserService {
           $set: {
             role: role,
           },
-        }
+        },
       );
     } catch (err) {
       throw new Error();

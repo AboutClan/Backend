@@ -30,7 +30,7 @@ router.route("/").post(
     } catch (err: any) {
       next(err);
     }
-  }
+  },
 );
 
 router

@@ -31,11 +31,10 @@ router
         body: { groupStudy },
       } = req;
 
-      const groupStudyId = await groupStudyServiceInstance?.createGroupStudy(
-        groupStudy
-      );
+      const groupStudyId =
+        await groupStudyServiceInstance?.createGroupStudy(groupStudy);
       res.status(200).json({ groupStudyId });
-    }
+    },
   )
   .patch(
     body("groupStudy").notEmpty().withMessage("groupStudy필요"),
@@ -48,7 +47,7 @@ router
 
       await groupStudyServiceInstance?.updateGroupStudy(groupStudy);
       res.status(200).end();
-    }
+    },
   );
 
 router
@@ -69,7 +68,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   )
   .delete(
     body("id").notEmpty().isNumeric().withMessage("id필요"),
@@ -86,7 +85,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -106,7 +105,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -124,14 +123,14 @@ router
         await groupStudyServiceInstance?.setWaitingPerson(
           id,
           pointType,
-          answer
+          answer,
         );
 
         res.status(200).end();
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 router
   .route("/waiting/status")
@@ -151,7 +150,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router.route("/waiting/:id").get(async (req, res, next) => {
@@ -192,14 +191,14 @@ router
           id,
           weekRecord,
           type,
-          weekRecordSub
+          weekRecordSub,
         );
 
         res.status(200).json(result);
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 router
   .route("/attendance/confirm")
@@ -219,7 +218,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 router
   .route("/comment")
@@ -239,7 +238,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   )
   .delete(
     body("id").notEmpty().isNumeric().withMessage("id필요"),
@@ -257,7 +256,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   )
   .patch(
     body("id").notEmpty().isNumeric().withMessage("id필요"),
@@ -276,7 +275,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   );
 
 router.route("/belong/match").patch(validateCheck, async (req, res, next) => {

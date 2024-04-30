@@ -28,7 +28,7 @@ export default class PromotionService {
         if (dayDiff > 2) {
           await Promotion.updateOne(
             { name },
-            { name, uid: this.token.uid, lastDate: now }
+            { name, uid: this.token.uid, lastDate: now },
           );
 
           await userService.updatePoint(100, "홍보 이벤트 참여");

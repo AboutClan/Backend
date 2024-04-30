@@ -23,7 +23,7 @@ router
     } = req;
 
     const allUser = await adminUserServiceInstance?.getAllUser(
-      location as string
+      location as string,
     );
 
     return res.status(200).json(allUser);
@@ -56,10 +56,10 @@ router
         uid as string,
         value,
         "point",
-        message
+        message,
       );
       return res.status(200).end();
-    }
+    },
   );
 
 router
@@ -78,10 +78,10 @@ router
         uid as string,
         value,
         "score",
-        message
+        message,
       );
       res.status(200).end();
-    }
+    },
   );
 
 router
@@ -102,10 +102,10 @@ router
         uid as string,
         value,
         "deposit",
-        message
+        message,
       );
       res.status(200).end();
-    }
+    },
   );
 
 router
