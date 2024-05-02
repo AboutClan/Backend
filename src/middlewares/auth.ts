@@ -4,7 +4,7 @@ import { decode } from "next-auth/jwt";
 export default async function tokenValidator(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const token = req.headers.authorization?.split(" ")[1];

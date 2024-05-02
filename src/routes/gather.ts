@@ -35,7 +35,7 @@ router
 
       const gatherId = await gatherServiceInstance?.createGather(gather);
       res.status(200).json({ gatherId });
-    }
+    },
   )
   .delete(
     body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
@@ -48,7 +48,7 @@ router
 
       const gatherData = await gatherServiceInstance?.deleteGather(gatherId);
       res.status(200).json(gatherData);
-    }
+    },
   )
   .patch(async (req, res, next) => {
     const {
@@ -78,7 +78,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   )
   .delete(
     body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
@@ -95,7 +95,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -116,7 +116,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   )
   .delete(
     body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
@@ -134,7 +134,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   )
   .patch(
     body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
@@ -153,7 +153,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -173,7 +173,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   );
 
 module.exports = router;

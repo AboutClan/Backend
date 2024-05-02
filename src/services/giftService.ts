@@ -22,7 +22,7 @@ export default class GiftService {
   async getGift(id: number) {
     try {
       const giftUser = await GiftModel.find({ giftId: id }).select(
-        "-_id -createdAt -updatedAt -__v"
+        "-_id -createdAt -updatedAt -__v",
       );
 
       return giftUser;
@@ -42,7 +42,7 @@ export default class GiftService {
         const user = await GiftModel.findOneAndUpdate(
           { uid: this.token.uid },
           { name, uid, cnt: existingUser.cnt + cnt, giftId },
-          { new: true, runValidators: true }
+          { new: true, runValidators: true },
         );
         if (!user) {
           throw new Error("no user");

@@ -101,7 +101,7 @@ export default class UserService {
   async getSimpleUserInfo() {
     try {
       const result = await User.findOne({ uid: this.token.uid }).select(
-        "avatar birth comment isActive location name profileImage score uid"
+        "avatar birth comment isActive location name profileImage score uid",
       );
 
       if (result && result.telephone)
@@ -116,7 +116,7 @@ export default class UserService {
   async getAllSimpleUserInfo() {
     try {
       const users = await User.find({}).select(
-        "avatar birth comment isActive location name profileImage score uid"
+        "avatar birth comment isActive location name profileImage score uid",
       );
 
       return users;
@@ -172,7 +172,7 @@ export default class UserService {
     endDay: string,
     all: boolean = false,
     location?: string | null,
-    summary?: boolean
+    summary?: boolean,
   ) {
     try {
       const allUser = all
@@ -267,7 +267,7 @@ export default class UserService {
 
       if (location) {
         attendForm = attendForm.filter(
-          (data) => data.userSummary.location.toString() == location.toString()
+          (data) => data.userSummary.location.toString() == location.toString(),
         );
       }
       if (!summary) {
@@ -354,7 +354,7 @@ export default class UserService {
     try {
       const profile = await getProfile(
         this.token.accessToken as string,
-        this.token.uid as string
+        this.token.uid as string,
       );
       if (!profile) {
         return new Error();
@@ -427,7 +427,7 @@ export default class UserService {
     try {
       await User.updateOne(
         { uid: this.token.uid },
-        { studyPreference: { place, subPlace } }
+        { studyPreference: { place, subPlace } },
       );
     } catch (err: any) {
       throw new Error(err);
@@ -440,7 +440,7 @@ export default class UserService {
   async getPreference() {
     try {
       const result = await User.findOne({ uid: this.token.uid }).select(
-        "studyPreference"
+        "studyPreference",
       );
       return result;
     } catch (err: any) {
@@ -475,7 +475,7 @@ export default class UserService {
             key: "enthusiasticMember",
             location: user?.location,
           },
-          { $inc: { seq: 1 } }
+          { $inc: { seq: 1 } },
         );
       } else await this.updateUser({ role });
     } catch (err: any) {
@@ -575,7 +575,7 @@ export default class UserService {
         if (dayDiff > 2) {
           await Promotion.updateOne(
             { name },
-            { name, uid: this.token.uid, lastDate: now }
+            { name, uid: this.token.uid, lastDate: now },
           );
 
           await this.updatePoint(100, "홍보 이벤트 참여");

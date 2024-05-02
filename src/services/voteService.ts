@@ -83,7 +83,7 @@ export default class VoteService {
 
       //open 기록만 가져오는게 아닌 open 및 free 가져오는 걸로 변경
       userArrivedInfo = userArrivedInfo.filter(
-        (info) => ["open", "free"].includes(info.status) && info.arrived
+        (info) => ["open", "free"].includes(info.status) && info.arrived,
       );
 
       const results = userArrivedInfo.reduce((acc, obj) => {
@@ -118,7 +118,7 @@ export default class VoteService {
 
             return acc;
           },
-          []
+          [],
         );
       });
 
@@ -167,7 +167,7 @@ export default class VoteService {
         .flatMap((participation) =>
           participation.attendences?.map((attendance) => {
             return (attendance.user as IUser)?._id;
-          })
+          }),
         )
         .find((ObjId) => String(ObjId) === this.token.id);
 
@@ -186,7 +186,7 @@ export default class VoteService {
         (participation) => {
           const placeLocation = participation.place?.location;
           return placeLocation === location || placeLocation === "전체";
-        }
+        },
       );
       //유저 정보 없는 경우 제거
       filteredVote?.participations?.forEach((par) => {
@@ -247,7 +247,7 @@ export default class VoteService {
             };
           }
           return participation;
-        }
+        },
       );
 
       await vote.save();
@@ -292,7 +292,7 @@ export default class VoteService {
         .flatMap((participation) =>
           participation.attendences?.map((attendence) => {
             return (attendence.user as IUser)?._id;
-          })
+          }),
         )
         .find((ObjId) => String(ObjId) === this.token.id);
 
@@ -353,7 +353,7 @@ export default class VoteService {
               !participation.absences?.some(
                 (absence) =>
                   (absence.user as IUser)?.uid.toString() ===
-                  this.token.uid?.toString()
+                  this.token.uid?.toString(),
               )
             )
               participation.absences = [
@@ -466,12 +466,13 @@ export default class VoteService {
       vote.participations.forEach((participation) => {
         const isTargetParticipation = !!participation.attendences?.find(
           (att) =>
-            (att.user as IUser)?.uid.toString() === this.token.uid?.toString()
+            (att.user as IUser)?.uid.toString() === this.token.uid?.toString(),
         );
         if (isTargetParticipation) {
           participation.attendences = participation.attendences?.filter(
             (att) =>
-              (att.user as IUser)?.uid.toString() !== this.token.uid?.toString()
+              (att.user as IUser)?.uid.toString() !==
+              this.token.uid?.toString(),
           );
           participation.absences = [
             ...(participation.absences as IAbsence[]),
@@ -513,13 +514,13 @@ export default class VoteService {
 
   async quickVote(
     date: any,
-    studyInfo: Omit<IVoteStudyInfo, "place" | "subPlace">
+    studyInfo: Omit<IVoteStudyInfo, "place" | "subPlace">,
   ) {
     try {
       const { start, end } = studyInfo;
       const user: any = await User.findOne(
         { uid: this.token.uid },
-        "studyPreference"
+        "studyPreference",
       );
       let { place, subPlace } = user.studyPreference;
 

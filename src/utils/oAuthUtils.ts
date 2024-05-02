@@ -56,12 +56,12 @@ export const refreshAccessToken = async (token: JWT) => {
       refreshedTokens.expires_in && { expires_at: refreshedTokens.expires_in },
       refreshedTokens.refresh_token_expires_in && {
         refresh_token_expires_in: refreshedTokens.refresh_token_expires_in,
-      }
+      },
     );
 
     await Account.updateMany(
       { providerAccountId: token.uid?.toString() },
-      { $set: updateFields }
+      { $set: updateFields },
     );
 
     return {
@@ -87,7 +87,7 @@ export const sendResultMessage = async (
   date: Dayjs,
   isOpen: boolean,
   time: string,
-  place: string
+  place: string,
 ) => {
   const dateKr = date.format("MM/DD");
   const resultMessage = isOpen
@@ -149,7 +149,7 @@ export const withdrawal = async (accessToken: string) => {
           "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
     uid = response.data.id.toString();
   } catch (error) {
@@ -173,7 +173,7 @@ export const withdrawal = async (accessToken: string) => {
           status: "inactive",
           uid: "",
         },
-      }
+      },
     );
   }
   return;

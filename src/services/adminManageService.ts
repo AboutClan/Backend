@@ -32,7 +32,7 @@ export default class AdminManageService {
               !attendence["arrived"] &&
               !participation.absences?.some(
                 (user) =>
-                  (attendence.user as IUser).uid == (user.user as IUser).uid
+                  (attendence.user as IUser).uid == (user.user as IUser).uid,
               )
             ) {
               unUser.push((attendence.user as IUser).uid);
@@ -80,13 +80,13 @@ export default class AdminManageService {
         await this.userServiceInstance.getParticipationRate(
           lastMonthStart,
           lastMonthEnd,
-          true
+          true,
         );
 
       const notPartUsers: any[] = [];
       fUsers.forEach((user) => {
         const idx = participationRate.findIndex(
-          (participant) => user.uid == participant.uid
+          (participant) => user.uid == participant.uid,
         );
 
         if (idx === -1) {

@@ -49,7 +49,7 @@ router
         mine,
         opponent,
         myId,
-        toUid
+        toUid,
       );
       if (result) res.status(400).json(result);
       else res.status(200).end();

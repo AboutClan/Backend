@@ -33,13 +33,13 @@ router.route("/arrived").get(
     try {
       const results = await voteServiceInstance?.getArrivedPeriod(
         startDay,
-        endDay
+        endDay,
       );
       return res.status(200).json(results);
     } catch (err) {
       next(err);
     }
-  }
+  },
 );
 
 router
@@ -79,7 +79,7 @@ router.use(
 
     req.date = date;
     next();
-  }
+  },
 );
 
 router
@@ -91,7 +91,7 @@ router
     try {
       const filteredVote = await voteServiceInstance?.getFilteredVote(
         date,
-        location
+        location,
       );
       return res.status(200).json(filteredVote);
     } catch (err) {
@@ -129,7 +129,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   )
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance, date } = req;
@@ -266,7 +266,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 module.exports = router;

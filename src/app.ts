@@ -11,8 +11,7 @@ import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
 const bodyParser = require("body-parser");
-// import { Notice } from "./db/models/notice";
-// import swaggerFile from "../swagger/swagger-output.json";
+
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");

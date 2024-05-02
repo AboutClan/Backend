@@ -118,7 +118,7 @@ export default class GatherService {
 
     try {
       gather.comment = gather.comment.filter(
-        (com: any) => (com._id as string) != commentId
+        (com: any) => (com._id as string) != commentId,
       );
 
       await gather.save();
@@ -160,7 +160,7 @@ export default class GatherService {
 
     try {
       gather.participants = gather.participants.filter(
-        (participant) => participant.user != (this.token.id as IUser)
+        (participant) => participant.user != (this.token.id as IUser),
       );
       await gather.save();
     } catch (err) {

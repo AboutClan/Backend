@@ -30,7 +30,7 @@ export default class DailyCheckService {
     try {
       const result = await DailyCheck.find(
         { uid: this.token.uid },
-        "-_id -__v"
+        "-_id -__v",
       );
       return result;
     } catch (err: any) {
