@@ -35,6 +35,7 @@ export interface IUser extends Document, IRegistered {
   friend: string[];
   like: number;
   belong?: string;
+  monthScore: number;
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -137,6 +138,10 @@ export const UserSchema: Schema<IUser> = new Schema({
     default: "member",
   },
   score: {
+    type: Number,
+    default: 0,
+  },
+  monthScore:{
     type: Number,
     default: 0,
   },

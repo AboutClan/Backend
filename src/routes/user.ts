@@ -388,6 +388,29 @@ router
   );
 
 router
+  .route("/monthScore")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+
+    try {
+      const userScore = await userServiceInstance?.getUserInfo(["monthScore"]);
+      return res.status(200).send(userScore);
+    } catch (err) {
+      next(err);
+    }
+  })
+  .delete(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+
+    try {
+      await userServiceInstance?.initMonthScore();
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
   .route("/deposit")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
