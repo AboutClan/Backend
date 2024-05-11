@@ -391,11 +391,13 @@ export default class UserService {
 
   async initMonthScore() {
     try {
-      const user = await User.findOne({ uid: this.token.uid });
-      if (!user) throw new Error();
+      const users = await User.find();
+      if (!users) throw new Error();
 
-      user.monthScore = 0;
-      await user.save();
+      users.forEach((user) => {
+        user.monthScore = 0;
+        user.save();
+      });
     } catch (err: any) {
       throw new Error(err);
     }
