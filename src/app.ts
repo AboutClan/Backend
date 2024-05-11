@@ -10,6 +10,7 @@ import dbConnect from "./db/conn";
 import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
+import { User } from "./db/models/user";
 const bodyParser = require("body-parser");
 const schedule = require("node-schedule");
 
@@ -38,9 +39,19 @@ const swaggerUi = require("swagger-ui-express");
 const openapiSpecification = require("../swagger/swaggerSpec");
 const swaggerSpec = openapiSpecification;
 
-const monthlyJob = schedule.scheduleJob("* * * * *", () => {
+const monthlyJob = schedule.scheduleJob("0 0 1 * *", async () => {
   // 여기에 실행할 작업을 작성합니다.
-  console.log("매월 1일에 실행될 작업을 수행합니다.");
+  try {
+    const users = await User.find();
+    if (!users) throw new Error();
+
+    users.forEach((user) => {
+      user.monthScore = 0;
+      user.save();
+    });
+  } catch (err: any) {
+    throw new Error(err);
+  }
 });
 
 class App {
