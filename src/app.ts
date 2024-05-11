@@ -11,7 +11,9 @@ import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
 const bodyParser = require("body-parser");
+const schedule = require("node-schedule");
 
+// 매월 1일 00:00:00에 실행되는 스케줄을 생성합니다.
 //router
 const user = require("./routes/user");
 const vote = require("./routes/vote");
@@ -35,6 +37,11 @@ const promotion = require("./routes/promotion");
 const swaggerUi = require("swagger-ui-express");
 const openapiSpecification = require("../swagger/swaggerSpec");
 const swaggerSpec = openapiSpecification;
+
+const monthlyJob = schedule.scheduleJob("* * * * *", () => {
+  // 여기에 실행할 작업을 작성합니다.
+  console.log("매월 1일에 실행될 작업을 수행합니다.");
+});
 
 class App {
   private app: express.Application;
