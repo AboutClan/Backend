@@ -389,12 +389,25 @@ export default class UserService {
     return;
   }
 
+  async initMonthScore() {
+    try {
+      const user = await User.findOne({ uid: this.token.uid });
+      if (!user) throw new Error();
+
+      user.monthScore = 0;
+      await user.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
+    return;
+  }
   async updateScore(score: number, message: string, sub?: string) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
 
       user.score += score;
+      user.monthScore += score;
       await user.save();
     } catch (err: any) {
       throw new Error(err);
