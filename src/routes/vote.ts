@@ -144,6 +144,25 @@ router
   });
 
 router
+  .route("/:date/participationCnt")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance, date } = req;
+    let { location = "수원" } = req.query as {
+      location: string;
+    };
+
+    try {
+      const results = await voteServiceInstance?.getParticipantsCnt(
+        date,
+        location,
+      );
+      return res.status(200).json(results);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
   .route("/:date/week")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance, date } = req;

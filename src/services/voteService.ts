@@ -199,7 +199,7 @@ export default class VoteService {
   }
 
   async getWeekDates(date: any) {
-    const startOfWeek = dayjs(date).startOf("week"); // ISO 8601 기준 주의 시작 (월요일)
+    const startOfWeek = dayjs(date).startOf("isoWeek"); // ISO 8601 기준 주의 시작 (월요일)
     const weekDates = [];
 
     for (let i = 0; i < 7; i++) {
@@ -207,6 +207,40 @@ export default class VoteService {
     }
 
     return weekDates;
+  }
+
+  async getParticipantsCnt(date: any, location: string) {
+    try {
+      const dateList = await this.getWeekDates(date);
+      const cntList = new Array(7).fill(0);
+
+      await Promise.all(
+        dateList.map(async (date, i) => {
+          let vote = await findOneVote(date);
+          if (!vote) return cntList;
+
+          const map = new Map();
+          let cnt = 0;
+
+          vote.participations.forEach((participation) => {
+            if (participation.place?.location == location) {
+              participation.attendences?.forEach((attendence) => {
+                if (!map.has((attendence.user as IUser).uid)) {
+                  map.set((attendence.user as IUser).uid, 1);
+                  cnt++;
+                }
+              });
+            }
+          });
+
+          cntList[i] = cnt;
+        }),
+      );
+
+      return cntList;
+    } catch (err) {
+      throw new Error();
+    }
   }
 
   async getFilteredVoteByDate(date: any, location: string) {
