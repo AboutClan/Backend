@@ -198,6 +198,47 @@ export default class VoteService {
     }
   }
 
+  async getWeekDates(date: any) {
+    const startOfWeek = dayjs(date).startOf("week"); // ISO 8601 기준 주의 시작 (월요일)
+    const weekDates = [];
+
+    for (let i = 0; i < 7; i++) {
+      weekDates.push(startOfWeek.add(i, "day").toDate());
+    }
+
+    return weekDates;
+  }
+
+  async getFilteredVoteByDate(date: any, location: string) {
+    try {
+      const dateList = await this.getWeekDates(date);
+
+      const result: any[] = [];
+
+      await Promise.all(
+        dateList.map(async (date2) => {
+          const filteredVote = await this.getVote(date2);
+
+          filteredVote.participations = filteredVote?.participations.filter(
+            (participation) => {
+              const placeLocation = participation.place?.location;
+              return placeLocation === location || placeLocation === "전체";
+            },
+          );
+          //유저 정보 없는 경우 제거
+          filteredVote?.participations?.forEach((par) => {
+            par.attendences = par?.attendences?.filter((who) => who?.user);
+          });
+
+          result.push(filteredVote);
+        }),
+      );
+      return result;
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
   async setVote(date: any, studyInfo: IVoteStudyInfo) {
     try {
       const { place, subPlace, start, end, memo }: IVoteStudyInfo = studyInfo;

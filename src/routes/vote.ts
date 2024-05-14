@@ -86,7 +86,9 @@ router
   .route("/:date")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance, date } = req;
-    let { location = "수원" } = req.query as { location: string };
+    let { location = "수원" } = req.query as {
+      location: string;
+    };
 
     try {
       const filteredVote = await voteServiceInstance?.getFilteredVote(
@@ -136,6 +138,25 @@ router
     try {
       await voteServiceInstance?.deleteVote(date);
       return res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
+  .route("/:date/week")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance, date } = req;
+    let { location = "수원" } = req.query as {
+      location: string;
+    };
+
+    try {
+      const filteredVote = await voteServiceInstance?.getFilteredVoteByDate(
+        date,
+        location,
+      );
+      return res.status(200).json(filteredVote);
     } catch (err) {
       next(err);
     }
