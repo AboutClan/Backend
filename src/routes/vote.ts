@@ -43,6 +43,34 @@ router.route("/arrived").get(
 );
 
 router
+  .route("/participationCnt")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+    let {
+      location = "수원",
+      startDay,
+      endDay,
+    } = req.query as {
+      location: string;
+      startDay: any;
+      endDay: any;
+    };
+
+    if (startDay == null && endDay == null) return res.status(400).end();
+
+    try {
+      const results = await voteServiceInstance?.getParticipantsCnt(
+        location,
+        startDay,
+        endDay,
+      );
+      return res.status(200).json(results);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
   .route("/deleteField")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
@@ -138,25 +166,6 @@ router
     try {
       await voteServiceInstance?.deleteVote(date);
       return res.status(204).end();
-    } catch (err) {
-      next(err);
-    }
-  });
-
-router
-  .route("/:date/participationCnt")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
-    let { location = "수원" } = req.query as {
-      location: string;
-    };
-
-    try {
-      const results = await voteServiceInstance?.getParticipantsCnt(
-        date,
-        location,
-      );
-      return res.status(200).json(results);
     } catch (err) {
       next(err);
     }

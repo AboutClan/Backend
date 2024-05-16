@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { IPlace, Place } from "../db/models/place";
 import { IUser, User } from "../db/models/user";
@@ -209,10 +209,28 @@ export default class VoteService {
     return weekDates;
   }
 
-  async getParticipantsCnt(date: any, location: string) {
+  async getRangeDates(startDay: any, endDay: any) {
+    startDay = dayjs(startDay);
+    endDay = dayjs(endDay);
+
+    const dates = [];
+
+    let currentDate: Dayjs = startDay;
+
+    while (currentDate.isBefore(endDay) || currentDate.isSame(endDay)) {
+      dates.push(currentDate.toDate());
+      currentDate = currentDate.add(1, "day");
+    }
+
+    return dates;
+  }
+
+  async getParticipantsCnt(location: string, startDay: any, endDay: any) {
     try {
-      const dateList = await this.getWeekDates(date);
-      const cntList = new Array(7).fill(0);
+      const cntList = new Array();
+      const dateList = await this.getRangeDates(startDay, endDay);
+
+      console.log(dateList);
 
       await Promise.all(
         dateList.map(async (date, i) => {
@@ -233,7 +251,7 @@ export default class VoteService {
             }
           });
 
-          cntList[i] = cnt;
+          cntList.push(cnt);
         }),
       );
 
