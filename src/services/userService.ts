@@ -7,6 +7,7 @@ import { Promotion } from "../db/models/promotion";
 import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
+import { Log } from "../db/models/log";
 
 const logger = require("../../logger");
 
@@ -612,6 +613,71 @@ export default class UserService {
       throw new Error(err);
     }
     return;
+  }
+
+  async getMonthScoreLog() {
+    // 현재 날짜를 구합니다.
+    const currentDate = new Date();
+
+    // 이번 달의 시작일과 마지막 날을 계산합니다.
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1,
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0,
+    );
+    try {
+      const logs = await Log.find(
+        {
+          "meta.type": "score",
+          "meta.uid": this.token.uid,
+          timestamp: {
+            $gte: startOfMonth,
+            $lte: endOfMonth,
+          },
+        },
+        "-_id timestamp message meta",
+      )
+        .sort({ timestamp: -1 })
+        .limit(30);
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async getLog(type: string) {
+    try {
+      const logs = await Log.find(
+        {
+          "meta.uid": this.token.uid,
+          "meta.type": type,
+        },
+        "-_id timestamp message meta",
+      )
+        .sort({ timestamp: -1 })
+        .limit(30);
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async getAllLog(type: string) {
+    try {
+      const logs = await Log.find(
+        { "meta.type": type },
+        "-_id timestamp message meta",
+      );
+
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async test() {

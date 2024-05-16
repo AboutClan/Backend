@@ -387,6 +387,83 @@ router
     },
   );
 
+router.route("/histories/score").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getLog("score");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/monthScore").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getMonthScoreLog();
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/score/all").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getAllLog("score");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/point").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getLog("point");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/point/all").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getAllLog("point");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/deposit").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getLog("deposit");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/deposit/all").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getAllLog("deposit");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
 router
   .route("/monthScore")
   .get(async (req: Request, res: Response, next: NextFunction) => {
