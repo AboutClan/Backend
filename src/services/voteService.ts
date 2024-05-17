@@ -7,7 +7,7 @@ import {
   IAttendance,
   IParticipation,
   IVote,
-  Vote,
+  Vote
 } from "../db/models/vote";
 import { IVoteStudyInfo } from "../types/vote";
 import { now, strToDate } from "../utils/dateUtils";
@@ -230,8 +230,6 @@ export default class VoteService {
       const cntList = new Array();
       const dateList = await this.getRangeDates(startDay, endDay);
 
-      console.log(dateList);
-
       await Promise.all(
         dateList.map(async (date, i) => {
           let vote = await findOneVote(date);
@@ -241,7 +239,7 @@ export default class VoteService {
           let cnt = 0;
 
           vote.participations.forEach((participation) => {
-            if (participation.place?.location == location) {
+            if (participation.place?.location == location && participation.place.brand!=="자유 신청") {
               participation.attendences?.forEach((attendence) => {
                 if (!map.has((attendence.user as IUser).uid)) {
                   map.set((attendence.user as IUser).uid, 1);

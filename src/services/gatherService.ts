@@ -2,7 +2,7 @@ import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { Gather, gatherStatus, IGatherData } from "../db/models/gather";
 import { IUser } from "../db/models/user";
-
+2;
 export default class GatherService {
   private token: JWT;
   constructor(token?: JWT) {
