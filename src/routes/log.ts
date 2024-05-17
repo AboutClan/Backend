@@ -23,6 +23,17 @@ router.route("/score").get(async (req, res, next) => {
   }
 });
 
+router.route("/monthScore").get(async (req, res, next) => {
+  const { logServiceInstance } = req;
+
+  try {
+    const logs = await logServiceInstance?.getMonthScoreLog();
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
 router.route("/score/all").get(async (req, res, next) => {
   const { logServiceInstance } = req;
 

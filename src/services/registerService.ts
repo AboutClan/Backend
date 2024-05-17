@@ -2,7 +2,6 @@ import { JWT } from "next-auth/jwt";
 import { IRegistered, Registered } from "../db/models/registered";
 import { User } from "../db/models/user";
 import * as CryptoJS from "crypto-js";
-import LogService from "./logService";
 import dbConnect from "../db/conn";
 
 const logger = require("../../logger");
@@ -39,6 +38,10 @@ export default class RegisterService {
     if (encodedTel === telephone) throw new Error("Key not exist");
     if (encodedTel.length == 0) throw new Error("Key not exist");
 
+    const a = await this.decodeByAES256(
+      "U2FsdGVkX1+Wz6uV+ErLREqYytNiVKsMU95smfwpGoo=",
+    );
+    console.log(a, a.length);
     const registerForm = {
       uid: this.token.uid,
       profileImage: this.token.picture,

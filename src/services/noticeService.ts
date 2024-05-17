@@ -14,7 +14,7 @@ export default class NoticeService {
           to: this.token.uid,
           $or: [{ type: "like" }, { type: "friend" }, { type: "alphabet" }],
         },
-        "-_id -__v"
+        "-_id -__v",
       );
       return result;
     } catch (err: any) {
@@ -40,7 +40,7 @@ export default class NoticeService {
     try {
       const result = await Notice.find(
         { to: this.token.uid, type: "like" },
-        "-_id -__v"
+        "-_id -__v",
       );
       return result;
     } catch (err: any) {
@@ -60,7 +60,7 @@ export default class NoticeService {
     try {
       const result = await Notice.find(
         { to: this.token.uid, type: "friend" },
-        "-_id -__v"
+        "-_id -__v",
       );
       return result;
     } catch (err: any) {
@@ -72,7 +72,7 @@ export default class NoticeService {
     type: "friend" | "alphabet",
     toUid: string,
     message: string,
-    sub?: string
+    sub?: string,
   ) {
     try {
       await Notice.create({
@@ -90,7 +90,7 @@ export default class NoticeService {
   async updateRequestFriend(
     type: "friend" | "alphabet",
     from: string,
-    status: string
+    status: string,
   ) {
     try {
       const results = await Notice.find({

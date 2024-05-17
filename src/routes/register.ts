@@ -55,7 +55,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   )
   .delete(
     body("uid").notEmpty().withMessage("uid필요"),
@@ -72,7 +72,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   );
 
 module.exports = router;

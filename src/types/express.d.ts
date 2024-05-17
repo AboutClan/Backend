@@ -21,6 +21,7 @@ import { ICollection } from "../db/models/collection";
 import CollectionService from "../services/collectionService";
 import CounterService from "../services/counterService";
 import GroupStudyService from "../services/groupStudyService";
+import PromotionService from "../services/promotionService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -52,6 +53,7 @@ declare global {
       adminManageInstance?: adminManageService;
       logServiceInstance?: LogService;
       imageServiceInstance?: ImageService;
+      promotionServiceInstance?: PromotionService;
     }
   }
 }

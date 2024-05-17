@@ -49,6 +49,7 @@ router
 
     try {
       const isActive = await userServiceInstance?.getAllSimpleUserInfo();
+      console.log(321, isActive);
       return res.status(200).json(isActive);
     } catch (err) {
       next(err);
@@ -76,14 +77,14 @@ router
       } = req;
 
       try {
-        const avatar = await userServiceInstance?.updateUser({
+        await userServiceInstance?.updateUser({
           avatar: { type, bg },
         });
-        return res.status(200).json(avatar);
+        return res.status(200).end();
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -116,7 +117,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -134,7 +135,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -179,13 +180,13 @@ router
             endDay,
             true,
             location,
-            Boolean(summary)
+            Boolean(summary),
           );
         return res.status(200).json(participationResult);
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -216,14 +217,14 @@ router
             endDay,
             false,
             location,
-            summary
+            summary,
           );
         const userResult = participationResult?.[0];
         return res.status(200).json(userResult);
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -240,14 +241,14 @@ router
       try {
         const voteResult = await userServiceInstance?.getVoteRate(
           startDay,
-          endDay
+          endDay,
         );
 
         return res.status(200).json(voteResult);
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -306,7 +307,7 @@ router
 
     try {
       const results = await userServiceInstance?.getUsersWithUids(
-        uids as string[]
+        uids as string[],
       );
       return res.status(200).json(results);
     } catch (err) {
@@ -354,7 +355,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -383,8 +384,108 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
+
+router.route("/histories/score").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getLog("score");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/monthScore").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getMonthScoreLog();
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/score/all").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getAllLog("score");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/point").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getLog("point");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/point/all").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getAllLog("point");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/deposit").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getLog("deposit");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router.route("/histories/deposit/all").get(async (req, res, next) => {
+  const { userServiceInstance } = req;
+
+  try {
+    const logs = await userServiceInstance?.getAllLog("deposit");
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
+router
+  .route("/monthScore")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+
+    try {
+      const userScore = await userServiceInstance?.getUserInfo(["monthScore"]);
+      return res.status(200).send(userScore);
+    } catch (err) {
+      next(err);
+    }
+  })
+  .delete(async (req: Request, res: Response, next: NextFunction) => {
+    const { userServiceInstance } = req;
+
+    try {
+      await userServiceInstance?.initMonthScore();
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  });
 
 router
   .route("/deposit")
@@ -412,7 +513,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -467,7 +568,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   )
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { userServiceInstance } = req;
@@ -541,7 +642,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router
@@ -560,7 +661,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 router

@@ -5,7 +5,7 @@ const { body, validationResult } = require("express-validator");
 export default function validateCheck(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   const errors = validationResult(req);
   console.log(errors);

@@ -80,7 +80,7 @@ export default class GroupStudyService {
     try {
       if (
         !groupStudy.participants.some(
-          (participant) => participant.user == (this.token.id as IUser)
+          (participant) => participant.user == (this.token.id as IUser),
         )
       ) {
         groupStudy.participants.push({
@@ -112,14 +112,14 @@ export default class GroupStudyService {
 
     try {
       groupStudy.participants = groupStudy.participants.filter(
-        (participant) => participant.user != (this.token.id as IUser)
+        (participant) => participant.user != (this.token.id as IUser),
       );
 
       groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
-        (who) => who.uid !== this.token.uid + ""
+        (who) => who.uid !== this.token.uid + "",
       );
       groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
-        (who) => who.uid !== this.token.uid + ""
+        (who) => who.uid !== this.token.uid + "",
       );
       await groupStudy.save();
     } catch (err) {
@@ -134,14 +134,14 @@ export default class GroupStudyService {
 
     try {
       groupStudy.participants = groupStudy.participants.filter(
-        (participant) => participant.user != toUid
+        (participant) => participant.user != toUid,
       );
 
       groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
-        (who) => who.uid !== toUid + ""
+        (who) => who.uid !== toUid + "",
       );
       groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
-        (who) => who.uid !== toUid + ""
+        (who) => who.uid !== toUid + "",
       );
       await groupStudy.save();
     } catch (err) {
@@ -187,7 +187,7 @@ export default class GroupStudyService {
 
     try {
       groupStudy.waiting = groupStudy.waiting.filter(
-        (who) => who.user.toString() !== userId
+        (who) => who.user.toString() !== userId,
       );
       if (status === "agree") {
         groupStudy.participants.push({
@@ -238,7 +238,7 @@ export default class GroupStudyService {
     id: string,
     weekRecord: string[],
     type: string,
-    weekRecordSub?: string[]
+    weekRecordSub?: string[],
   ) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
@@ -259,7 +259,7 @@ export default class GroupStudyService {
 
       const findUser = weekData.find((who) => who.uid === this.token.uid + "");
       const findMember = groupStudy.participants.find(
-        (who) => who.user.toString() === (this.token.id as string)
+        (who) => who.user.toString() === (this.token.id as string),
       );
 
       if (findUser) {
@@ -324,7 +324,7 @@ export default class GroupStudyService {
 
     try {
       groupStudy.comment = groupStudy.comment.filter(
-        (com: any) => (com._id as string) != commentId
+        (com: any) => (com._id as string) != commentId,
       );
 
       await groupStudy.save();
@@ -388,7 +388,7 @@ export default class GroupStudyService {
             b = belong;
             if (
               !group.participants.some(
-                (participant) => participant.user == who._id
+                (participant) => participant.user == who._id,
               )
             ) {
               await group.participants.push({

@@ -33,14 +33,42 @@ router.route("/arrived").get(
     try {
       const results = await voteServiceInstance?.getArrivedPeriod(
         startDay,
-        endDay
+        endDay,
       );
       return res.status(200).json(results);
     } catch (err) {
       next(err);
     }
-  }
+  },
 );
+
+router
+  .route("/participationCnt")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance } = req;
+    let {
+      location = "수원",
+      startDay,
+      endDay,
+    } = req.query as {
+      location: string;
+      startDay: any;
+      endDay: any;
+    };
+
+    if (startDay == null && endDay == null) return res.status(400).end();
+
+    try {
+      const results = await voteServiceInstance?.getParticipantsCnt(
+        location,
+        startDay,
+        endDay,
+      );
+      return res.status(200).json(results);
+    } catch (err) {
+      next(err);
+    }
+  });
 
 router
   .route("/deleteField")
@@ -79,19 +107,21 @@ router.use(
 
     req.date = date;
     next();
-  }
+  },
 );
 
 router
   .route("/:date")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance, date } = req;
-    let { location = "수원" } = req.query as { location: string };
+    let { location = "수원" } = req.query as {
+      location: string;
+    };
 
     try {
       const filteredVote = await voteServiceInstance?.getFilteredVote(
         date,
-        location
+        location,
       );
       return res.status(200).json(filteredVote);
     } catch (err) {
@@ -129,13 +159,32 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   )
   .delete(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance, date } = req;
     try {
       await voteServiceInstance?.deleteVote(date);
       return res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+router
+  .route("/:date/week")
+  .get(async (req: Request, res: Response, next: NextFunction) => {
+    const { voteServiceInstance, date } = req;
+    let { location = "수원" } = req.query as {
+      location: string;
+    };
+
+    try {
+      const filteredVote = await voteServiceInstance?.getFilteredVoteByDate(
+        date,
+        location,
+      );
+      return res.status(200).json(filteredVote);
     } catch (err) {
       next(err);
     }
@@ -266,7 +315,7 @@ router
       } catch (err) {
         next(err);
       }
-    }
+    },
   );
 
 module.exports = router;

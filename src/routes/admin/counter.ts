@@ -22,7 +22,7 @@ router
     try {
       const counter = await counterServiceInstance?.getCounter(
         key as string,
-        location as string
+        location as string,
       );
       res.status(200).json(counter);
     } catch (err: any) {

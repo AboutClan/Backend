@@ -17,7 +17,7 @@ export default class CollectionService {
       if (previousData) {
         await Collection.updateOne(
           { user: this.token.id },
-          { $push: { collects: alphabet } }
+          { $push: { collects: alphabet } },
         );
       } else {
         await Collection.create({
@@ -35,7 +35,7 @@ export default class CollectionService {
     mine: string,
     opponent: string,
     myId: string,
-    toUid: string
+    toUid: string,
   ) {
     try {
       const findToUser = await User.findOne({ uid: toUid });
@@ -81,7 +81,7 @@ export default class CollectionService {
         });
         await Collection.updateOne(
           { user: this.token.id },
-          { $set: { collects: myAlphabets }, $inc: { collectCnt: 1 } }
+          { $set: { collects: myAlphabets }, $inc: { collectCnt: 1 } },
         );
         await Request.create({
           category: "건의",

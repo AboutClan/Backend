@@ -39,7 +39,7 @@ router
       } catch (err: any) {
         next(err);
       }
-    }
+    },
   );
 
 module.exports = router;

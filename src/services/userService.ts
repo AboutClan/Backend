@@ -7,6 +7,7 @@ import { Promotion } from "../db/models/promotion";
 import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
+import { Log } from "../db/models/log";
 
 const logger = require("../../logger");
 
@@ -101,7 +102,7 @@ export default class UserService {
   async getSimpleUserInfo() {
     try {
       const result = await User.findOne({ uid: this.token.uid }).select(
-        "avatar birth comment isActive location name profileImage score uid"
+        "avatar birth comment isActive location name profileImage score uid",
       );
 
       if (result && result.telephone)
@@ -115,14 +116,9 @@ export default class UserService {
 
   async getAllSimpleUserInfo() {
     try {
-      const users = await User.find({}, "-_id").select(
-        "avatar birth comment isActive location name profileImage score uid"
+      const users = await User.find({}).select(
+        "avatar birth comment isActive location name profileImage score uid",
       );
-
-      users.forEach(async (user) => {
-        if (user.telephone)
-          user.telephone = await this.decodeByAES256(user.telephone);
-      });
 
       return users;
     } catch (err: any) {
@@ -177,7 +173,7 @@ export default class UserService {
     endDay: string,
     all: boolean = false,
     location?: string | null,
-    summary?: boolean
+    summary?: boolean,
   ) {
     try {
       const allUser = all
@@ -272,7 +268,7 @@ export default class UserService {
 
       if (location) {
         attendForm = attendForm.filter(
-          (data) => data.userSummary.location.toString() == location.toString()
+          (data) => data.userSummary.location.toString() == location.toString(),
         );
       }
       if (!summary) {
@@ -359,7 +355,7 @@ export default class UserService {
     try {
       const profile = await getProfile(
         this.token.accessToken as string,
-        this.token.uid as string
+        this.token.uid as string,
       );
       if (!profile) {
         return new Error();
@@ -394,12 +390,27 @@ export default class UserService {
     return;
   }
 
+  async initMonthScore() {
+    try {
+      const users = await User.find();
+      if (!users) throw new Error();
+
+      users.forEach((user) => {
+        user.monthScore = 0;
+        user.save();
+      });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+    return;
+  }
   async updateScore(score: number, message: string, sub?: string) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
 
       user.score += score;
+      user.monthScore += score;
       await user.save();
     } catch (err: any) {
       throw new Error(err);
@@ -432,7 +443,7 @@ export default class UserService {
     try {
       await User.updateOne(
         { uid: this.token.uid },
-        { studyPreference: { place, subPlace } }
+        { studyPreference: { place, subPlace } },
       );
     } catch (err: any) {
       throw new Error(err);
@@ -445,7 +456,7 @@ export default class UserService {
   async getPreference() {
     try {
       const result = await User.findOne({ uid: this.token.uid }).select(
-        "studyPreference"
+        "studyPreference",
       );
       return result;
     } catch (err: any) {
@@ -480,7 +491,7 @@ export default class UserService {
             key: "enthusiasticMember",
             location: user?.location,
           },
-          { $inc: { seq: 1 } }
+          { $inc: { seq: 1 } },
         );
       } else await this.updateUser({ role });
     } catch (err: any) {
@@ -580,7 +591,7 @@ export default class UserService {
         if (dayDiff > 2) {
           await Promotion.updateOne(
             { name },
-            { name, uid: this.token.uid, lastDate: now }
+            { name, uid: this.token.uid, lastDate: now },
           );
 
           await this.updatePoint(100, "홍보 이벤트 참여");
@@ -602,6 +613,71 @@ export default class UserService {
       throw new Error(err);
     }
     return;
+  }
+
+  async getMonthScoreLog() {
+    // 현재 날짜를 구합니다.
+    const currentDate = new Date();
+
+    // 이번 달의 시작일과 마지막 날을 계산합니다.
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1,
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0,
+    );
+    try {
+      const logs = await Log.find(
+        {
+          "meta.type": "score",
+          "meta.uid": this.token.uid,
+          timestamp: {
+            $gte: startOfMonth,
+            $lte: endOfMonth,
+          },
+        },
+        "-_id timestamp message meta",
+      )
+        .sort({ timestamp: -1 })
+        .limit(30);
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async getLog(type: string) {
+    try {
+      const logs = await Log.find(
+        {
+          "meta.uid": this.token.uid,
+          "meta.type": type,
+        },
+        "-_id timestamp message meta",
+      )
+        .sort({ timestamp: -1 })
+        .limit(30);
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async getAllLog(type: string) {
+    try {
+      const logs = await Log.find(
+        { "meta.type": type },
+        "-_id timestamp message meta",
+      );
+
+      return logs;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async test() {

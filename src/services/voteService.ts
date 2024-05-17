@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { IPlace, Place } from "../db/models/place";
 import { IUser, User } from "../db/models/user";
@@ -83,7 +83,7 @@ export default class VoteService {
 
       //open 기록만 가져오는게 아닌 open 및 free 가져오는 걸로 변경
       userArrivedInfo = userArrivedInfo.filter(
-        (info) => ["open", "free"].includes(info.status) && info.arrived
+        (info) => ["open", "free"].includes(info.status) && info.arrived,
       );
 
       const results = userArrivedInfo.reduce((acc, obj) => {
@@ -118,7 +118,7 @@ export default class VoteService {
 
             return acc;
           },
-          []
+          [],
         );
       });
 
@@ -167,7 +167,7 @@ export default class VoteService {
         .flatMap((participation) =>
           participation.attendences?.map((attendance) => {
             return (attendance.user as IUser)?._id;
-          })
+          }),
         )
         .find((ObjId) => String(ObjId) === this.token.id);
 
@@ -186,13 +186,106 @@ export default class VoteService {
         (participation) => {
           const placeLocation = participation.place?.location;
           return placeLocation === location || placeLocation === "전체";
-        }
+        },
       );
       //유저 정보 없는 경우 제거
       filteredVote?.participations?.forEach((par) => {
         par.attendences = par?.attendences?.filter((who) => who?.user);
       });
       return filteredVote;
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
+  async getWeekDates(date: any) {
+    const startOfWeek = dayjs(date).startOf("isoWeek"); // ISO 8601 기준 주의 시작 (월요일)
+    const weekDates = [];
+
+    for (let i = 0; i < 7; i++) {
+      weekDates.push(startOfWeek.add(i, "day").toDate());
+    }
+
+    return weekDates;
+  }
+
+  async getRangeDates(startDay: any, endDay: any) {
+    startDay = dayjs(startDay);
+    endDay = dayjs(endDay);
+
+    const dates = [];
+
+    let currentDate: Dayjs = startDay;
+
+    while (currentDate.isBefore(endDay) || currentDate.isSame(endDay)) {
+      dates.push(currentDate.toDate());
+      currentDate = currentDate.add(1, "day");
+    }
+
+    return dates;
+  }
+
+  async getParticipantsCnt(location: string, startDay: any, endDay: any) {
+    try {
+      const cntList = new Array();
+      const dateList = await this.getRangeDates(startDay, endDay);
+
+      console.log(dateList);
+
+      await Promise.all(
+        dateList.map(async (date, i) => {
+          let vote = await findOneVote(date);
+          if (!vote) return cntList;
+
+          const map = new Map();
+          let cnt = 0;
+
+          vote.participations.forEach((participation) => {
+            if (participation.place?.location == location) {
+              participation.attendences?.forEach((attendence) => {
+                if (!map.has((attendence.user as IUser).uid)) {
+                  map.set((attendence.user as IUser).uid, 1);
+                  cnt++;
+                }
+              });
+            }
+          });
+
+          cntList.push(cnt);
+        }),
+      );
+
+      return cntList;
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
+  async getFilteredVoteByDate(date: any, location: string) {
+    try {
+      const dateList = await this.getWeekDates(date);
+
+      const result: any[] = [];
+
+      await Promise.all(
+        dateList.map(async (date2) => {
+          const filteredVote = await this.getVote(date2);
+
+          filteredVote.participations = filteredVote?.participations.filter(
+            (participation) => {
+              const placeLocation = participation.place?.location;
+              return placeLocation === location || placeLocation === "전체";
+            },
+          );
+          //유저 정보 없는 경우 제거
+          filteredVote?.participations?.forEach((par) => {
+            par.attendences = par?.attendences?.filter((who) => who?.user);
+          });
+
+          result.push(filteredVote);
+        }),
+      );
+      return result;
     } catch (err) {
       throw new Error();
     }
@@ -247,7 +340,7 @@ export default class VoteService {
             };
           }
           return participation;
-        }
+        },
       );
 
       await vote.save();
@@ -292,7 +385,7 @@ export default class VoteService {
         .flatMap((participation) =>
           participation.attendences?.map((attendence) => {
             return (attendence.user as IUser)?._id;
-          })
+          }),
         )
         .find((ObjId) => String(ObjId) === this.token.id);
 
@@ -353,7 +446,7 @@ export default class VoteService {
               !participation.absences?.some(
                 (absence) =>
                   (absence.user as IUser)?.uid.toString() ===
-                  this.token.uid?.toString()
+                  this.token.uid?.toString(),
               )
             )
               participation.absences = [
@@ -466,12 +559,13 @@ export default class VoteService {
       vote.participations.forEach((participation) => {
         const isTargetParticipation = !!participation.attendences?.find(
           (att) =>
-            (att.user as IUser)?.uid.toString() === this.token.uid?.toString()
+            (att.user as IUser)?.uid.toString() === this.token.uid?.toString(),
         );
         if (isTargetParticipation) {
           participation.attendences = participation.attendences?.filter(
             (att) =>
-              (att.user as IUser)?.uid.toString() !== this.token.uid?.toString()
+              (att.user as IUser)?.uid.toString() !==
+              this.token.uid?.toString(),
           );
           participation.absences = [
             ...(participation.absences as IAbsence[]),
@@ -513,13 +607,13 @@ export default class VoteService {
 
   async quickVote(
     date: any,
-    studyInfo: Omit<IVoteStudyInfo, "place" | "subPlace">
+    studyInfo: Omit<IVoteStudyInfo, "place" | "subPlace">,
   ) {
     try {
       const { start, end } = studyInfo;
       const user: any = await User.findOne(
         { uid: this.token.uid },
-        "studyPreference"
+        "studyPreference",
       );
       let { place, subPlace } = user.studyPreference;
 
