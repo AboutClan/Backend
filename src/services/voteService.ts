@@ -7,7 +7,7 @@ import {
   IAttendance,
   IParticipation,
   IVote,
-  Vote
+  Vote,
 } from "../db/models/vote";
 import { IVoteStudyInfo } from "../types/vote";
 import { now, strToDate } from "../utils/dateUtils";
@@ -227,8 +227,12 @@ export default class VoteService {
 
   async getParticipantsCnt(location: string, startDay: any, endDay: any) {
     try {
-      const cntList = new Array();
       const dateList = await this.getRangeDates(startDay, endDay);
+      const cntList = new Map<Date, number>();
+
+      dateList.forEach((date) => {
+        cntList.set(date, 0);
+      });
 
       await Promise.all(
         dateList.map(async (date, i) => {
@@ -239,9 +243,15 @@ export default class VoteService {
           let cnt = 0;
 
           vote.participations.forEach((participation) => {
-            if (participation.place?.location == location && participation.place.brand!=="자유 신청") {
+            if (
+              participation.place?.location == location &&
+              participation.place.brand !== "자유 신청"
+            ) {
               participation.attendences?.forEach((attendence) => {
-                if (!map.has((attendence.user as IUser).uid)) {
+                if (
+                  attendence.user != null &&
+                  !map.has((attendence.user as IUser).uid)
+                ) {
                   map.set((attendence.user as IUser).uid, 1);
                   cnt++;
                 }
@@ -249,11 +259,15 @@ export default class VoteService {
             }
           });
 
-          cntList.push(cnt);
+          cntList.set(date, cnt);
+          console.log(cntList);
         }),
       );
-
-      return cntList;
+      let array = Array.from(cntList, ([name, value]) => ({
+        date: name,
+        value,
+      }));
+      return array;
     } catch (err) {
       throw new Error();
     }
