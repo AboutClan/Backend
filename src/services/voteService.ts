@@ -241,7 +241,7 @@ export default class VoteService {
           vote.participations.forEach((participation) => {
             if (participation.place?.location == location && participation.place.brand!=="자유 신청") {
               participation.attendences?.forEach((attendence) => {
-                if (!map.has((attendence.user as IUser).uid)) {
+                if (attendence.firstChoice&& !map.has((attendence.user as IUser).uid)) {
                   map.set((attendence.user as IUser).uid, 1);
                   cnt++;
                 }
