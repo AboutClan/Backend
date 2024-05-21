@@ -33,6 +33,7 @@ const dailyCheck = require("./routes/dailyCheck");
 const collection = require("./routes/collection");
 const groupStudy = require("./routes/groupStudy");
 const promotion = require("./routes/promotion");
+const webpush = require("./routes/webpush");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
@@ -75,6 +76,7 @@ class App {
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(dbSet);
+    this.app.use("/", webpush);
     this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     this.app.use(tokenValidator);
   }
