@@ -249,7 +249,7 @@ export default class VoteService {
             ) {
               participation.attendences?.forEach((attendence) => {
                 if (
-                  attendence.user != null &&attendence.firstChoice&&
+                  attendence.user != null &&
                   !map.has((attendence.user as IUser).uid)
                 ) {
                   map.set((attendence.user as IUser).uid, 1);
