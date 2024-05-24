@@ -4,21 +4,12 @@ import AdminVoteService from "../services/adminVoteServices";
 
 const schedule = require("node-schedule");
 
-//schedule 테스트
-export const scheduleTest = schedule.scheduleJob("* * * * *", async () => {
-  try {
-    console.log("Schedule Test");
-    console.log(dayjs().toDate().toString());
-  } catch (err: any) {
-    throw new Error(err);
-  }
-});
-
 //투표 결과 발표
 export const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
-    adminVoteServiceInstance.confirm(dayjs().toDate().toString());
+    await adminVoteServiceInstance.confirm(dayjs().toDate().toString());
+    console.log("vote result succeess");
   } catch (err: any) {
     throw new Error(err);
   }
