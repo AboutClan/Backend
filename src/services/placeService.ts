@@ -16,7 +16,6 @@ export default class PlaceService {
   }
 
   async addPlace(placeData: IPlace) {
-    console.log(this.token);
     try {
       const {
         status,
@@ -38,7 +37,7 @@ export default class PlaceService {
       if (!status) placeData.status = "active";
       if (!time) placeData.time = "unknown";
       if (!registerDate) placeData.registerDate = new Date().toString();
-      if (!registrant) placeData.registrant = this.token._id as string;
+      if (!registrant) placeData.registrant = this.token.id as string;
 
       if (
         !fullname ||
