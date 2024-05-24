@@ -11,7 +11,7 @@ import { config } from "./config/config";
 import { dbSet } from "./middlewares/dbSet";
 import tokenValidator from "./middlewares/auth";
 import { User } from "./db/models/user";
-import "./schedule/schedule.ts";
+import "./schedule/schedule";
 const bodyParser = require("body-parser");
 
 // 매월 1일 00:00:00에 실행되는 스케줄을 생성합니다.
