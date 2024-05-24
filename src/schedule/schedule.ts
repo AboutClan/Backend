@@ -5,7 +5,7 @@ import AdminVoteService from "../services/adminVoteServices";
 const schedule = require("node-schedule");
 
 //schedule 테스트
-const scheduleTest = schedule.scheduleJob("* * * * *", async () => {
+export const scheduleTest = schedule.scheduleJob("* * * * *", async () => {
   try {
     console.log("Schedule Test");
     console.log(dayjs().toDate().toString());
@@ -15,7 +15,7 @@ const scheduleTest = schedule.scheduleJob("* * * * *", async () => {
 });
 
 //투표 결과 발표
-const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
+export const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
     adminVoteServiceInstance.confirm(dayjs().toDate().toString());
@@ -25,7 +25,7 @@ const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
 });
 
 //매월 monthScore 초기화
-const initMonthScore = schedule.scheduleJob("0 0 1 * *", async () => {
+export const initMonthScore = schedule.scheduleJob("0 0 1 * *", async () => {
   try {
     const users = await User.find();
     if (!users) throw new Error();
