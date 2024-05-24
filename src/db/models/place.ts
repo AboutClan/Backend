@@ -1,4 +1,5 @@
 import mongoose, { Document, model, Model, Schema } from "mongoose";
+import { IUser } from './user';
 
 export interface IPlace extends Document {
   status: string;
@@ -14,6 +15,9 @@ export interface IPlace extends Document {
   location: string;
   locationDetail?: string;
   time?: string;
+  registerDate: string;
+  registrant: string | IUser;
+  mapURL: string;
 }
 
 export const PlaceSchema: Schema<IPlace> = new Schema({
@@ -54,6 +58,16 @@ export const PlaceSchema: Schema<IPlace> = new Schema({
     enum: ["수원", "양천", "강남", "동대문", "안양", "인천", "전체"],
     default: "수원",
   },
+  registerDate:{
+    type: String
+  },
+  registrant: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  mapURL:{
+    type: String
+  }
 });
 
 export const Place =
