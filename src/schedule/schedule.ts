@@ -18,7 +18,8 @@ export const scheduleTest = schedule.scheduleJob("* * * * *", async () => {
 export const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
-    adminVoteServiceInstance.confirm(dayjs().toDate().toString());
+    await adminVoteServiceInstance.confirm(dayjs().toDate().toString());
+    console.log("vote result succeess");
   } catch (err: any) {
     throw new Error(err);
   }
