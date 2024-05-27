@@ -67,6 +67,8 @@ export default class PlaceService {
       if (!statusList.includes(status)) throw new Error();
 
       await Place.updateOne({_id: placeId}, {status});
+
+      return;
     }
   }
 }
