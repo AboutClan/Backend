@@ -61,14 +61,16 @@ export default class PlaceService {
   }
 
   async updateStatus(placeId: any, status: any) {
-    try{
+    try {
       const statusList = ["active", "inactive"];
 
       if (!statusList.includes(status)) throw new Error();
 
-      await Place.updateOne({_id: placeId}, {status});
+      await Place.updateOne({ _id: placeId }, { status });
 
       return;
+    } catch (err: any) {
+      throw new Error(err);
     }
   }
 }
