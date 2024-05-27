@@ -5,7 +5,7 @@ import AdminVoteService from "../services/adminVoteServices";
 const schedule = require("node-schedule");
 
 //투표 결과 발표
-export const voteResult = schedule.scheduleJob("0 11 * * *", async () => {
+export const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
     await adminVoteServiceInstance.confirm(dayjs().toDate().toString());
