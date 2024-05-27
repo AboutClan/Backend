@@ -43,6 +43,7 @@ export const RequestSchema: Schema<IRequestData> = new Schema(
         "배지",
         "불참",
         "조모임",
+        "장소 추가"
       ],
     },
     title: {
