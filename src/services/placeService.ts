@@ -34,10 +34,10 @@ export default class PlaceService {
         mapURL,
       } = placeData;
 
-      if (!status) placeData.status = "inactive";
       if (!time) placeData.time = "unknown";
       if (!registerDate) placeData.registerDate = new Date().toString();
-      if (!registrant) placeData.registrant = this.token.id as string;
+      placeData.status = "inactive";
+      placeData.registrant = this.token.id as string;
 
       if (
         !fullname ||
