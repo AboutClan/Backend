@@ -36,4 +36,16 @@ router
     }
   });
 
+router.route("/status").post(async (req, res, next) => {
+  const { placeServiceInstance } = req;
+  const { placeId, status } = req.body;
+
+  try {
+    const places = await placeServiceInstance?.updateStatus(placeId, status);
+    return res.status(200).json(places);
+  } catch (err: any) {
+    next(err);
+  }
+});
+
 module.exports = router;

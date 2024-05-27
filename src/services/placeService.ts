@@ -34,10 +34,10 @@ export default class PlaceService {
         mapURL,
       } = placeData;
 
-      if (!status) placeData.status = "active";
       if (!time) placeData.time = "unknown";
       if (!registerDate) placeData.registerDate = new Date().toString();
-      if (!registrant) placeData.registrant = this.token.id as string;
+      placeData.status = "inactive";
+      placeData.registrant = this.token.id as string;
 
       if (
         !fullname ||
@@ -57,6 +57,18 @@ export default class PlaceService {
       return;
     } catch (err: any) {
       throw new Error(err);
+    }
+  }
+
+  async updateStatus(placeId: any, status: any) {
+    try{
+      const statusList = ["active", "inactive"];
+
+      if (!statusList.includes(status)) throw new Error();
+
+      await Place.updateOne({_id: placeId}, {status});
+
+      return;
     }
   }
 }
