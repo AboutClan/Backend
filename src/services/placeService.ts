@@ -6,9 +6,9 @@ export default class PlaceService {
   constructor(token?: JWT) {
     this.token = token as JWT;
   }
-  async getActivePlace() {
+  async getActivePlace(status:"active"|"inactive") {
     try {
-      const places = await Place.find({ status: "active" });
+      const places = await Place.find({ status });
       return places;
     } catch (err: any) {
       throw new Error(err);

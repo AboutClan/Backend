@@ -1,6 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
 import PlaceService from "../services/placeService";
-import { decode } from "next-auth/jwt";
 
 const router = express.Router();
 
@@ -16,9 +15,9 @@ router
   .route("/")
   .get(async (req, res, next) => {
     const { placeServiceInstance } = req;
-
+    const { status } = req.body;
     try {
-      const places = await placeServiceInstance?.getActivePlace();
+      const places = await placeServiceInstance?.getActivePlace(status||"active");
       return res.status(200).json(places);
     } catch (err: any) {
       next(err);
