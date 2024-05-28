@@ -15,7 +15,8 @@ router
   .route("/")
   .get(async (req, res, next) => {
     const { placeServiceInstance } = req;
-    const { status } = req.body;
+
+     const status: "active" | "inactive" = (req.query?.status as "active" | "inactive") || "active";
     try {
       const places = await placeServiceInstance?.getActivePlace(status||"active");
       return res.status(200).json(places);
