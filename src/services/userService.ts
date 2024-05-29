@@ -8,6 +8,7 @@ import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
 import { getProfile } from "../utils/oAuthUtils";
 import { Log } from "../db/models/log";
+import { Place } from "../db/models/place";
 
 const logger = require("../../logger");
 
@@ -441,10 +442,24 @@ export default class UserService {
 
   async setPreference(place: any, subPlace: any) {
     try {
+      const user = await User.findOne(
+        { uid: this.token.uid },
+        "studyPreference",
+      );
+
+      if (user?.studyPreference?.place) {
+        const placeId = user?.studyPreference.place;
+        await Place.updateOne(
+          { _id: placeId, prefCnt: { $gt: 0 } },
+          { $inc: { prefCnt: -1 } },
+        );
+      }
+
       await User.updateOne(
         { uid: this.token.uid },
         { studyPreference: { place, subPlace } },
       );
+      await Place.updateOne({ _id: place }, { $inc: { prefCnt: 1 } });
     } catch (err: any) {
       throw new Error(err);
     }

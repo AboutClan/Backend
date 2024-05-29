@@ -18,6 +18,7 @@ export interface IPlace extends Document {
   registerDate: string;
   registrant: string | IUser;
   mapURL: string;
+  prefCnt: number;
 }
 
 export const PlaceSchema: Schema<IPlace> = new Schema({
@@ -67,6 +68,10 @@ export const PlaceSchema: Schema<IPlace> = new Schema({
   },
   mapURL:{
     type: String
+  },
+  prefCnt:{
+    type: Number,
+    default:0
   }
 });
 
