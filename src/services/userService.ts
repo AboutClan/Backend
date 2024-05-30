@@ -440,13 +440,14 @@ export default class UserService {
     return;
   }
 
-  async setPreference(place: any, subPlace: any) {
+  async setPreference(place: any, subPlace: any[]) {
     try {
       const user = await User.findOne(
         { uid: this.token.uid },
         "studyPreference",
       );
 
+      //update main preference
       if (user?.studyPreference?.place) {
         const placeId = user?.studyPreference.place;
         await Place.updateOne(
@@ -459,6 +460,20 @@ export default class UserService {
         { uid: this.token.uid },
         { studyPreference: { place, subPlace } },
       );
+
+      //update sub preference
+      if (user?.studyPreference?.subPlace) {
+        user?.studyPreference?.subPlace.forEach(async (placeId) => {
+          await Place.updateOne(
+            { _id: placeId, prefCnt: { $gt: 0 } },
+            { $inc: { prefCnt: -1 } },
+          );
+        });
+      }
+
+      subPlace.forEach(async (placeId) => {
+        await Place.updateOne({ _id: placeId }, { $inc: { prefCnt: 1 } });
+      });
       await Place.updateOne({ _id: place }, { $inc: { prefCnt: 1 } });
     } catch (err: any) {
       throw new Error(err);
@@ -696,6 +711,24 @@ export default class UserService {
   }
 
   async test() {
-    throw new Error("error");
+    await Place.updateMany({}, { prefCnt: 0 });
+
+    const users = await User.find();
+
+    users.forEach(async (user) => {
+      if (user?.studyPreference?.place) {
+        await Place.updateOne(
+          { _id: user.studyPreference.place },
+          { $inc: { prefCnt: 1 } },
+        );
+      }
+
+      if (user?.studyPreference?.subPlace) {
+        user?.studyPreference?.subPlace.forEach(async (placeId) => {
+          await Place.updateOne({ _id: placeId }, { $inc: { prefCnt: 1 } });
+        });
+      }
+    });
+    return null;
   }
 }

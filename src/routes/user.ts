@@ -667,6 +667,8 @@ router
 router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    throw new Error("what?");
+    const { userServiceInstance } = req;
+    await userServiceInstance?.test();
+    return res.status(200).end();
   });
 module.exports = router;
