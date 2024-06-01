@@ -41,15 +41,9 @@ export const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
 });
 
 //매월 monthScore 초기화
-export const initMonthScore = schedule.scheduleJob("0 12 * * *", async () => {
+export const initMonthScore = schedule.scheduleJob("0 13 * * *", async () => {
   try {
-    const users = await User.find();
-    if (!users) throw new Error();
-
-    users.forEach((user) => {
-      user.monthScore = 0;
-      user.save();
-    });
+    await User.updateMany({}, { monthScore: 0 });
     console.log("month score init success");
   } catch (err: any) {
     throw new Error(err);
