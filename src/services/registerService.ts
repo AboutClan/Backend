@@ -41,7 +41,6 @@ export default class RegisterService {
     const a = await this.decodeByAES256(
       "U2FsdGVkX1+Wz6uV+ErLREqYytNiVKsMU95smfwpGoo=",
     );
-    console.log(a, a.length);
     const registerForm = {
       uid: this.token.uid,
       profileImage: this.token.picture,

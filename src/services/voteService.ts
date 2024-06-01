@@ -7,7 +7,7 @@ import {
   IAttendance,
   IParticipation,
   IVote,
-  Vote
+  Vote,
 } from "../db/models/vote";
 import { IVoteStudyInfo } from "../types/vote";
 import { now, strToDate } from "../utils/dateUtils";
@@ -249,7 +249,8 @@ export default class VoteService {
             ) {
               participation.attendences?.forEach((attendence) => {
                 if (
-                  attendence.user != null &&attendence.firstChoice&&
+                  attendence.user != null &&
+                  attendence.firstChoice &&
                   !map.has((attendence.user as IUser).uid)
                 ) {
                   map.set((attendence.user as IUser).uid, 1);
@@ -260,7 +261,6 @@ export default class VoteService {
           });
 
           cntList.set(date, cnt);
-          console.log(cntList);
         }),
       );
       let array = Array.from(cntList, ([name, value]) => ({
