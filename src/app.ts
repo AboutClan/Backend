@@ -61,7 +61,7 @@ class App {
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(dbSet);
-    this.app.use("/", webpush);
+    this.app.use("/webpush", webpush);
     this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     this.app.use(tokenValidator);
   }
