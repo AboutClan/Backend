@@ -531,7 +531,19 @@ router
     } catch (err) {
       next(err);
     }
-  });
+  }).patch(async (req: Request, res: Response, next: NextFunction) => {
+      const {userServiceInstance} = req;
+
+      try {
+        await userServiceInstance?.updateUserAllScore();
+        return res.status(200).end();
+      } catch (err) {
+        next(err);
+      }
+    },
+  );
+
+  
 
 router
   .route("/deposit/all")

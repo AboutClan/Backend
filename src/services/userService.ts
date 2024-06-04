@@ -423,6 +423,25 @@ export default class UserService {
     return;
   }
 
+  async updateUserAllScore() {
+    try {
+      const users = await User.find();
+      if (!users) throw new Error();
+
+      for (const user of users) {
+        user.score = Math.floor(user.score * 0.2);
+        await user.save();
+        logger.logger.info("동아리 점수 소프트 리셋", {
+          metadata: { type: "score", uid: user.uid, value: 0 },
+        });
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    return;
+  }
+
   async updateDeposit(deposit: number, message: string, sub?: string) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
