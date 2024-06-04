@@ -710,24 +710,35 @@ export default class UserService {
   }
 
   async test() {
-    await Place.updateMany({}, { prefCnt: 0 });
+    // await Place.updateMany({}, { prefCnt: 0 });
 
-    const users = await User.find();
+    // const users = await User.find();
 
-    users.forEach(async (user) => {
-      if (user?.studyPreference?.place) {
-        await Place.updateOne(
-          { _id: user.studyPreference.place },
-          { $inc: { prefCnt: 1 } },
-        );
-      }
+    // users.forEach(async (user) => {
+    //   if (user?.studyPreference?.place) {
+    //     await Place.updateOne(
+    //       { _id: user.studyPreference.place },
+    //       { $inc: { prefCnt: 1 } },
+    //     );
+    //   }
 
-      if (user?.studyPreference?.subPlace) {
-        user?.studyPreference?.subPlace.forEach(async (placeId) => {
-          await Place.updateOne({ _id: placeId }, { $inc: { prefCnt: 1 } });
-        });
-      }
+    //   if (user?.studyPreference?.subPlace) {
+    //     user?.studyPreference?.subPlace.forEach(async (placeId) => {
+    //       await Place.updateOne({ _id: placeId }, { $inc: { prefCnt: 1 } });
+    //     });
+    //   }
+    // });
+    // return null;
+
+    const users = await User.find({});
+
+    users.forEach((user) => {
+      const score = user.score;
+      const divScore = Math.round(score / 4);
+      user.score = divScore;
+      user.save();
     });
-    return null;
+
+    return;
   }
 }
