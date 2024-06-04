@@ -41,8 +41,23 @@ export default class WebPushService {
 
     // Send 201 - resource created
     const payload = JSON.stringify({
-      title: "Test Notification",
-      body: "This is a test notification",
+      title: "카공스터디 참여 투표",
+      body: "마감이 얼마 남지 않았어요. 지금 신청하세요!",
+      icon: "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/%EB%8F%99%EC%95%84%EB%A6%AC+%EC%95%84%EB%B0%94%ED%83%80.webp",
+      badge:
+        "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/A_symbol_in_a_simple_and_clean_design__suitable_fo-removebg-preview+(1).webp",
+      image:
+        "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/%EB%8F%99%EC%95%84%EB%A6%AC+%EC%95%84%EB%B0%94%ED%83%80.webp",
+      data: {
+        url: "https://studyabout.herokuapp.com/",
+        notificationType: "studyReminder",
+      },
+      tag: "unique_tag_for_this_notification",
+      requireInteraction: true,
+      silent: false,
+      renotify: true,
+      timestamp: 1618307200000,
+      vibrate: [100, 50, 100],
     });
 
     try {
