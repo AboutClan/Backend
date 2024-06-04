@@ -49,7 +49,6 @@ router
 
     try {
       const isActive = await userServiceInstance?.getAllSimpleUserInfo();
-      console.log(321, isActive);
       return res.status(200).json(isActive);
     } catch (err) {
       next(err);
@@ -210,7 +209,6 @@ router
       } = req.query as any;
 
       try {
-        console.log(12);
         const participationResult =
           await userServiceInstance?.getParticipationRate(
             startDay,
@@ -667,6 +665,8 @@ router
 router
   .route("/test")
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    throw new Error("what?");
+    const { userServiceInstance } = req;
+    await userServiceInstance?.test();
+    return res.status(200).end();
   });
 module.exports = router;
