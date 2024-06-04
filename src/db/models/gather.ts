@@ -57,6 +57,7 @@ export interface IGatherData {
   place?: string;
   isAdminOpen?: boolean;
   image?: string;
+  kakaoUrl?: string;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -225,6 +226,9 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
       type: Boolean,
     },
     image: {
+      type: String,
+    },
+    kakaoUrl: {
       type: String,
     },
   },
