@@ -429,10 +429,14 @@ export default class UserService {
       if (!users) throw new Error();
 
       for (const user of users) {
-        user.score = Math.floor(user.score * 0.2);
+        user.score = 0;
+        user.point += 20;
         await user.save();
-        logger.logger.info("동아리 점수 소프트 리셋", {
+        logger.logger.info("동아리 점수 초기화", {
           metadata: { type: "score", uid: user.uid, value: 0 },
+        });
+        logger.logger.info("동아리 점수 초기화 보상", {
+          metadata: { type: "point", uid: user.uid, value: 20 },
         });
       }
     } catch (err: any) {
