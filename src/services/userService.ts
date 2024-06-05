@@ -429,7 +429,7 @@ export default class UserService {
       if (!users) throw new Error();
 
       for (const user of users) {
-        if (!user?.score) return;
+        if (!user?.score) continue;
         user.score = 0;
         user.point += 20;
         await user.save();
