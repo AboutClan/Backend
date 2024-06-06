@@ -1,7 +1,7 @@
 import { JWT } from "next-auth/jwt";
 import { Notice } from "../db/models/notice";
 import { User } from "../db/models/user";
-
+const logger = require("../../logger");
 export default class NoticeService {
   private token: JWT;
   constructor(token?: JWT) {
@@ -30,7 +30,15 @@ export default class NoticeService {
         message,
         type: "like",
       });
-      await User.findOneAndUpdate({ uid: to }, { $inc: { like: 1 } });
+      await User.findOneAndUpdate({ uid: to }, { $inc: { like: 1, point: 2 } });
+
+      logger.logger.info(message, {
+        metadata: {
+          type: "point",
+          uid: to,
+          value: 2,
+        },
+      });
     } catch (err: any) {
       throw new Error(err);
     }
