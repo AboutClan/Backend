@@ -1,8 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
-import AdminUserService from "../../services/adminUserServices";
-import { IUser, User } from "../../db/models/user";
 import { body } from "express-validator";
+import { IUser, User } from "../../db/models/user";
 import validateCheck from "../../middlewares/validator";
+import AdminUserService from "../../services/adminUserServices";
 
 const router = express.Router();
 
@@ -19,11 +19,12 @@ router
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const {
       adminUserServiceInstance,
-      query: { location },
+      query: { location, isSummary },
     } = req;
 
     const allUser = await adminUserServiceInstance?.getAllUser(
       location as string,
+      Boolean(isSummary),
     );
 
     return res.status(200).json(allUser);

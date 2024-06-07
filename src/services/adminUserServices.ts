@@ -1,5 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { IUser, User } from "../db/models/user";
+import { convertUserToSummary } from "../utils/convertUtils";
 
 const logger = require("../../logger");
 
@@ -9,13 +10,15 @@ export default class AdminUserService {
     this.token = token as JWT;
   }
 
-  async getAllUser(location?: string) {
+  async getAllUser(location?: string, isSummary?: boolean) {
     try {
       if (location) {
         const users = await User.find({ isActive: true, location });
+        if (isSummary) return users.map((user) => convertUserToSummary(user));
         return users;
       }
       const users = await User.find({ isActive: true });
+      if (isSummary) return users.map((user) => convertUserToSummary(user));
       return users;
     } catch (err) {
       throw new Error();
