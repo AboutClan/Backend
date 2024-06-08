@@ -1,5 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { IUser, User } from "../db/models/user";
+import { UserFilterType } from "../routes/admin/user";
 import { convertUserToSummary } from "../utils/convertUtils";
 
 const logger = require("../../logger");
@@ -8,6 +9,7 @@ type UserQueryProps = {
   isActive: true;
   location?: string;
   score?: { $gt: number };
+  monthScore?: { $gt: number };
 };
 export default class AdminUserService {
   private token: JWT;
@@ -18,13 +20,21 @@ export default class AdminUserService {
   async getAllUser(
     location?: string,
     isSummary?: boolean,
-    filterType?: "score",
+    filterType?: UserFilterType,
   ) {
     try {
       const query: UserQueryProps = { isActive: true };
       if (location) query.location = location;
-      if (filterType === "score") {
-        query.score = { $gt: 0 };
+
+      switch (filterType) {
+        case "score":
+          query.score = { $gt: 0 };
+          break;
+        case "monthScore":
+          query.monthScore = { $gt: 0 };
+          break;
+        default:
+          break;
       }
 
       const users = await User.find(query);

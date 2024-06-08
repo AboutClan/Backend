@@ -14,7 +14,7 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-type FilterType = "score";
+export type UserFilterType = "score" | "monthScore";
 
 router
   .route("/")
@@ -27,7 +27,7 @@ router
     const allUser = await adminUserServiceInstance?.getAllUser(
       location as string,
       isSummary === "true",
-      filterType as FilterType,
+      filterType as UserFilterType,
     );
 
     return res.status(200).json(allUser);
