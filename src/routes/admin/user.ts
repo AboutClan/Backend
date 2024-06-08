@@ -14,17 +14,20 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+type FilterType = "score";
+
 router
   .route("/")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const {
       adminUserServiceInstance,
-      query: { location, isSummary },
+      query: { location, isSummary, filterType },
     } = req;
 
     const allUser = await adminUserServiceInstance?.getAllUser(
       location as string,
       isSummary === "true",
+      filterType as FilterType,
     );
 
     return res.status(200).json(allUser);

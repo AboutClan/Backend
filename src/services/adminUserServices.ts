@@ -4,22 +4,33 @@ import { convertUserToSummary } from "../utils/convertUtils";
 
 const logger = require("../../logger");
 
+type UserQueryProps = {
+  isActive: true;
+  location?: string;
+  score?: { $gt: number };
+};
 export default class AdminUserService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
   }
 
-  async getAllUser(location?: string, isSummary?: boolean) {
+  async getAllUser(
+    location?: string,
+    isSummary?: boolean,
+    filterType?: "score",
+  ) {
     try {
-      if (location) {
-        const users = await User.find({ isActive: true, location });
-        if (isSummary) return users.map((user) => convertUserToSummary(user));
-        return users;
+      const query: UserQueryProps = { isActive: true };
+      if (location) query.location = location;
+      if (filterType === "score") {
+        query.score = { $gt: 0 };
       }
-      const users = await User.find({ isActive: true });
+
+      const users = await User.find(query);
+
       if (isSummary) return users.map((user) => convertUserToSummary(user));
-      return users;
+      else return users;
     } catch (err) {
       throw new Error();
     }
