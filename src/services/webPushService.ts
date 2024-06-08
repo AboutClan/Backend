@@ -11,12 +11,20 @@ export default class WebPushService {
   }
 
   async subscribe(subscription: any) {
+    console.log(this.token.uid);
+
     try {
-      const newSubscription = new NotificationSub({
-        ...subscription,
-        uid: this.token?.uid,
-      });
-      await newSubscription.save();
+      const data = await NotificationSub.find({ uid: this.token.uid });
+
+      if (!data) {
+        const newSubscription = new NotificationSub({
+          ...subscription,
+          uid: this.token?.uid,
+        });
+
+        await newSubscription.save();
+      }
+
       return;
     } catch (err) {
       return;
