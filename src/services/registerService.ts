@@ -35,6 +35,13 @@ export default class RegisterService {
 
   async register(subRegisterForm: Omit<IRegistered, "uid" | "profileImage">) {
     const { telephone } = subRegisterForm;
+
+    // 전화번호 검증: 010으로 시작하고 11자리 숫자인지 확인
+    const telephoneRegex = /^010\d{8}$/;
+    if (!telephoneRegex.test(telephone)) {
+      throw new Error("Invalid telephone number");
+    }
+
     const encodedTel = await this.encodeByAES56(telephone);
     if (encodedTel === telephone) throw new Error("Key not exist");
 
