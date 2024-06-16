@@ -229,9 +229,11 @@ export default class VoteService {
     try {
       const dateList = await this.getRangeDates(startDay, endDay);
       const cntList = new Map<Date, number>();
+      const totalCntList = new Map<Date, number>(); // totalCntList 추가
 
       dateList.forEach((date) => {
         cntList.set(date, 0);
+        totalCntList.set(date, 0); // 초기화
       });
 
       await Promise.all(
@@ -240,32 +242,38 @@ export default class VoteService {
           if (!vote) return cntList;
 
           const map = new Map();
+          const totalMap = new Map();
           let cnt = 0;
+          let totalCnt = 0;
 
           vote.participations.forEach((participation) => {
-            if (
-              (!location || participation.place?.location == location) &&
-              participation.place?.brand !== "자유 신청"
-            ) {
-              participation.attendences?.forEach((attendence) => {
-                if (
-                  attendence.user != null &&
-                  attendence.firstChoice &&
-                  !map.has((attendence.user as IUser).uid)
-                ) {
-                  map.set((attendence.user as IUser).uid, 1);
-                  cnt++;
+            participation.attendences?.forEach((attendence) => {
+              if (attendence.user != null && attendence.firstChoice) {
+                if (!map.has((attendence.user as IUser).uid)) {
+                  if (
+                    participation.place?.location === location &&
+                    participation.place?.brand !== "자유 신청"
+                  ) {
+                    map.set((attendence.user as IUser).uid, 1);
+                    cnt++;
+                  }
                 }
-              });
-            }
+                if (!totalMap.has((attendence.user as IUser).uid)) {
+                  totalMap.set((attendence.user as IUser).uid, 1);
+                  totalCnt++;
+                }
+              }
+            });
           });
 
           cntList.set(date, cnt);
+          totalCntList.set(date, totalCnt);
         }),
       );
-      let array = Array.from(cntList, ([name, value]) => ({
-        date: name,
-        value,
+      let array = Array.from(dateList, (date) => ({
+        date,
+        value: cntList.get(date),
+        totalValue: totalCntList.get(date),
       }));
       return array;
     } catch (err) {
