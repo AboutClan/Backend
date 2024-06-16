@@ -46,11 +46,7 @@ router
   .route("/participationCnt")
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const { voteServiceInstance } = req;
-    let {
-      location = "수원",
-      startDay,
-      endDay,
-    } = req.query as {
+    let { location, startDay, endDay } = req.query as {
       location: string;
       startDay: any;
       endDay: any;
