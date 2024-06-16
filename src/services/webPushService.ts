@@ -11,8 +11,6 @@ export default class WebPushService {
   }
 
   async subscribe(subscription: any) {
-    console.log(this.token.uid);
-
     try {
       const data = await NotificationSub.find({ uid: this.token.uid });
 
