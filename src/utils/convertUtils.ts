@@ -10,6 +10,7 @@ export interface UserSummaryProps {
   profileImage: string;
   score: number;
   uid: string;
+  _id: string;
   monthScore: number;
 }
 
@@ -24,6 +25,7 @@ export const convertUserToSummary = (user: IUser): UserSummaryProps => {
     profileImage,
     score,
     uid,
+    _id,
     monthScore,
   } = user;
 
@@ -36,6 +38,7 @@ export const convertUserToSummary = (user: IUser): UserSummaryProps => {
     name,
     profileImage,
     score,
+    _id,
     uid,
     monthScore,
   };
