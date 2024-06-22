@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const { decodedToken } = req;
-
   const userServiceInstance = new UserService(decodedToken);
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   req.userServiceInstance = userServiceInstance;
