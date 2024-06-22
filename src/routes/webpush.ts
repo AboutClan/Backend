@@ -7,11 +7,9 @@ const _ = require("lodash");
 
 router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   const { decodedToken } = req;
-
   const webPushServiceInstance = new WebPushService(decodedToken);
-  req.webPushServiceInstance = webPushServiceInstance;
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  req.token = decodedToken;
+  req.webPushServiceInstance = webPushServiceInstance;
   next();
 });
 

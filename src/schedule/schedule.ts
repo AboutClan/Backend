@@ -30,7 +30,7 @@ export function sendNoti() {
 sendNoti();
 
 //투표 결과 발표
-export const voteResult = schedule.scheduleJob("0 10 * * *", async () => {
+export const voteResult = schedule.scheduleJob("0 11 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
     await adminVoteServiceInstance.confirm(dayjs().toDate().toString());
