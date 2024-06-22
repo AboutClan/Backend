@@ -29,6 +29,13 @@ export function sendNoti() {
 }
 sendNoti();
 
+export const noti = schedule.scheduleJob("*/1 * * * *", () => {
+  console.log("Sending request...");
+  const webPushServiceInstance = new WebPushService();
+  webPushServiceInstance.sendNotificationAllUser();
+  return;
+});
+
 //투표 결과 발표
 export const voteResult = schedule.scheduleJob("0 11 * * *", async () => {
   try {
