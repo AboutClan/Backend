@@ -22,12 +22,12 @@ export default class GroupStudyService {
   async getGroupStudy() {
     try {
       const groupStudyData = await GroupStudy.find()
-        .populate([
-          "organizer",
-          "participants.user",
-          "waiting.user",
-          "comment.user",
-        ])
+        // .populate([
+        //   "organizer",
+        //   "participants.user",
+        //   "waiting.user",
+        //   "comment.user",
+        // ])
         .select("-_id");
       return groupStudyData;
     } catch (err: any) {
