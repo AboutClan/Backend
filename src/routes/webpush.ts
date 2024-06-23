@@ -13,17 +13,20 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-router.post("/subscribe", async (req: Request, res: Response) => {
-  // Get pushSubscription object
-  const subscription = req.body;
+router.post(
+  "/subscribe",
+  async (req: Request, res: Response, next: NextFunction) => {
+    // Get pushSubscription object
+    const subscription = req.body;
 
-  try {
-    req.webPushServiceInstance?.subscribe(subscription);
-    return res.status(200).send("register success");
-  } catch (err) {
-    return res.status(500).send("Fail to save subscription");
-  }
-});
+    try {
+      req.webPushServiceInstance?.subscribe(subscription);
+      return res.status(200).send("register success");
+    } catch (err) {
+      next();
+    }
+  },
+);
 
 router.post(
   "/sendNotification",
