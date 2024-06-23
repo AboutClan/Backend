@@ -12,16 +12,23 @@ export default class WebPushService {
 
   async subscribe(subscription: any) {
     try {
-      const newSubscription = new NotificationSub({
-        ...subscription,
-        uid: this.token?.uid,
+      const data = await NotificationSub.findOne({
+        uid: this.token.uid,
+        endpoint: subscription.endpoint,
       });
 
-      await newSubscription.save();
+      if (!data) {
+        const newSubscription = new NotificationSub({
+          ...subscription,
+          uid: this.token?.uid,
+        });
+
+        await newSubscription.save();
+      }
 
       return;
-    } catch (err) {
-      return;
+    } catch (err: any) {
+      throw new Error(err);
     }
   }
 
