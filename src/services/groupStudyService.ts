@@ -22,6 +22,7 @@ export default class GroupStudyService {
   async getGroupStudy() {
     try {
       const groupStudyData = await GroupStudy.find()
+      
         // .populate([
         //   "organizer",
         //   "participants.user",
@@ -29,7 +30,7 @@ export default class GroupStudyService {
         //   "comment.user",
         // ])
         .select("-_id");
-      return groupStudyData;
+      return groupStudyData.slice(0,8);
     } catch (err: any) {
       throw new Error(err);
     }
