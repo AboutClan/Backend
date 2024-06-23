@@ -1,5 +1,4 @@
 import { JWT } from "next-auth/jwt";
-import { GiftModel } from "../db/models/gift";
 import { NotificationSub } from "../db/models/notificationSub";
 const webPush = require("web-push");
 const PushNotifications = require("node-pushnotifications");
@@ -54,7 +53,7 @@ export default class WebPushService {
       body: "마감이 얼마 남지 않았어요. 지금 신청하세요!",
       icon: "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/%EB%8F%99%EC%95%84%EB%A6%AC+%EC%95%84%EB%B0%94%ED%83%80.webp",
       badge:
-        "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/A_symbol_in_a_simple_and_clean_design__suitable_fo-removebg-preview+(1).webp",
+        "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/ALogo.png",
       image:
         "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/%EB%8F%99%EC%95%84%EB%A6%AC+%EC%95%84%EB%B0%94%ED%83%80.webp",
       data: {
@@ -65,7 +64,7 @@ export default class WebPushService {
       requireInteraction: true,
       silent: false,
       renotify: true,
-      timestamp: 1618307200000,
+      timestamp: Date.now(),
       vibrate: [100, 50, 100],
     });
 
