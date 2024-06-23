@@ -51,11 +51,9 @@ export default class WebPushService {
     const payload = JSON.stringify({
       title: "카공스터디 참여 투표",
       body: "마감이 얼마 남지 않았어요. 지금 신청하세요!",
-      icon: "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/%EB%8F%99%EC%95%84%EB%A6%AC+%EC%95%84%EB%B0%94%ED%83%80.webp",
       badge:
         "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/ALogo.png",
-      image:
-        "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/%EB%8F%99%EC%95%84%EB%A6%AC+%EC%95%84%EB%B0%94%ED%83%80.webp",
+
       data: {
         url: "https://studyabout.herokuapp.com/",
         notificationType: "studyReminder",
