@@ -3,6 +3,7 @@ import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { GroupStudy, IGroupStudyData } from "../db/models/groupStudy";
 import { IUser, User } from "../db/models/user";
+import { convertUserToSummary } from "../utils/convertUtils";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -29,7 +30,19 @@ export default class GroupStudyService {
           "comment.user",
         ])
         .select("-_id");
-      return groupStudyData;
+      return groupStudyData.map((old) => ({
+        ...old,
+        organizer: convertUserToSummary(old.organizer),
+        participants: old.participants.map((user) =>
+          convertUserToSummary(user.user as unknown as IUser),
+        ),
+        waiting: old.waiting.map((user) =>
+          convertUserToSummary(user.user as unknown as IUser),
+        ),
+        comment: old.comment.map((user) =>
+          convertUserToSummary(user.user as unknown as IUser),
+        ),
+      }));
     } catch (err: any) {
       throw new Error(err);
     }
