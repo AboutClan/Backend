@@ -49,8 +49,8 @@ export default class WebPushService {
 
     // Send 201 - resource created
     const payload = JSON.stringify({
-      title: "스터디 투표",
-      body: "희오 사랑해",
+      title: "희오",
+      body: "사랑해",
       badge:
         "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/ALogo.png",
       icon: "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/144.png",
