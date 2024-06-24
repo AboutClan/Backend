@@ -65,6 +65,7 @@ export default class WebPushService {
       renotify: true,
       timestamp: Date.now(),
       vibrate: [100, 50, 100],
+      priority: "high",
     });
 
     try {
