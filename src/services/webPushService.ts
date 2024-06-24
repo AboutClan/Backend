@@ -44,7 +44,7 @@ export default class WebPushService {
         contentEncoding: "aes128gcm",
         headers: {},
       },
-      isAlwaysUseFCM: false,
+      isAlwaysUseFCM: true,
     };
 
     // Send 201 - resource created
