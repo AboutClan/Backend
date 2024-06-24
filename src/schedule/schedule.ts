@@ -8,9 +8,10 @@ const schedule = require("node-schedule");
 export function sendNoti() {
   try {
     const rule = new schedule.RecurrenceRule();
-    rule.dayOfWeek = [2, 4, 6]; // 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday
-    rule.hour = 18; // 6 PM
+    rule.dayOfWeek = [1, 2, 4, 6]; // 월, 화, 목, 토
+    rule.hour = 19; // 오후 6시
     rule.minute = 0;
+    rule.tz = "Asia/Seoul"; // 한국 시간대
 
     const webPushServiceInstance = new WebPushService();
 
@@ -29,12 +30,12 @@ export function sendNoti() {
 }
 sendNoti();
 
-export const noti = schedule.scheduleJob("*/1 * * * *", () => {
-  console.log("Sending request...");
-  const webPushServiceInstance = new WebPushService();
-  webPushServiceInstance.sendNotificationAllUser();
-  return;
-});
+// export const noti = schedule.scheduleJob("*/1 * * * *", () => {
+//   console.log("Sending request...");
+//   const webPushServiceInstance = new WebPushService();
+//   webPushServiceInstance.sendNotificationAllUser();
+//   return;
+// });
 
 //투표 결과 발표
 export const voteResult = schedule.scheduleJob("0 11 * * *", async () => {
