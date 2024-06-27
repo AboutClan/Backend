@@ -8,7 +8,7 @@ const schedule = require("node-schedule");
 export function sendNoti() {
   try {
     const rule = new schedule.RecurrenceRule();
-    rule.dayOfWeek = [2, 4, 5, 6]; // 화, 목, 토
+    rule.dayOfWeek = [2, 3, 5, 6]; // 화,수,금, 토
     rule.hour = 18; // 오후 6시
     rule.minute = 0;
     rule.tz = "Asia/Seoul"; // 한국 시간대
