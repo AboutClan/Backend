@@ -30,21 +30,21 @@ export default class GroupStudyService {
         // ])
         .populate({
           path: "organizer",
-          select: "name profileImage uid",
+          select: "name profileImage uid score avatar",
         })
         .populate({
           path: "participants.user",
-          select: "name profileImage uid",
+          select: "name profileImage uid score avatar",
         })
         .populate({
           path: "waiting.user",
-          select: "name profileImage uid",
+          select: "name profileImage uid score avatar",
         })
         .populate({
           path: "comment.user",
-          select: "name profileImage uid",
+          select: "name profileImage uid score avatar",
         })
-        .select("-_id")
+        .select("-_id");
       return groupStudyData;
     } catch (err: any) {
       throw new Error(err);
