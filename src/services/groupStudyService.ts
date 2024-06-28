@@ -22,13 +22,29 @@ export default class GroupStudyService {
   async getGroupStudy() {
     try {
       const groupStudyData = await GroupStudy.find()
-        .populate([
-          "organizer",
-          "participants.user",
-          "waiting.user",
-          "comment.user",
-        ])
-        .select("-_id");
+        // .populate([
+        //   "organizer",
+        //   "participants.user",
+        //   "waiting.user",
+        //   "comment.user",
+        // ])
+        .populate({
+          path: "organizer",
+          select: "name profileImage uid",
+        })
+        .populate({
+          path: "participants.user",
+          select: "name profileImage uid",
+        })
+        .populate({
+          path: "waiting.user",
+          select: "name profileImage uid",
+        })
+        .populate({
+          path: "comment.user",
+          select: "name profileImage uid",
+        })
+        .select("-_id")
       return groupStudyData;
     } catch (err: any) {
       throw new Error(err);
