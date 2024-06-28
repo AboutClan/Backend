@@ -62,6 +62,7 @@ export interface IGroupStudyData {
   hashTag: string;
   attendance: IAttendance;
   link?: string;
+  isSecret?: boolean;
   waiting: IWaiting[];
 }
 
@@ -231,6 +232,9 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     },
     password: {
       type: String,
+    },
+    isSecret: {
+      type: Boolean,
     },
     questionText: {
       type: String,
