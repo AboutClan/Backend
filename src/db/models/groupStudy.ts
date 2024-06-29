@@ -144,7 +144,7 @@ export const participantsSchema: Schema<participantsType> = new Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "member", "manager", "human"],
+      enum: ["admin", "member", "manager", "human","secret"],
     },
     attendCnt: {
       type: Number,
