@@ -208,7 +208,7 @@ export default class GroupStudyService {
       if (status === "agree") {
         groupStudy.participants.push({
           user: userId,
-          role: "member",
+          role: userId ? "member" : "outsider",
           attendCnt: 0,
         });
       }

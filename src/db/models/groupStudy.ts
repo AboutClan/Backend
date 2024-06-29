@@ -66,7 +66,7 @@ export interface IGroupStudyData {
   waiting: IWaiting[];
 }
 
-type UserRole = "admin" | "manager" | "member";
+type UserRole = "admin" | "manager" | "member"|"outsider";
 
 interface IAttendance {
   firstDate?: string;
@@ -144,7 +144,7 @@ export const participantsSchema: Schema<participantsType> = new Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "member", "manager", "human","secret"],
+      enum: ["admin", "member", "manager", "human","outsider"],
     },
     attendCnt: {
       type: Number,
