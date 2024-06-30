@@ -1,51 +1,77 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 
 import CollectionService from "../services/collectionService";
-import NoticeService from "../services/noticeService";
 
-const router = express.Router();
+class CollectionController {
+  public router: Router;
+  private collectionServiceInstance: CollectionService;
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { decodedToken } = req;
+  constructor() {
+    this.router = Router();
+    this.collectionServiceInstance = new CollectionService();
+    this.initializeRoutes();
+  }
 
-  const collectionService = new CollectionService(decodedToken);
-  req.collectionServiceInstance = collectionService;
-  next();
-});
+  public setCollectionServiceInstance(instance: CollectionService) {
+    this.collectionServiceInstance = instance;
+  }
 
-router
-  .route("/alphabet")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { collectionServiceInstance } = req;
+  private initializeRoutes() {
+    this.router.use("/", this.createCollectionServiceInstance.bind(this));
+
+    // 라우트 핸들러
+    this.router.get("/alphabet", this.getCollection.bind(this));
+    this.router.patch("/alphabet", this.setCollection.bind(this));
+    this.router.patch("/alphabet/change", this.changeCollection.bind(this));
+    this.router.post(
+      "/alphabet/completed",
+      this.setCollectionCompleted.bind(this),
+    );
+    this.router.get("/alphabet/all", this.getCollectionAll.bind(this));
+  }
+
+  private async createCollectionServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { decodedToken } = req;
+    const collectionService = new CollectionService(decodedToken);
+    this.setCollectionServiceInstance(collectionService);
+    next();
+  }
+
+  private async getCollection(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await collectionServiceInstance?.getCollection();
+      const user = await this.collectionServiceInstance?.getCollection();
       res.status(200).json(user);
     } catch (err: any) {
       next(err);
     }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
+  }
+
+  private async setCollection(req: Request, res: Response, next: NextFunction) {
     const {
-      collectionServiceInstance,
       body: { alphabet },
     } = req;
     try {
-      await collectionServiceInstance?.setCollection(alphabet);
+      await this.collectionServiceInstance?.setCollection(alphabet);
       res.status(200).end();
     } catch (err: any) {
       next(err);
     }
-  });
+  }
 
-router
-  .route("/alphabet/change")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
+  private async changeCollection(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     const {
-      collectionServiceInstance,
       body: { mine, opponent, myId, toUid },
     } = req;
     try {
-      const result = await collectionServiceInstance?.changeCollection(
+      const result = await this.collectionServiceInstance?.changeCollection(
         mine,
         opponent,
         myId,
@@ -56,37 +82,39 @@ router
     } catch (err: any) {
       next(err);
     }
-  });
+  }
 
-router
-  .route("/alphabet/completed")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      collectionServiceInstance,
-      body: {},
-    } = req;
+  private async setCollectionCompleted(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const result = await collectionServiceInstance?.setCollectionCompleted();
+      const result =
+        await this.collectionServiceInstance?.setCollectionCompleted();
       if (result === "not completed") {
         res.status(400).json({ message: "not completed" });
       } else {
-        return res.end();
+        res.end();
       }
     } catch (err: any) {
       next(err);
     }
-  });
+  }
 
-router
-  .route("/alphabet/all")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { collectionServiceInstance } = req;
+  private async getCollectionAll(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const users = await collectionServiceInstance?.getCollectionAll();
+      const users = await this.collectionServiceInstance?.getCollectionAll();
       res.status(200).json(users);
     } catch (err: any) {
       next(err);
     }
-  });
+  }
+}
 
-module.exports = router;
+const collectionController = new CollectionController();
+module.exports = collectionController.router;

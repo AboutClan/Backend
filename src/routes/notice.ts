@@ -1,99 +1,131 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import NoticeService from "../services/noticeService";
 
 const router = express.Router();
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { decodedToken } = req;
+class NoticeController {
+  public router: Router;
+  private noticeServiceInstance: NoticeService;
 
-  const noticeService = new NoticeService(decodedToken);
-  req.noticeServiceInstance = noticeService;
-  next();
-});
+  constructor() {
+    this.router = Router();
+    this.noticeServiceInstance = new NoticeService();
+    this.initializeRoutes();
+  }
 
-router
-  .route("/")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { noticeServiceInstance } = req;
+  public setNoticeServiceInstance(instance: NoticeService) {
+    this.noticeServiceInstance = instance;
+  }
 
+  private initializeRoutes() {
+    this.router.use("/", this.createNoticeServiceInstance.bind(this));
+
+    this.router.route("/").get(this.getActiveLog.bind(this));
+    this.router
+      .route("/like")
+      .get(this.getLike.bind(this))
+      .post(this.setLike.bind(this));
+    this.router.route("/like/all").get(this.getLikeAll.bind(this));
+    this.router
+      .route("/friend")
+      .get(this.getFriendRequest.bind(this))
+      .post(this.requestFriendNotice.bind(this))
+      .patch(this.updateRequestFriend.bind(this));
+    this.router
+      .route("/alphabet")
+      .post(this.requestAlphabetNotice.bind(this))
+      .patch(this.updateRequestAlphabet.bind(this));
+  }
+
+  private async createNoticeServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { decodedToken } = req;
+    const noticeService = new NoticeService(decodedToken);
+    this.setNoticeServiceInstance(noticeService);
+    next();
+  }
+
+  private async getActiveLog(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await noticeServiceInstance?.getActiveLog();
+      const result = await this.noticeServiceInstance?.getActiveLog();
       return res.status(200).json(result);
     } catch (err: any) {
       next(err);
     }
-  });
+  }
 
-router
-  .route("/like")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { noticeServiceInstance } = req;
-
+  private async getLike(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await noticeServiceInstance?.getLike();
+      const result = await this.noticeServiceInstance?.getLike();
       return res.status(200).json(result);
     } catch (err: any) {
       next(err);
     }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  }
+
+  private async setLike(req: Request, res: Response, next: NextFunction) {
     const {
-      noticeServiceInstance,
       body: { to, message },
     } = req;
-
     try {
-      await noticeServiceInstance?.setLike(to, message);
+      await this.noticeServiceInstance?.setLike(to, message);
+      return res.end();
     } catch (err: any) {
       next(err);
     }
+  }
 
-    return res.end();
-  });
-
-router
-  .route("/like/all")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { noticeServiceInstance } = req;
-
+  private async getLikeAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await noticeServiceInstance?.getLikeAll();
+      const result = await this.noticeServiceInstance?.getLikeAll();
       return res.status(200).json(result);
     } catch (err: any) {
       next(err);
     }
-  });
+  }
 
-router
-  .route("/friend")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { noticeServiceInstance } = req;
+  private async getFriendRequest(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const result = await noticeServiceInstance?.getFriendRequest();
+      const result = await this.noticeServiceInstance?.getFriendRequest();
       return res.status(200).json(result);
     } catch (err: any) {
       next(err);
     }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  }
+
+  private async requestFriendNotice(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     const {
-      noticeServiceInstance,
       body: { toUid, message },
     } = req;
     try {
-      await noticeServiceInstance?.requestNotice("friend", toUid, message);
+      await this.noticeServiceInstance?.requestNotice("friend", toUid, message);
       return res.status(200).end();
-    } catch (err) {
+    } catch (err: any) {
       next(err);
     }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
+  }
+
+  private async updateRequestFriend(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     const {
-      noticeServiceInstance,
       body: { from, status },
     } = req;
     try {
-      const data = await noticeServiceInstance?.updateRequestFriend(
+      const data = await this.noticeServiceInstance?.updateRequestFriend(
         "friend",
         from,
         status,
@@ -102,37 +134,42 @@ router
         return res.status(404).json({ message: "no data found" });
       }
       return res.status(200).end();
-    } catch (err) {
+    } catch (err: any) {
       next(err);
     }
-  });
+  }
 
-router
-  .route("/alphabet")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  private async requestAlphabetNotice(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     const {
-      noticeServiceInstance,
       body: { toUid, message, sub },
     } = req;
     try {
-      await noticeServiceInstance?.requestNotice(
+      await this.noticeServiceInstance?.requestNotice(
         "alphabet",
         toUid,
         message,
         sub,
       );
       return res.status(200).end();
-    } catch (err) {
+    } catch (err: any) {
       next(err);
     }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
+  }
+
+  private async updateRequestAlphabet(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     const {
-      noticeServiceInstance,
       body: { from, status },
     } = req;
     try {
-      const data = await noticeServiceInstance?.updateRequestFriend(
+      const data = await this.noticeServiceInstance?.updateRequestFriend(
         "alphabet",
         from,
         status,
@@ -141,9 +178,11 @@ router
         return res.status(404).json({ message: "no data found" });
       }
       return res.status(200).end();
-    } catch (err) {
+    } catch (err: any) {
       next(err);
     }
-  });
+  }
+}
 
-module.exports = router;
+const noticeController = new NoticeController();
+module.exports = noticeController.router;

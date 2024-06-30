@@ -1,51 +1,83 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import PlaceService from "../services/placeService";
 
-const router = express.Router();
+class PlaceController {
+  public router: Router;
+  private placeServiceInstance: PlaceService;
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { decodedToken } = req;
+  constructor() {
+    this.router = Router();
+    this.placeServiceInstance = new PlaceService();
+    this.initializeRoutes();
+  }
 
-  const placeServiceInstance = new PlaceService(decodedToken);
-  req.placeServiceInstance = placeServiceInstance;
-  next();
-});
+  public setPlaceServiceInstance(instance: PlaceService) {
+    this.placeServiceInstance = instance;
+  }
 
-router
-  .route("/")
-  .get(async (req, res, next) => {
-    const { placeServiceInstance } = req;
+  private initializeRoutes() {
+    this.router.use("/", this.createPlaceServiceInstance.bind(this));
 
-     const status: "active" | "inactive" = (req.query?.status as "active" | "inactive") || "active";
+    this.router.use("/", this.createPlaceServiceInstance.bind(this));
+    this.router
+      .route("/")
+      .get(this.getActivePlace.bind(this))
+      .post(this.addPlace.bind(this));
+    this.router.route("/status").post(this.updateStatus.bind(this));
+  }
+
+  private async createPlaceServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { decodedToken } = req;
+    const placeService = new PlaceService(decodedToken);
+    this.setPlaceServiceInstance(placeService);
+    next();
+  }
+
+  private async getActivePlace(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const status: "active" | "inactive" =
+      (req.query?.status as "active" | "inactive") || "active";
+
     try {
-      const places = await placeServiceInstance?.getActivePlace(status||"active");
+      const places = await this.placeServiceInstance?.getActivePlace(status);
       return res.status(200).json(places);
     } catch (err: any) {
       next(err);
     }
-  })
-  .post(async (req, res, next) => {
-    const { placeServiceInstance } = req;
+  }
+
+  private async addPlace(req: Request, res: Response, next: NextFunction) {
     const placeInfo = req.body;
 
     try {
-      const places = await placeServiceInstance?.addPlace(placeInfo);
+      const places = await this.placeServiceInstance?.addPlace(placeInfo);
       return res.status(200).json(places);
     } catch (err: any) {
       next(err);
     }
-  });
-
-router.route("/status").post(async (req, res, next) => {
-  const { placeServiceInstance } = req;
-  const { placeId, status } = req.body;
-
-  try {
-    const places = await placeServiceInstance?.updateStatus(placeId, status);
-    return res.status(200).json(places);
-  } catch (err: any) {
-    next(err);
   }
-});
 
-module.exports = router;
+  private async updateStatus(req: Request, res: Response, next: NextFunction) {
+    const { placeId, status } = req.body;
+
+    try {
+      const places = await this.placeServiceInstance?.updateStatus(
+        placeId,
+        status,
+      );
+      return res.status(200).json(places);
+    } catch (err: any) {
+      next(err);
+    }
+  }
+}
+
+const placeController = new PlaceController();
+module.exports = placeController.router;

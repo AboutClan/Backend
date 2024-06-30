@@ -1,25 +1,29 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import BookService from "../services/bookService";
 
-const router = express.Router();
+class BookController {
+  public router: Router;
+  private bookServiceInstance;
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const bookServiceInstance = new BookService();
-  req.bookServiceInstance = bookServiceInstance;
-  next();
-});
+  constructor() {
+    this.router = Router();
+    this.bookServiceInstance = new BookService();
+    this.initializeRoutes();
+  }
 
-router
-  .route("/")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { bookServiceInstance } = req;
+  private initializeRoutes() {
+    this.router.get("/", this.getBookList.bind(this));
+  }
 
+  private async getBookList(req: Request, res: Response, next: NextFunction) {
     try {
-      const bookList = await bookServiceInstance?.getBookList();
+      const bookList = await this.bookServiceInstance?.getBookList();
       res.status(200).send(bookList);
     } catch (err: any) {
       next(err);
     }
-  });
+  }
+}
 
-module.exports = router;
+const bookController = new BookController();
+module.exports = bookController.router;

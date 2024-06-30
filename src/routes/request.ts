@@ -4,37 +4,65 @@ import RequestService from "../services/requestService";
 
 const router: Router = express.Router();
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const rqeuestServiceInstance = new RequestService();
-  req.requestServiceInstance = rqeuestServiceInstance;
-  next();
-});
+class RequestController {
+  public router: Router;
+  private requestServiceInstance: RequestService;
 
-router
-  .route("/")
-  .get(async (req, res, next) => {
-    const { requestServiceInstance } = req;
-    if (!requestServiceInstance) throw new Error();
+  constructor() {
+    this.router = Router();
+    this.requestServiceInstance = new RequestService();
+    this.initializeRoutes();
+  }
 
+  public setPromotionServiceInstance(instance: RequestService) {
+    this.requestServiceInstance = instance;
+  }
+
+  private initializeRoutes() {
+    this.router.use("/", this.createRequestServiceInstance.bind(this));
+
+    this.router
+      .route("/")
+      .get(this.getRequestData.bind(this))
+      .post(this.createRequest.bind(this));
+  }
+
+  private async createRequestServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const requestService = new RequestService();
+    this.setPromotionServiceInstance(requestService);
+    next();
+  }
+
+  private async getRequestData(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const requestData = await requestServiceInstance.getRequest();
+      const requestData = await this.requestServiceInstance.getRequest();
       res.status(200).json(requestData);
     } catch (err: any) {
       next(err);
     }
-  })
-  .post(async (req, res, next) => {
+  }
+
+  private async createRequest(req: Request, res: Response, next: NextFunction) {
     const {
-      requestServiceInstance,
       body: { request = "" },
     } = req;
 
     try {
-      await requestServiceInstance?.createRequest(request);
+      await this.requestServiceInstance?.createRequest(request);
       res.status(200).end();
     } catch (err: any) {
       next(err);
     }
-  });
+  }
+}
 
-module.exports = router;
+const requestController = new RequestController();
+module.exports = requestController.router;
