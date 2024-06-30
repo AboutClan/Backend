@@ -4,42 +4,64 @@ import validateCheck from "../middlewares/validator";
 import { body } from "express-validator";
 
 const router: Router = express.Router();
+class PlazaController {
+  public router: Router;
+  private plazaServiceInstance: PlazaService;
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const plazaServiceInstance = new PlazaService();
-  req.plazaServiceInstance = plazaServiceInstance;
-  next();
-});
+  constructor() {
+    this.router = Router();
+    this.plazaServiceInstance = new PlazaService();
+    this.initializeRoutes();
+  }
 
-router
-  .route("/")
-  .get(async (req, res, next) => {
-    const { plazaServiceInstance } = req;
-    if (!plazaServiceInstance) throw new Error();
+  public setPlazaServiceInstance(instance: PlazaService) {
+    this.plazaServiceInstance = instance;
+  }
 
+  private initializeRoutes() {
+    this.router.use("/", this.createPlazaServiceInstance.bind(this));
+    this.router
+      .route("/")
+      .get(this.getPlaza.bind(this))
+      .post(
+        body("plaza").notEmpty().withMessage("plaza필요"),
+        validateCheck,
+        this.createPlaza.bind(this),
+      );
+  }
+
+  private async createPlazaServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const plazaService = new PlazaService();
+    this.setPlazaServiceInstance(plazaService);
+    next();
+  }
+
+  private async getPlaza(req: Request, res: Response, next: NextFunction) {
     try {
-      const plazaData = await plazaServiceInstance.getPlaza();
+      const plazaData = await this.plazaServiceInstance.getPlaza();
       res.status(200).json(plazaData);
     } catch (err: any) {
       next(err);
     }
-  })
-  .post(
-    body("plaza").notEmpty().withMessage("plaza필요"),
-    validateCheck,
-    async (req, res, next) => {
-      const {
-        plazaServiceInstance,
-        body: { plaza },
-      } = req;
+  }
 
-      try {
-        await plazaServiceInstance?.createPlaza(plaza);
-        res.status(200).end();
-      } catch (err: any) {
-        next(err);
-      }
-    },
-  );
+  private async createPlaza(req: Request, res: Response, next: NextFunction) {
+    const {
+      body: { plaza },
+    } = req;
 
-module.exports = router;
+    try {
+      await this.plazaServiceInstance?.createPlaza(plaza);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
+  }
+}
+
+const plazaController = new PlazaController();
+module.exports = plazaController.router;

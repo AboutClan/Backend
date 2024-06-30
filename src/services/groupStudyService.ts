@@ -54,6 +54,8 @@ export default class GroupStudyService {
   async createGroupStudy(data: IGroupStudyData) {
     const nextId = await this.getNextSequence("groupStudyId");
 
+    console.log(data);
+
     const groupStudyInfo: IGroupStudyData = {
       ...data,
       participants: [
@@ -79,6 +81,7 @@ export default class GroupStudyService {
     }
   }
   async updateGroupStudy(data: IGroupStudyData) {
+    console.log(data);
     const groupStudy = await GroupStudy.findOne({ id: data.id });
     if (!groupStudy) throw new Error();
 

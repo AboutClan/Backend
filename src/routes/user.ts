@@ -1,97 +1,218 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import { body, query } from "express-validator";
 import validateCheck from "../middlewares/validator";
 import UserService from "../services/userService";
 
 const router = express.Router();
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { decodedToken } = req;
-  const userServiceInstance = new UserService(decodedToken);
-  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  req.userServiceInstance = userServiceInstance;
-  next();
-});
+class UserController {
+  public router: Router;
+  private userServiceInstance: UserService;
 
-//userInfo의 필드 수정. post/patch/put 모두 상황마다 사용 가능할 거 같은데, 대부분의 경우 처음부터 존재하는 필드에 업데이트 하는 거고, 각 필드마다 통일성 유지를 위해서(프론트엔드에서 하위 필드 메소드 통일해서 정리하고 있어서. 일단 patch로 통일했음. 나중에 수정하고 싶으면 말씀해주세요!)
+  constructor() {
+    this.router = Router();
+    this.userServiceInstance = new UserService();
+    this.initializeRoutes();
+  }
 
-router
-  .route("/active")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  public setUserServiceInstance(instance: UserService) {
+    this.userServiceInstance = instance;
+  }
 
+  private initializeRoutes() {
+    this.router.use("/", this.createUserServiceInstance.bind(this));
+
+    this.router.get("/active", this.getActive.bind(this));
+    this.router.get("/simple", this.getSimple.bind(this));
+    this.router.get("/simpleAll", this.getAllSimple.bind(this));
+    this.router
+      .route("/avatar")
+      .get(this.getAvatar.bind(this))
+      .patch(
+        validateCheck,
+        body("type").notEmpty().withMessage("Type is required."),
+        body("bg").notEmpty().withMessage("Background is required."),
+        this.updateAvatar.bind(this),
+      );
+    this.router
+      .route("/comment")
+      .get(this.getAllComments.bind(this))
+      .patch(
+        validateCheck,
+        body("comment").notEmpty().withMessage("Comment is required."),
+        this.updateComment.bind(this),
+      );
+    this.router.patch(
+      "/role",
+      body("role").notEmpty().withMessage("Role is required."),
+      this.patchRole.bind(this),
+    );
+
+    this.router.patch("/rest", this.patchRest.bind(this));
+    this.router.get(
+      "/participationrate/all",
+      this.getParticipationRateAll.bind(this),
+    );
+    this.router.get("/participationrate", this.getParticipationRate.bind(this));
+    this.router.get("/voterate", this.getVoteRate.bind(this));
+    this.router
+      .route("/profile")
+      .get(this.getProfile.bind(this))
+      .post(this.updateProfile.bind(this))
+      .patch(this.patchProfile.bind(this));
+    this.router.get("/profile/:uid", this.getUserByUid.bind(this));
+
+    this.router.route("/profiles").get(this.getUsersWithUids.bind(this));
+    this.router.patch("/changeInactive", this.setUserInactive.bind(this));
+    this.router
+      .route("/point")
+      .get(this.getUserPoint.bind(this))
+      .patch(this.updateUserPoint.bind(this));
+    this.router
+      .route("/score")
+      .get(this.getUserScore.bind(this))
+      .patch(this.updateUserScore.bind(this));
+    this.router.get("/histories/score", this.getScoreLogs.bind(this));
+    this.router.get("/histories/monthScore", this.getMonthScoreLogs.bind(this));
+    this.router.get("/histories/score/all", this.getAllScoreLogs.bind(this));
+    this.router.get("/histories/point", this.getPointLogs.bind(this));
+    this.router.get("/histories/point/all", this.getAllPointLogs.bind(this));
+    this.router
+      .route("/monthScore")
+      .get(this.getMonthScore.bind(this))
+      .delete(this.initMonthScore.bind(this));
+    this.router
+      .route("/deposit")
+      .get(this.getUserDeposit.bind(this))
+      .patch(this.updateUserDeposit.bind(this));
+    this.router
+      .route("/score/all")
+      .get(this.getAllUserScores.bind(this))
+      .patch(this.updateAllUserScores.bind(this));
+    this.router.route("/deposit/all").get(this.getAllUserDeposits.bind(this));
+
+    this.router
+      .route("/preference")
+      .post(
+        body("place").notEmpty().withMessage("place 입력 필요."),
+        this.setPreference.bind(this),
+      )
+      .get(this.getPreference.bind(this));
+
+    this.router
+      .route("/promotion")
+      .get(this.getPromotion.bind(this))
+      .post(
+        body("name").notEmpty().withMessage("name 입력 필요."),
+        this.setPromotion.bind(this),
+      );
+
+    this.router
+      .route("/friend")
+      .get(this.getFriend.bind(this))
+      .patch(this.setFriend.bind(this))
+      .delete(
+        body("toUid").notEmpty().isString().withMessage("toUid 필요"),
+        this.deleteFriend.bind(this),
+      );
+
+    this.router
+      .route("/belong")
+      .patch(
+        body("uid").notEmpty().withMessage("uid 입력 필요."),
+        body("belong").notEmpty().withMessage("belong 입력 필요."),
+        this.patchBelong.bind(this),
+      );
+
+    this.router.route("/test").get(this.test.bind(this));
+  }
+
+  private async createUserServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { decodedToken } = req;
+    const userServiceInstance = new UserService(decodedToken);
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    this.setUserServiceInstance(userServiceInstance);
+    next();
+  }
+
+  private getActive = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const isActive = await userServiceInstance?.getUserInfo(["isActive"]);
-      return res.status(200).json(isActive);
+      const isActive = await this.userServiceInstance.getUserInfo(["isActive"]);
+      res.status(200).json(isActive);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/simple")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private getSimple = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const isActive = await userServiceInstance?.getSimpleUserInfo();
-      return res.status(200).json(isActive);
+      const simpleUserInfo = await this.userServiceInstance.getSimpleUserInfo();
+      res.status(200).json(simpleUserInfo);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/simpleAll")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private getAllSimple = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const isActive = await userServiceInstance?.getAllSimpleUserInfo();
-      return res.status(200).json(isActive);
+      const allSimpleUserInfo =
+        await this.userServiceInstance.getAllSimpleUserInfo();
+      res.status(200).json(allSimpleUserInfo);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/avatar")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private getAvatar = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const avatar = await userServiceInstance?.getUserInfo(["avatar"]);
-      return res.status(200).json(avatar);
+      const avatar = await this.userServiceInstance.getUserInfo(["avatar"]);
+      res.status(200).json(avatar);
     } catch (err) {
       next(err);
     }
-  })
-  .patch(
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { type, bg },
-      } = req;
+  };
 
-      try {
-        await userServiceInstance?.updateUser({
-          avatar: { type, bg },
-        });
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-router
-  .route("/comment")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private updateAvatar = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const comments = await userServiceInstance?.getAllUserInfo([
+      const { type, bg } = req.body;
+      await this.userServiceInstance.updateUser({ avatar: { type, bg } });
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getAllComments = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const comments = await this.userServiceInstance.getAllUserInfo([
         "comment",
         "name",
       ]);
@@ -99,456 +220,441 @@ router
     } catch (err) {
       next(err);
     }
-  })
-  .patch(
-    body("comment").notEmpty().withMessage("comment입력 필요"),
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { comment = "" },
-      } = req;
+  };
 
-      try {
-        await userServiceInstance?.updateUser({ comment });
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
+  private updateComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { comment } = req.body;
+      await this.userServiceInstance.updateUser({ comment });
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
 
-router
-  .route("/role")
-  .patch(
-    body("role").notEmpty().withMessage("role입력 필요."),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { role },
-      } = req;
-      try {
-        await userServiceInstance?.patchRole(role);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
+  private patchRole = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { role } = req.body;
+      await this.userServiceInstance.patchRole(role);
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
 
-router
-  .route("/rest")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
+  private patchRest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const {
-      userServiceInstance,
       body: { info = "" },
     } = req;
-
     try {
-      await userServiceInstance?.setRest(info);
+      await this.userServiceInstance?.setRest(info);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/participationrate/all")
-  .get(
-    query("startDay").notEmpty().withMessage("startDay입력 필요."),
-    query("endDay").notEmpty().withMessage("startDay입력 필요."),
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const { userServiceInstance } = req;
-      const {
-        startDay,
-        endDay,
-        location,
-        summary,
-      }: {
-        startDay: string;
-        endDay: string;
-        location: string | null;
-        summary: boolean;
-      } = req.query as any;
-      try {
-        const participationResult =
-          await userServiceInstance?.getParticipationRate(
-            startDay,
-            endDay,
-            true,
-            location,
-            Boolean(summary),
-          );
-        return res.status(200).json(participationResult);
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-router
-  .route("/participationrate")
-  .get(
-    query("startDay").notEmpty().withMessage("startDay입력 필요."),
-    query("endDay").notEmpty().withMessage("startDay입력 필요."),
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const { userServiceInstance } = req;
-      const {
-        startDay,
-        endDay,
-        location,
-        summary,
-      }: {
-        startDay: string;
-        endDay: string;
-        location: string | null;
-        summary: boolean;
-      } = req.query as any;
-
-      try {
-        const participationResult =
-          await userServiceInstance?.getParticipationRate(
-            startDay,
-            endDay,
-            false,
-            location,
-            summary,
-          );
-        const userResult = participationResult?.[0];
-        return res.status(200).json(userResult);
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-router
-  .route("/voterate")
-  .get(
-    query("startDay").notEmpty().withMessage("startDay입력 필요."),
-    query("endDay").notEmpty().withMessage("startDay입력 필요."),
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const { userServiceInstance } = req;
-      const { startDay, endDay }: { startDay: string; endDay: string } =
-        req.query as any;
-
-      try {
-        const voteResult = await userServiceInstance?.getVoteRate(
+  private getParticipationRateAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      startDay,
+      endDay,
+      location,
+      summary,
+    }: {
+      startDay: string;
+      endDay: string;
+      location: string | null;
+      summary: boolean;
+    } = req.query as any;
+    try {
+      const participationResult =
+        await this.userServiceInstance?.getParticipationRate(
           startDay,
           endDay,
+          true,
+          location,
+          Boolean(summary),
         );
+      return res.status(200).json(participationResult);
+    } catch (err) {
+      next(err);
+    }
+  };
 
-        return res.status(200).json(voteResult);
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-router
-  .route("/profile")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private getParticipationRate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      startDay,
+      endDay,
+      location,
+      summary,
+    }: {
+      startDay: string;
+      endDay: string;
+      location: string | null;
+      summary: boolean;
+    } = req.query as any;
     try {
-      const targetUser = await userServiceInstance?.getUserInfo([]);
+      const participationResult =
+        await this.userServiceInstance?.getParticipationRate(
+          startDay,
+          endDay,
+          false,
+          location,
+          summary,
+        );
+      const userResult = participationResult?.[0];
+      return res.status(200).json(userResult);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getVoteRate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { startDay, endDay }: { startDay: string; endDay: string } =
+      req.query as any;
+    try {
+      const voteResult = await this.userServiceInstance?.getVoteRate(
+        startDay,
+        endDay,
+      );
+      return res.status(200).json(voteResult);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const targetUser = await this.userServiceInstance?.getUserInfo([]);
       return res.status(200).json(targetUser);
     } catch (err) {
       next(err);
     }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  };
+
+  private updateProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const registerForm = req.body || {};
-
     try {
-      await userServiceInstance?.updateUser(registerForm);
-      const updatedUser = await userServiceInstance?.getUserInfo([]);
+      await this.userServiceInstance?.updateUser(registerForm);
+      const updatedUser = await this.userServiceInstance?.getUserInfo([]);
       return res.status(200).json(updatedUser);
     } catch (err) {
       next(err);
     }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  };
 
+  private patchProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const updatedUser = await userServiceInstance?.patchProfile();
+      const updatedUser = await this.userServiceInstance?.patchProfile();
       return res.status(200).json(updatedUser);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/profile/:uid")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  private getUserByUid = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const { uid } = req.params;
-
     try {
-      const isActive = await userServiceInstance?.getUserWithUid(uid);
+      const isActive = await this.userServiceInstance?.getUserWithUid(uid);
       return res.status(200).json(isActive);
     } catch (err) {
       next(err);
     }
-  });
-router
-  .route("/profiles")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  };
+
+  private getUsersWithUids = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const { uids } = req.query;
 
     try {
-      const results = await userServiceInstance?.getUsersWithUids(
+      const results = await this.userServiceInstance?.getUsersWithUids(
         uids as string[],
       );
       return res.status(200).json(results);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/changeInactive")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private setUserInactive = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const results = await userServiceInstance?.setUserInactive();
+      const results = await this.userServiceInstance?.setUserInactive();
       return res.status(200).json(results);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/point")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private getUserPoint = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const userPoint = await userServiceInstance?.getUserInfo(["point"]);
+      const userPoint = await this.userServiceInstance?.getUserInfo(["point"]);
       return res.status(200).send(userPoint);
     } catch (err) {
       next(err);
     }
-  })
-  .patch(
-    body("point").notEmpty().isNumeric().withMessage("point입력 필요."),
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { point, message = "", sub },
-      } = req;
+  };
 
-      try {
-        await userServiceInstance?.updatePoint(point, message, sub);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-router
-  .route("/score")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  private updateUserPoint = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { point, message = "", sub },
+    } = req;
 
     try {
-      const userScore = await userServiceInstance?.getUserInfo(["score"]);
-      return res.status(200).send(userScore);
-    } catch (err) {
-      next(err);
-    }
-  })
-  .patch(
-    body("score").notEmpty().isNumeric().withMessage("score입력 필요."),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { score, message, sub },
-      } = req;
-
-      try {
-        await userServiceInstance?.updateScore(score, message, sub);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-router.route("/histories/score").get(async (req, res, next) => {
-  const { userServiceInstance } = req;
-
-  try {
-    const logs = await userServiceInstance?.getLog("score");
-    return res.status(200).json(logs);
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-router.route("/histories/monthScore").get(async (req, res, next) => {
-  const { userServiceInstance } = req;
-
-  try {
-    const logs = await userServiceInstance?.getMonthScoreLog();
-    return res.status(200).json(logs);
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-router.route("/histories/score/all").get(async (req, res, next) => {
-  const { userServiceInstance } = req;
-
-  try {
-    const logs = await userServiceInstance?.getAllLog("score");
-    return res.status(200).json(logs);
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-router.route("/histories/point").get(async (req, res, next) => {
-  const { userServiceInstance } = req;
-
-  try {
-    const logs = await userServiceInstance?.getLog("point");
-    return res.status(200).json(logs);
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-router.route("/histories/point/all").get(async (req, res, next) => {
-  const { userServiceInstance } = req;
-
-  try {
-    const logs = await userServiceInstance?.getAllLog("point");
-    return res.status(200).json(logs);
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-router.route("/histories/deposit").get(async (req, res, next) => {
-  const { userServiceInstance } = req;
-
-  try {
-    const logs = await userServiceInstance?.getLog("deposit");
-    return res.status(200).json(logs);
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-router.route("/histories/deposit/all").get(async (req, res, next) => {
-  const { userServiceInstance } = req;
-
-  try {
-    const logs = await userServiceInstance?.getAllLog("deposit");
-    return res.status(200).json(logs);
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-router
-  .route("/monthScore")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
-    try {
-      const userScore = await userServiceInstance?.getUserInfo(["monthScore"]);
-      return res.status(200).send(userScore);
-    } catch (err) {
-      next(err);
-    }
-  })
-  .delete(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
-    try {
-      await userServiceInstance?.initMonthScore();
+      await this.userServiceInstance?.updatePoint(point, message, sub);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/deposit")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private getUserScore = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const userScore = await userServiceInstance?.getUserInfo(["deposit"]);
+      const userScore = await this.userServiceInstance?.getUserInfo(["score"]);
       return res.status(200).send(userScore);
     } catch (err) {
       next(err);
     }
-  })
-  .patch(
-    body("deposit").notEmpty().isNumeric().withMessage("deposit입력 필요."),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { deposit, message, sub },
-      } = req;
+  };
 
-      try {
-        await userServiceInstance?.updateDeposit(deposit, message, sub);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-router
-  .route("/score/all")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  private updateUserScore = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { score, message, sub },
+    } = req;
 
     try {
-      const userScore = await userServiceInstance?.getAllUserInfo([
+      await this.userServiceInstance?.updateScore(score, message, sub);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getScoreLogs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const logs = await this.userServiceInstance?.getLog("score");
+      return res.status(200).json(logs);
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  private getMonthScoreLogs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const logs = await this.userServiceInstance?.getMonthScoreLog();
+      return res.status(200).json(logs);
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  private getAllScoreLogs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const logs = await this.userServiceInstance?.getAllLog("score");
+      return res.status(200).json(logs);
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  private getPointLogs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const logs = await this.userServiceInstance?.getLog("point");
+      return res.status(200).json(logs);
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  private getAllPointLogs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const logs = await this.userServiceInstance?.getAllLog("point");
+      return res.status(200).json(logs);
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  private getMonthScore = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const userScore = await this.userServiceInstance?.getUserInfo([
+        "monthScore",
+      ]);
+      return res.status(200).send(userScore);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private initMonthScore = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      await this.userServiceInstance?.initMonthScore();
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getUserDeposit = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const userScore = await this.userServiceInstance?.getUserInfo([
+        "deposit",
+      ]);
+      return res.status(200).send(userScore);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private updateUserDeposit = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { deposit, message, sub },
+    } = req;
+
+    try {
+      await this.userServiceInstance?.updateDeposit(deposit, message, sub);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getAllUserScores = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const userScore = await this.userServiceInstance?.getAllUserInfo([
         "name",
         "score",
         "location",
         "uid",
       ]);
-
       return res.status(200).send(userScore);
     } catch (err) {
       next(err);
     }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  };
 
+  private updateAllUserScores = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      await userServiceInstance?.updateUserAllScore();
+      await this.userServiceInstance?.updateUserAllScore();
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/deposit/all")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-
+  private getAllUserDeposits = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const userScore = await userServiceInstance?.getAllUserInfo([
+      const userScore = await this.userServiceInstance?.getAllUserInfo([
         "name",
         "deposit",
         "uid",
@@ -557,125 +663,134 @@ router
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/preference")
-  .post(
-    body("place").notEmpty().withMessage("place입력 필요."),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { place, subPlace = [] },
-      } = req;
-
-      try {
-        await userServiceInstance?.setPreference(place, subPlace);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  )
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  private setPreference = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { place, subPlace = [] },
+    } = req;
 
     try {
-      const result = await userServiceInstance?.getPreference();
+      await this.userServiceInstance?.setPreference(place, subPlace);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getPreference = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const result = await this.userServiceInstance?.getPreference();
       return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/promotion")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
+  private getPromotion = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const { userServiceInstance } = req;
-
-      const promotionData = await userServiceInstance?.getPromotion();
+      const promotionData = await this.userServiceInstance?.getPromotion();
       return res.status(200).json(promotionData);
     } catch (err) {
       next(err);
     }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  };
+
+  private setPromotion = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const {
-        userServiceInstance,
         body: { name },
       } = req;
 
-      await userServiceInstance?.setPromotion(name);
+      await this.userServiceInstance?.setPromotion(name);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
-router
-  .route("/friend")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
+  };
+
+  private getFriend = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const friend = await userServiceInstance?.getUserInfo(["friend"]);
+      const friend = await this.userServiceInstance?.getUserInfo(["friend"]);
       return res.status(200).json(friend);
     } catch (err: any) {
       next(err);
     }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
+  };
+
+  private setFriend = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const {
-      userServiceInstance,
       body: { toUid },
     } = req;
     try {
-      await userServiceInstance?.setFriend(toUid);
+      await this.userServiceInstance?.setFriend(toUid);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  })
-  .delete(
-    body("toUid").notEmpty().isString().withMessage("toUid필요"),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { toUid },
-      } = req;
-      try {
-        const friend = await userServiceInstance?.deleteFriend(toUid);
-        return res.status(200).end(friend);
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
+  };
 
-router
-  .route("/belong")
-  .patch(
-    body("uid").notEmpty().withMessage("uid입력 필요."),
-    body("belong").notEmpty().withMessage("belong입력 필요."),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        userServiceInstance,
-        body: { uid, belong },
-      } = req;
-      try {
-        await userServiceInstance?.patchBelong(uid, belong);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
+  private deleteFriend = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { toUid },
+    } = req;
+    try {
+      const friend = await this.userServiceInstance?.deleteFriend(toUid);
+      return res.status(200).end(friend);
+    } catch (err) {
+      next(err);
+    }
+  };
 
-router
-  .route("/test")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { userServiceInstance } = req;
-    await userServiceInstance?.test();
+  private patchBelong = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { uid, belong },
+    } = req;
+    try {
+      await this.userServiceInstance?.patchBelong(uid, belong);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private test = async (req: Request, res: Response, next: NextFunction) => {
+    await this.userServiceInstance?.test();
     return res.status(200).end();
-  });
-module.exports = router;
+  };
+}
+
+const userController = new UserController();
+module.exports = userController.router;

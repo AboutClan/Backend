@@ -1,46 +1,74 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import { Subscription } from "../db/models/subscription";
 import { NotificationSub } from "../db/models/notificationSub";
 import WebPushService from "../services/webPushService";
 const router = express.Router();
 const _ = require("lodash");
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { decodedToken } = req;
-  const webPushServiceInstance = new WebPushService(decodedToken);
-  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  req.webPushServiceInstance = webPushServiceInstance;
-  next();
-});
+class WebPushController {
+  public router: Router;
+  private webPushServiceInstance: WebPushService;
 
-router.post(
-  "/subscribe",
-  async (req: Request, res: Response, next: NextFunction) => {
-    // Get pushSubscription object
-    const subscription = req.body;
+  constructor() {
+    this.router = Router();
+    this.webPushServiceInstance = new WebPushService();
+    this.initializeRoutes();
+  }
+
+  public setWebPushServiceInstance(instance: WebPushService) {
+    this.webPushServiceInstance = instance;
+  }
+
+  private initializeRoutes() {
+    this.router.use("/", this.createWebPushServiceInstance.bind(this));
+
+    this.router.post("/subscribe", this.subscribe.bind(this));
+    this.router.post("/sendNotification", this.sendNotification.bind(this));
+  }
+
+  private async createWebPushServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { decodedToken } = req;
+    const webPushService = new WebPushService(decodedToken);
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    this.setWebPushServiceInstance(webPushService);
+    next();
+  }
+
+  private subscribe = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { body: subscription } = req;
 
     try {
-      req.webPushServiceInstance?.subscribe(subscription);
+      this.webPushServiceInstance?.subscribe(subscription);
       return res.status(200).send("register success");
     } catch (err) {
-      next();
+      next(err);
     }
-  },
-);
+  };
 
-router.post(
-  "/sendNotification",
-  async (req: Request, res: Response, next: NextFunction) => {
+  private sendNotification = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      req.webPushServiceInstance?.sendNotificationAllUser();
+      this.webPushServiceInstance?.sendNotificationAllUser();
       return res.status(200).send("Notification sent");
     } catch (err) {
-      next();
+      next(err);
     }
-  },
-);
+  };
+}
 
-module.exports = router;
+const webPushController = new WebPushController();
+module.exports = webPushController.router;
 
 // router.post(
 //   "/push",
