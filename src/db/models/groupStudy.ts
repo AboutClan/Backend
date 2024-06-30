@@ -20,6 +20,7 @@ export interface memberCntType {
 
 export interface participantsType {
   user: string | IUser;
+  randomId?: number;
   role: UserRole;
   attendCnt: number;
 }
@@ -149,6 +150,9 @@ export const participantsSchema: Schema<participantsType> = new Schema(
     attendCnt: {
       type: Number,
     },
+    randomId: {
+      type:Number
+    }
   },
   { _id: false }
 );

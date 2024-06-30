@@ -210,6 +210,7 @@ export default class GroupStudyService {
           user: userId,
           role: userId ? "member" : "outsider",
           attendCnt: 0,
+          randomId: userId ? undefined : Math.floor(Math.random() * 100000),
         });
       }
 
