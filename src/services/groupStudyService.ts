@@ -147,21 +147,27 @@ export default class GroupStudyService {
     return;
   }
 
-  async exileParticipate(id: string, toUid: string) {
+  async exileParticipate(id: string, toUid: string, randomId?: number) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
 
     try {
-      groupStudy.participants = groupStudy.participants.filter(
-        (participant) => participant.user != toUid,
-      );
+      if (!randomId) {
+        groupStudy.participants = groupStudy.participants.filter(
+          (participant) => participant.user != toUid,
+        );
 
-      groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
-        (who) => who.uid !== toUid + "",
-      );
-      groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
-        (who) => who.uid !== toUid + "",
-      );
+        groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
+          (who) => who.uid !== toUid + "",
+        );
+        groupStudy.attendance.thisWeek = groupStudy.attendance.thisWeek.filter(
+          (who) => who.uid !== toUid + "",
+        );
+      } else {
+        groupStudy.participants = groupStudy.participants.filter(
+          (participant) => participant.randomId !== randomId,
+        );
+      }
       await groupStudy.save();
     } catch (err) {
       throw new Error();

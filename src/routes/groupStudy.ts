@@ -218,11 +218,15 @@ class GroupStudyController {
     next: NextFunction,
   ) {
     const {
-      body: { id, toUid },
+      body: { id, toUid, randomId },
     } = req;
 
     try {
-      await this.groupStudyServiceInstance.exileParticipate(id, toUid);
+      await this.groupStudyServiceInstance.exileParticipate(
+        id,
+        toUid,
+        randomId,
+      );
       res.status(200).end();
     } catch (err) {
       next(err);
