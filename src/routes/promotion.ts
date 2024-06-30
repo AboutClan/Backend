@@ -1,41 +1,64 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import PromotionService from "../services/promotionService";
 
 const router = express.Router();
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { decodedToken } = req;
+class PromotionController {
+  public router: Router;
+  private promotionServiceInstance: PromotionService;
 
-  const promotionServiceInstance = new PromotionService(decodedToken);
-  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  req.promotionServiceInstance = promotionServiceInstance;
-  next();
-});
+  constructor() {
+    this.router = Router();
+    this.promotionServiceInstance = new PromotionService();
+    this.initializeRoutes();
+  }
 
-router
-  .route("/")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
+  public setPromotionServiceInstance(instance: PromotionService) {
+    this.promotionServiceInstance = instance;
+  }
+
+  private initializeRoutes() {
+    this.router.use("/", this.createPromotionServiceInstance.bind(this));
+
+    this.router
+      .route("/")
+      .get(this.getPromotion.bind(this))
+      .post(this.setPromotion.bind(this));
+  }
+
+  private async createPromotionServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { decodedToken } = req;
+    const promotionService = new PromotionService(decodedToken);
+    this.setPromotionServiceInstance(promotionService);
+    next();
+  }
+
+  private async getPromotion(req: Request, res: Response, next: NextFunction) {
     try {
-      const { promotionServiceInstance } = req;
-
-      const promotionData = await promotionServiceInstance?.getPromotion();
+      const promotionData = await this.promotionServiceInstance?.getPromotion();
       return res.status(200).json(promotionData);
     } catch (err) {
       next(err);
     }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  }
+
+  private async setPromotion(req: Request, res: Response, next: NextFunction) {
     try {
       const {
-        promotionServiceInstance,
         body: { name },
       } = req;
 
-      await promotionServiceInstance?.setPromotion(name);
+      await this.promotionServiceInstance?.setPromotion(name);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
+  }
+}
 
-module.exports = router;
+const promotionController = new PromotionController();
+module.exports = promotionController.router;

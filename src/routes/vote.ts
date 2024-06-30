@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import { body, query } from "express-validator";
 import validateCheck from "../middlewares/validator";
 import VoteService from "../services/voteService";
@@ -7,31 +7,129 @@ import { strToDate } from "../utils/dateUtils";
 
 const router = express.Router();
 
-router.use("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { decodedToken } = req;
+class VoteController {
+  public router: Router;
+  private voteServiceInstance: VoteService;
 
-  const voteServiceInstance = new VoteService(decodedToken);
-  req.voteServiceInstance = voteServiceInstance;
-  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  req.token = decodedToken;
-  next();
-});
+  constructor() {
+    this.router = Router();
+    this.voteServiceInstance = new VoteService();
+    this.initializeRoutes();
+  }
 
-router.route("/arrived").get(
-  query("startDay").notEmpty().withMessage("startDay입력 필요."),
-  query("endDay").notEmpty().withMessage("startDay입력 필요."),
-  validateCheck,
+  public setVoteServiceInstance(instance: VoteService) {
+    this.voteServiceInstance = instance;
+  }
 
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
+  private initializeRoutes() {
+    this.router.use("/", this.createVoteServiceInstance.bind(this));
 
+    this.router
+      .route("/arrived")
+      .get(
+        query("startDay").notEmpty().withMessage("startDay 입력 필요."),
+        query("endDay").notEmpty().withMessage("startDay 입력 필요."),
+        validateCheck,
+        this.getArrivedPeriod.bind(this),
+      );
+
+    this.router
+      .route("/participationCnt")
+      .get(
+        query("location").notEmpty().withMessage("location 입력 필요."),
+        query("startDay").notEmpty().withMessage("startDay 입력 필요."),
+        query("endDay").notEmpty().withMessage("endDay 입력 필요."),
+        validateCheck,
+        this.getParticipantsCnt.bind(this),
+      );
+
+    this.router.route("/deleteField").get(this.deleteField.bind(this));
+
+    this.router.route("/arriveCnt").get(this.getArriveCheckCnt.bind(this));
+
+    this.router.use("/:date", this.setDateParam.bind(this));
+
+    this.router
+      .route("/:date")
+      .get(this.getFilteredVote.bind(this))
+      .post(
+        body("place").notEmpty().withMessage("place 입력 필요."),
+        body("start").notEmpty().withMessage("start 입력 필요."),
+        body("end").notEmpty().withMessage("end 입력 필요."),
+        validateCheck,
+        this.setVote.bind(this),
+      )
+      .patch(
+        body("start").notEmpty().withMessage("start 입력 필요."),
+        body("end").notEmpty().withMessage("end 입력 필요."),
+        validateCheck,
+        this.patchVote.bind(this),
+      )
+      .delete(this.deleteVote.bind(this));
+
+    this.router.route("/:date/week").get(this.getFilteredVoteByDate.bind(this));
+
+    this.router
+      .route("/:date/absence")
+      .get(this.getAbsence.bind(this))
+      .post(
+        body("message")
+          .optional()
+          .isString()
+          .withMessage("message must be a string"),
+        validateCheck,
+        this.setAbsence.bind(this),
+      );
+
+    this.router
+      .route("/:date/arrived")
+      .get(this.getArrived.bind(this))
+      .patch(
+        body("memo").optional().isString().withMessage("memo must be a string"),
+        validateCheck,
+        this.patchArrive.bind(this),
+      );
+
+    this.router.route("/:date/confirm").patch(this.patchConfirm.bind(this));
+
+    this.router.route("/:date/dismiss").patch(this.patchDismiss.bind(this));
+
+    this.router.route("/:date/start").get(this.getStart.bind(this));
+
+    this.router.route("/:date/quick").post(this.quickVote.bind(this));
+
+    this.router
+      .route("/:date/free")
+      .patch(
+        body("placeId").notEmpty().withMessage("placeId 필요"),
+        validateCheck,
+        this.setFree.bind(this),
+      );
+  }
+
+  private async createVoteServiceInstance(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { decodedToken } = req;
+    const voteService = new VoteService(decodedToken);
+    this.setVoteServiceInstance(voteService);
+    next();
+  }
+
+  private getArrivedPeriod = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const { startDay, endDay } = req.query as {
       startDay: string;
       endDay: string;
     };
 
     try {
-      const results = await voteServiceInstance?.getArrivedPeriod(
+      const results = await this.voteServiceInstance?.getArrivedPeriod(
         startDay,
         endDay,
       );
@@ -39,23 +137,21 @@ router.route("/arrived").get(
     } catch (err) {
       next(err);
     }
-  },
-);
+  };
 
-router
-  .route("/participationCnt")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-    let { location, startDay, endDay } = req.query as {
+  private getParticipantsCnt = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { location, startDay, endDay } = req.query as {
       location: string;
-      startDay: any;
-      endDay: any;
+      startDay: string;
+      endDay: string;
     };
 
-    if (startDay == null && endDay == null) return res.status(400).end();
-
     try {
-      const results = await voteServiceInstance?.getParticipantsCnt(
+      const results = await this.voteServiceInstance?.getParticipantsCnt(
         location,
         startDay,
         endDay,
@@ -64,37 +160,39 @@ router
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/deleteField")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-
+  private deleteField = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      await voteServiceInstance?.deleteField();
+      await this.voteServiceInstance?.deleteField();
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/arriveCnt")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance } = req;
-
+  private getArriveCheckCnt = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const result = await voteServiceInstance?.getArriveCheckCnt();
+      const result = await this.voteServiceInstance?.getArriveCheckCnt();
       return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router.use(
-  "/:date",
-  async (req: Request, res: Response, next: NextFunction) => {
+  private setDateParam = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const { date: dateStr } = req.params;
     const dayjsDate = strToDate(dateStr);
     const date = dayjsDate.toDate();
@@ -103,19 +201,18 @@ router.use(
 
     req.date = date;
     next();
-  },
-);
+  };
 
-router
-  .route("/:date")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
-    let { location = "수원" } = req.query as {
-      location: string;
-    };
+  private getFilteredVote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
+    let { location = "수원" } = req.query as { location: string };
 
     try {
-      const filteredVote = await voteServiceInstance?.getFilteredVote(
+      const filteredVote = await this.voteServiceInstance?.getFilteredVote(
         date,
         location,
       );
@@ -123,13 +220,14 @@ router
     } catch (err) {
       next(err);
     }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  };
+
+  private setVote = async (req: Request, res: Response, next: NextFunction) => {
     const { place, subPlace, start, end, memo }: IVoteStudyInfo = req.body;
-    const { voteServiceInstance, date } = req;
+    const { date } = req;
 
     try {
-      await voteServiceInstance?.setVote(date, {
+      await this.voteServiceInstance?.setVote(date, {
         place,
         subPlace,
         start,
@@ -140,178 +238,197 @@ router
     } catch (err) {
       next(err);
     }
-  })
-  .patch(
-    body("start").notEmpty().withMessage("start필요"),
-    body("end").notEmpty().withMessage("end필요"),
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const { voteServiceInstance, date } = req;
-      const { start, end }: IVoteStudyInfo = req.body;
+  };
 
-      try {
-        await voteServiceInstance?.patchVote(date, start, end);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  )
-  .delete(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
+  private patchVote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { start, end }: IVoteStudyInfo = req.body;
+    const { date } = req;
+
     try {
-      await voteServiceInstance?.deleteVote(date);
+      await this.voteServiceInstance?.patchVote(date, start, end);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private deleteVote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
+
+    try {
+      await this.voteServiceInstance?.deleteVote(date);
       return res.status(204).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/:date/week")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
-    let { location = "수원" } = req.query as {
-      location: string;
-    };
+  private getFilteredVoteByDate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
+    let { location = "수원" } = req.query as { location: string };
 
     try {
-      const filteredVote = await voteServiceInstance?.getFilteredVoteByDate(
-        date,
-        location,
-      );
+      const filteredVote =
+        await this.voteServiceInstance?.getFilteredVoteByDate(date, location);
       return res.status(200).json(filteredVote);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-//Todo: aggregate와 속도 비교
-router
-  .route("/:date/absence")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
+  private getAbsence = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
+
     try {
-      const result = await voteServiceInstance?.getAbsence(date);
+      const result = await this.voteServiceInstance?.getAbsence(date);
       return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
-  })
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  };
+
+  private setAbsence = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const {
-      voteServiceInstance,
       date,
       body: { message = "" },
     } = req;
 
     try {
-      const result = await voteServiceInstance?.setAbsence(date, message);
+      const result = await this.voteServiceInstance?.setAbsence(date, message);
       return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/:date/arrived")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
+  private getArrived = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
 
     try {
-      const arriveInfo = await voteServiceInstance?.getArrived(date);
+      const arriveInfo = await this.voteServiceInstance?.getArrived(date);
       return res.status(200).json(arriveInfo);
     } catch (err) {
       next(err);
     }
-  })
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
+  };
+
+  private patchArrive = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const {
+      date,
       body: { memo = "" },
     } = req;
 
     try {
-      const result = await voteServiceInstance?.patchArrive(date, memo);
+      const result = await this.voteServiceInstance?.patchArrive(date, memo);
       return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/:date/confirm")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
+  private patchConfirm = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
 
     try {
-      await voteServiceInstance?.patchConfirm(date);
+      await this.voteServiceInstance?.patchConfirm(date);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/:date/dismiss")
-  .patch(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
+  private patchDismiss = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
 
     try {
-      voteServiceInstance?.patchDismiss(date);
+      await this.voteServiceInstance?.patchDismiss(date);
       return res.status(204).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/:date/start")
-  .get(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
+  private getStart = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
 
     try {
-      const result = await voteServiceInstance?.getStart(date);
-      res.status(200).json(result);
+      const result = await this.voteServiceInstance?.getStart(date);
+      return res.status(200).json(result);
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/:date/quick")
-  .post(async (req: Request, res: Response, next: NextFunction) => {
-    const { voteServiceInstance, date } = req;
-
+  private quickVote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
     const voteInfo: Omit<IVoteStudyInfo, "place" | "subPlace"> = req.body;
 
     try {
-      await voteServiceInstance?.quickVote(date, voteInfo);
+      await this.voteServiceInstance?.quickVote(date, voteInfo);
       return res.status(200).end();
     } catch (err) {
       next(err);
     }
-  });
+  };
 
-router
-  .route("/:date/free")
-  .patch(
-    body("placeId").notEmpty().withMessage("placeId 필요"),
-    validateCheck,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const {
-        voteServiceInstance,
-        date,
-        body: { placeId },
-      } = req;
+  private setFree = async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      date,
+      body: { placeId },
+    } = req;
 
-      try {
-        await voteServiceInstance?.setFree(date, placeId);
-        return res.status(200).end();
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
+    try {
+      await this.voteServiceInstance?.setFree(date, placeId);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+}
 
-module.exports = router;
+const voteController = new VoteController();
+module.exports = voteController.router;

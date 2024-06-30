@@ -47,6 +47,7 @@ export default class GatherService {
       user: this.token.id,
       id: nextId,
     };
+
     try {
       const gatherData = gatherInfo;
       await Gather.create(gatherData);
