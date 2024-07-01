@@ -15,11 +15,6 @@ export function sendNoti() {
 
     const webPushServiceInstance = new WebPushService();
 
-    const sendNotification = () => {
-      console.log("알림을 사용자에게 보냅니다.");
-      // 여기에 알림을 보내는 로직을 추가하세요.
-    };
-
     const job = schedule.scheduleJob(
       rule,
       webPushServiceInstance.sendNotificationAllUser,
@@ -41,7 +36,11 @@ sendNoti();
 export const voteResult = schedule.scheduleJob("0 11 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
+    const webPushServiceInstance = new WebPushService();
+
     await adminVoteServiceInstance.confirm(dayjs().toDate().toString());
+    await webPushServiceInstance.sendNotificationVoteResult();
+
     console.log("vote result succeess");
   } catch (err: any) {
     throw new Error(err);
