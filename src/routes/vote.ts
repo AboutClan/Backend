@@ -81,14 +81,11 @@ class VoteController {
         this.setAbsence.bind(this),
       );
 
-    this.router
-      .route("/:date/arrived")
-      .get(this.getArrived.bind(this))
-      .patch(
-        body("memo").optional().isString().withMessage("memo must be a string"),
-        validateCheck,
-        this.patchArrive.bind(this),
-      );
+    this.router.route("/:date/arrived").get(this.getArrived.bind(this)).patch(
+      body("memo"),
+
+      this.patchArrive.bind(this),
+    );
 
     this.router.route("/:date/confirm").patch(this.patchConfirm.bind(this));
 
