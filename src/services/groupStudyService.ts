@@ -42,7 +42,7 @@ export default class GroupStudyService {
         })
         .populate({
           path: "comment.user",
-          select: "name profileImage uid score avatar comment",
+          select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
       return groupStudyData;
