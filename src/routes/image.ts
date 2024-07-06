@@ -53,8 +53,6 @@ class ImageController {
     res: Response,
     next: NextFunction,
   ) {
-    const { imageServiceInstance } = req;
-
     let myFile = req.file?.originalname;
     let path = req.body.path;
 
@@ -73,7 +71,7 @@ class ImageController {
       }
 
       try {
-        await imageServiceInstance?.saveImage(data.Location);
+        await this.imageServiceInstance?.saveImage(data.Location);
 
         return res.status(201).json({
           ok: true,
