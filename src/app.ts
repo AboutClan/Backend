@@ -62,12 +62,12 @@ class App {
     this.app.use(compression());
     this.app.use(dbSet);
     this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    this.app.get("/", (req, res, next) => res.send("hello world"));
     this.app.use(tokenValidator);
   }
 
   setupRoutes() {
     // 라우터 설정
-    this.app.get("/", (req, res, next) => res.send("hello world"));
     this.app.use("/user", user);
     this.app.use("/register", register);
     this.app.use("/vote", vote);
@@ -89,14 +89,15 @@ class App {
     this.app.use(ErrorHandler);
   }
 
-  listen() {
-    // 서버 실행
-    this.app.listen(this.port, async () => {
-      await dbConnect();
-      console.log(`Server is listening on port ${this.port}`);
+  public async listen(port?: number) {
+    const listenPort = port || this.port;
+    return this.app.listen(listenPort, () => {
+      console.log(`Server is listening on port ${listenPort}`);
     });
   }
 }
 
 const app = new App();
-app.listen();
+app.listen(3001);
+
+export default app;
