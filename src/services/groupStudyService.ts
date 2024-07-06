@@ -3,6 +3,7 @@ import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { GroupStudy, IGroupStudyData } from "../db/models/groupStudy";
 import { IUser, User } from "../db/models/user";
+import WebPushService from "./webPushService";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -119,6 +120,9 @@ export default class GroupStudyService {
         });
         await groupStudy?.save();
       }
+
+      const webPushService = new WebPushService(this.token);
+      webPushService.sendNotificationGroupStudy(id);
 
       return;
     } catch (err) {
