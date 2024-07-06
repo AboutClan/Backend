@@ -24,6 +24,7 @@ class WebPushController {
 
     this.router.post("/subscribe", this.subscribe.bind(this));
     this.router.post("/sendNotification", this.sendNotification.bind(this));
+    this.router.get("/notification/:uid", this.sendNotificationToX.bind(this));
   }
 
   private async createWebPushServiceInstance(
@@ -61,6 +62,19 @@ class WebPushController {
     try {
       this.webPushServiceInstance?.sendNotificationAllUser();
       return res.status(200).send("Notification sent");
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private sendNotificationToX = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { uid } = req.params;
+    try {
+      this.webPushServiceInstance?.sendNotificationToX(uid);
     } catch (err) {
       next(err);
     }

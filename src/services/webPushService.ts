@@ -32,7 +32,7 @@ export default class WebPushService {
     };
 
     // Send 201 - resource created
-    this.basePayload = JSON.stringify({
+    this.basePayload = {
       title: "스터디 투표",
       body: "스터디 마감이 얼마 남지 않았어요. 지금 신청하세요!",
       badge:
@@ -50,7 +50,7 @@ export default class WebPushService {
       timestamp: Date.now(),
       vibrate: [100, 50, 100],
       priority: "high",
-    });
+    };
   }
 
   async subscribe(subscription: any) {
@@ -96,6 +96,32 @@ export default class WebPushService {
     }
   }
 
+  async sendNotificationToX(uid: string) {
+    const payload = JSON.stringify({
+      ...this.basePayload,
+      title: "테스트 알림이에요",
+      body: "테스트 알림이에요",
+    });
+
+    console.log(payload);
+
+    try {
+      const subscriptions = await NotificationSub.find({ uid });
+
+      subscriptions.forEach((subscription) => {
+        const push = new PushNotifications(this.settings);
+
+        push.send(subscription, payload, (err: any, result: any) => {
+          console.log(result);
+          if (err) throw new Error(err);
+        });
+      });
+      return;
+    } catch (err) {
+      return;
+    }
+  }
+
   async sendNotificationVoteResult() {
     const failure = new Set();
     const success = new Set();
@@ -115,17 +141,17 @@ export default class WebPushService {
       }
     });
 
-    const successPayload = {
+    const successPayload = JSON.stringify({
       ...this.basePayload,
       title: "스터디가 오픈했어요!",
       body: "스터디 투표 결과를 확인해보세요.",
-    };
+    });
 
-    const failPayload = {
+    const failPayload = JSON.stringify({
       ...this.basePayload,
       title: "오늘은 스터디가 열리지 않았어요.",
       body: "내일 스터디 투표를 참여해보세요",
-    };
+    });
 
     try {
       const subscriptions = await NotificationSub.find();
