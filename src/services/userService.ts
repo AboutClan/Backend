@@ -639,7 +639,7 @@ export default class UserService {
             { name, uid: this.token.uid, lastDate: now },
           );
 
-          await this.updatePoint(100, "홍보 이벤트 참여");
+          await this.updatePoint(200, "홍보 이벤트 참여");
         }
       } else {
         await Promotion.create({ name, uid: this.token.uid, lastDate: now });
