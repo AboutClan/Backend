@@ -3,6 +3,7 @@ import { NotificationSub } from "../db/models/notificationSub";
 import { IUser } from "../db/models/user";
 import dayjs from "dayjs";
 import { findOneVote } from "../utils/voteUtils";
+import { GroupStudy } from "../db/models/groupStudy";
 const webPush = require("web-push");
 const PushNotifications = require("node-pushnotifications");
 
@@ -103,8 +104,6 @@ export default class WebPushService {
       body: "테스트 알림이에요",
     });
 
-    console.log(payload);
-
     try {
       const subscriptions = await NotificationSub.find({ uid });
 
@@ -120,6 +119,35 @@ export default class WebPushService {
     } catch (err) {
       return;
     }
+  }
+  async sendNotificationGroupStudy(id: string) {
+    const payload = JSON.stringify({
+      ...this.basePayload,
+      title: "소모임에 누군가 가입했어요!",
+      body: "소모임을 확인해보세요.",
+    });
+
+    const members = new Set();
+    const groupStudy = await GroupStudy.findOne({ id }).populate([
+      "participants.user",
+    ]);
+
+    groupStudy?.participants.forEach((participant) => {
+      members.add((participant.user as IUser).uid);
+    });
+
+    const memberArray = Array.from(members);
+    const subscriptions = await NotificationSub.find({
+      uid: { $in: memberArray },
+    });
+
+    subscriptions.forEach((subscription) => {
+      const push = new PushNotifications(this.settings);
+      push.send(subscription, payload, (err: any, result: any) => {
+        if (err) throw new Error(err);
+      });
+    });
+    return;
   }
 
   async sendNotificationVoteResult() {
