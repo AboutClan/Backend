@@ -1,8 +1,10 @@
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { Gather, gatherStatus, IGatherData } from "../db/models/gather";
-import { IUser } from "../db/models/user";
-2;
+import { IUser, User } from "../db/models/user";
+
+const logger = require("../../logger");
+
 export default class GatherService {
   private token: JWT;
   constructor(token?: JWT) {
@@ -72,15 +74,24 @@ export default class GatherService {
 
     try {
       const id = userId ?? this.token.id;
-
+      const user = await User.findOne({ _id: id });
+      if (!user) throw new Error();
       if (!gather.participants.some((participant) => participant.user == id)) {
         gather.participants.push({
           user: id,
           phase,
         });
-
         await gather?.save();
       }
+      user.score += 5;
+      await user.save();
+      logger.logger.info("번개 모임 참여", {
+        metadata: {
+          type: "point",
+          uid: user.uid,
+          value: 5,
+        },
+      });
 
       return;
     } catch (err) {
