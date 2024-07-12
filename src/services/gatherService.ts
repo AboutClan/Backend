@@ -74,8 +74,6 @@ export default class GatherService {
 
     try {
       const id = userId ?? this.token.id;
-      const user = await User.findOne({ _id: id });
-      if (!user) throw new Error();
       if (!gather.participants.some((participant) => participant.user == id)) {
         gather.participants.push({
           user: id,
@@ -83,11 +81,13 @@ export default class GatherService {
         });
         await gather?.save();
       }
+      const user = await User.findOne({ _id: id });
+      if (!user) throw new Error();
       user.score += 5;
       await user.save();
       logger.logger.info("번개 모임 참여", {
         metadata: {
-          type: "point",
+          type: "score",
           uid: user.uid,
           value: 5,
         },
@@ -97,6 +97,32 @@ export default class GatherService {
     } catch (err) {
       throw new Error();
     }
+  }
+
+  async deleteParticipate(gatherId: string) {
+    const gather = await Gather.findOne({ id: gatherId });
+    if (!gather) throw new Error();
+
+    try {
+      gather.participants = gather.participants.filter(
+        (participant) => participant.user != (this.token.id as IUser),
+      );
+      await gather.save();
+      const user = await User.findOne({ _id: this.token.id });
+      if (!user) throw new Error();
+      user.score -= 5;
+      await user.save();
+      logger.logger.info("번개 모임 참여 취소", {
+        metadata: {
+          type: "score",
+          uid: user.uid,
+          value: -5,
+        },
+      });
+    } catch (err) {
+      throw new Error();
+    }
+    return;
   }
 
   async setStatus(gatherId: string, status: gatherStatus) {
@@ -163,21 +189,6 @@ export default class GatherService {
       throw new Error();
     }
 
-    return;
-  }
-
-  async deleteParticipate(gatherId: string) {
-    const gather = await Gather.findOne({ id: gatherId });
-    if (!gather) throw new Error();
-
-    try {
-      gather.participants = gather.participants.filter(
-        (participant) => participant.user != (this.token.id as IUser),
-      );
-      await gather.save();
-    } catch (err) {
-      throw new Error();
-    }
     return;
   }
 }
