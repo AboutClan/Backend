@@ -97,11 +97,11 @@ export default class WebPushService {
     }
   }
 
-  async sendNotificationToX(uid: string) {
+  async sendNotificationToX(uid: string, title?: string, description?: string) {
     const payload = JSON.stringify({
       ...this.basePayload,
-      title: "테스트 알림이에요",
-      body: "테스트 알림이에요",
+      title: title || "테스트 알림이에요",
+      body: description || "테스트 알림이에요",
     });
 
     try {

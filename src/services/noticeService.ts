@@ -22,6 +22,13 @@ export default class NoticeService {
     }
   }
 
+  async deleteLike(to: string) {
+    try {
+      await User.findOneAndUpdate({ uid: to }, { $inc: { like: -1 } });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
   async setLike(to: string, message: string) {
     try {
       await Notice.create({

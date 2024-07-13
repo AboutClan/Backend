@@ -1,10 +1,12 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import NoticeService from "../services/noticeService";
 import WebPushService from "../services/webPushService";
+import { JWT } from "next-auth/jwt";
 
 const router = express.Router();
 
 class NoticeController {
+  public decodedToken: null | JWT;
   public router: Router;
   private noticeServiceInstance: NoticeService;
   private webPushServiceInstance: WebPushService;
@@ -13,6 +15,7 @@ class NoticeController {
     this.router = Router();
     this.noticeServiceInstance = new NoticeService();
     this.webPushServiceInstance = new WebPushService();
+    this.decodedToken = null;
     this.initializeRoutes();
   }
 
@@ -27,7 +30,8 @@ class NoticeController {
     this.router
       .route("/like")
       .get(this.getLike.bind(this))
-      .post(this.setLike.bind(this));
+      .post(this.setLike.bind(this))
+      .delete(this.deleteLike.bind(this));
     this.router.route("/like/all").get(this.getLikeAll.bind(this));
     this.router
       .route("/friend")
@@ -46,6 +50,7 @@ class NoticeController {
     next: NextFunction,
   ) {
     const { decodedToken } = req;
+    this.decodedToken = decodedToken;
     const noticeService = new NoticeService(decodedToken);
     this.setNoticeServiceInstance(noticeService);
     next();
@@ -62,6 +67,7 @@ class NoticeController {
 
   private async getLike(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log(this.decodedToken);
       const result = await this.noticeServiceInstance?.getLike();
       return res.status(200).json(result);
     } catch (err: any) {
@@ -75,7 +81,23 @@ class NoticeController {
     } = req;
     try {
       await this.noticeServiceInstance?.setLike(to, message);
-      await this.webPushServiceInstance?.sendNotificationToX(to);
+      await this.webPushServiceInstance?.sendNotificationToX(
+        to,
+        "좋아요를 받았어요!",
+        `${this.decodedToken?.name}님이 좋아요를 보냈어요!`,
+      );
+      return res.end();
+    } catch (err: any) {
+      next(err);
+    }
+  }
+
+  private async deleteLike(req: Request, res: Response, next: NextFunction) {
+    const {
+      body: { to, message },
+    } = req;
+    try {
+      await this.noticeServiceInstance?.deleteLike(to);
       return res.end();
     } catch (err: any) {
       next(err);
@@ -114,6 +136,11 @@ class NoticeController {
     } = req;
     try {
       await this.noticeServiceInstance?.requestNotice("friend", toUid, message);
+      await this.webPushServiceInstance?.sendNotificationToX(
+        toUid,
+        "친구요청을 받았어요!",
+        `${this.decodedToken?.name}님이 친구요청을 보냈어요!`,
+      );
       return res.status(200).end();
     } catch (err: any) {
       next(err);
