@@ -93,11 +93,25 @@ class GatherController {
   }
 
   private async getGather(req: Request, res: Response, next: NextFunction) {
-    const { cursor } = req.query as { cursor?: string };
+    const { cursor, gatherId } = req.query as {
+      cursor?: string;
+      gatherId?: string;
+    };
     const cursorNum = cursor ? parseInt(cursor) : null;
+    const gatherIdNum = gatherId ? parseInt(gatherId) : null;
 
+    let gatherData;
     try {
-      const gatherData = await this.gatherServiceInstance.getGather(cursorNum);
+      if (gatherIdNum) {
+        console.log(typeof gatherId);
+        if (gatherIdNum == -1)
+          gatherData = await this.gatherServiceInstance.getThreeGather();
+        else
+          gatherData =
+            await this.gatherServiceInstance.getGatherById(gatherIdNum);
+      } else {
+        gatherData = await this.gatherServiceInstance.getGather(cursorNum);
+      }
       res.status(200).json(gatherData);
     } catch (err: any) {
       next(err);

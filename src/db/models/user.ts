@@ -51,7 +51,7 @@ export const restSchema: Schema<restType> = new Schema({
     type: Schema.Types.Number,
     default: 0,
   },
-});
+}, {timestamps:false});
 
 export const avatarSchema: Schema<avatarType> = new Schema({
   type: {
@@ -62,7 +62,7 @@ export const avatarSchema: Schema<avatarType> = new Schema({
     type: Schema.Types.Number,
     default: 1,
   },
-});
+}, {timestamps:false});
 
 //Todo: Error
 export const preferenceSchema: Schema<preferenceType> = new Schema(
@@ -78,6 +78,7 @@ export const preferenceSchema: Schema<preferenceType> = new Schema(
   },
   {
     _id: false,
+    timestamps: false
   }
 );
 
