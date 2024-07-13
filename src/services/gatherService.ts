@@ -21,20 +21,42 @@ export default class GatherService {
     }
   }
 
+  async getGatherById(gatherId: number) {
+    const gatherData = await Gather.findOne({ id: gatherId }).populate([
+      "user",
+      "participants.user",
+      "comment.user",
+    ]);
+
+    return gatherData;
+  }
+
+  async getThreeGather() {
+    const gatherData = await Gather.find()
+      .populate(["user", "participants.user", "comment.user"])
+      .sort({ id: -1 })
+      .limit(3);
+
+    return gatherData;
+  }
+
   async getGather(cursor: number | null) {
     try {
-      const gatherData = await Gather.find()
-        .populate(["user", "participants.user", "comment.user"])
+      const gap = 12;
+      let start = gap * (cursor || 0);
+
+      let gatherData = await Gather.find()
+        .skip(start)
+        .limit(gap + 1)
         .select("-_id");
 
-      if (cursor === null || cursor === undefined) {
-        return gatherData.slice().reverse();
-      }
+      gatherData = await Gather.populate(gatherData, [
+        { path: "user" },
+        { path: "participants.user" },
+        { path: "comment.user" },
+      ]);
 
-      const gap = 12;
-      let start = gap + gap * (cursor || 0);
-      if (cursor === 0) return gatherData.slice(-start).reverse();
-      return gatherData.slice(-start, -start + gap + 1).reverse();
+      return gatherData.reverse();
     } catch (err: any) {
       throw new Error(err);
     }

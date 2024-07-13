@@ -20,6 +20,35 @@ export default class GroupStudyService {
     }
   }
 
+  async getGroupStudyById(groupStudyId: string) {
+    try {
+      const groupStudyIdNum = parseInt(groupStudyId);
+
+      const groupStudyData = await GroupStudy.findOne({ id: groupStudyIdNum })
+        .populate({
+          path: "organizer",
+          select: "name profileImage uid score avatar comment",
+        })
+        .populate({
+          path: "participants.user",
+          select: "name profileImage uid score avatar comment",
+        })
+        .populate({
+          path: "waiting.user",
+          select: "name profileImage uid score avatar comment",
+        })
+        .populate({
+          path: "comment.user",
+          select: "name profileImage uid score avatar comment location",
+        })
+        .select("-_id");
+
+      return groupStudyData;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async getGroupStudy() {
     try {
       const groupStudyData = await GroupStudy.find()

@@ -71,7 +71,7 @@ export const typeSchema: Schema<TitleType> = new Schema(
       default: null,
     },
   },
-  { _id: false }
+  { _id: false, timestamps: false },
 );
 
 export const timeSchema: Schema<ITime> = new Schema(
@@ -83,7 +83,7 @@ export const timeSchema: Schema<ITime> = new Schema(
       type: Number,
     },
   },
-  { _id: false }
+  { _id: false , timestamps: false}
 );
 
 export const gatherListSchema: Schema<GatherType> = new Schema(
@@ -95,7 +95,7 @@ export const gatherListSchema: Schema<GatherType> = new Schema(
       type: timeSchema,
     },
   },
-  { _id: false }
+  { _id: false , timestamps: false}
 );
 
 export const locationSchema: Schema<LocationType> = new Schema(
@@ -108,7 +108,7 @@ export const locationSchema: Schema<LocationType> = new Schema(
       default: "",
     },
   },
-  { _id: false }
+  { _id: false , timestamps: false}
 );
 
 export const memberCntSchema: Schema<memberCntType> = new Schema(
@@ -120,7 +120,7 @@ export const memberCntSchema: Schema<memberCntType> = new Schema(
       type: Number,
     },
   },
-  { _id: false }
+  { _id: false , timestamps: false}
 );
 
 export const participantsSchema: Schema<participantsType> = new Schema(
@@ -134,7 +134,7 @@ export const participantsSchema: Schema<participantsType> = new Schema(
       enum: ["all", "first", "second"],
     },
   },
-  { _id: false }
+  { _id: false , timestamps: false}
 );
 
 export const commentSchema: Schema<commentType> = new Schema(
