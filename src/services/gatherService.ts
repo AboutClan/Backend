@@ -46,6 +46,7 @@ export default class GatherService {
       let start = gap * (cursor || 0);
 
       let gatherData = await Gather.find()
+        .sort({ id: -1 })
         .skip(start)
         .limit(gap + 1)
         .select("-_id");
