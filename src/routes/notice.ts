@@ -1,15 +1,18 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import NoticeService from "../services/noticeService";
+import WebPushService from "../services/webPushService";
 
 const router = express.Router();
 
 class NoticeController {
   public router: Router;
   private noticeServiceInstance: NoticeService;
+  private webPushServiceInstance: WebPushService;
 
   constructor() {
     this.router = Router();
     this.noticeServiceInstance = new NoticeService();
+    this.webPushServiceInstance = new WebPushService();
     this.initializeRoutes();
   }
 
@@ -72,6 +75,7 @@ class NoticeController {
     } = req;
     try {
       await this.noticeServiceInstance?.setLike(to, message);
+      await this.webPushServiceInstance?.sendNotificationToX(to);
       return res.end();
     } catch (err: any) {
       next(err);
