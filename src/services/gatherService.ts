@@ -57,7 +57,7 @@ export default class GatherService {
         { path: "comment.user" },
       ]);
 
-      return gatherData.reverse();
+      return cursor === null ? gatherData : gatherData.reverse();
     } catch (err: any) {
       throw new Error(err);
     }
