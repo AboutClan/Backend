@@ -674,6 +674,54 @@ export default class VoteService {
     }
   }
 
+  async createComment(voteId: string, comment: string) {
+    const vote = await Vote.findOne({ id: voteId });
+    if (!vote) throw new Error();
+
+    try {
+      vote.  .push({
+        user: this.token.id as IUser,
+        comment,
+      });
+
+      await vote.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
+  async deleteComment(voteId: string, commentId: string) {
+    const vote = await Vote.findOne({ id: voteId });
+    if (!vote) throw new Error();
+
+    try {
+      vote.comment = vote.comment.filter(
+        (com: any) => (com._id as string) != commentId,
+      );
+
+      await vote.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
+  async patchComment(voteId: string, commentId: string, comment: string) {
+    const vote = await Vote.findOne({ id: voteId });
+    if (!vote) throw new Error();
+
+    try {
+      vote.comment.forEach(async (com: any) => {
+        if ((com._id as string) == commentId) {
+          com.comment = comment;
+          await vote.save();
+        }
+      });
+      return;
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
   async getArriveCheckCnt() {
     try {
       const arriveCheckCnt = await Vote.collection

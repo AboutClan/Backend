@@ -102,6 +102,28 @@ class VoteController {
         validateCheck,
         this.setFree.bind(this),
       );
+
+    this.router
+      .route("/comment")
+      .post(
+        body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+        body("comment").notEmpty().isString().withMessage("comment필요"),
+        validateCheck,
+        this.createComment.bind(this),
+      )
+      .delete(
+        body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+        body("commentId").notEmpty().withMessage("commentId필요"),
+        validateCheck,
+        this.deleteComment.bind(this),
+      )
+      .patch(
+        body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+        body("comment").notEmpty().isString().withMessage("string필요"),
+        body("commentId").notEmpty().withMessage("commentId필요"),
+        validateCheck,
+        this.patchComment.bind(this),
+      );
   }
 
   private async createVoteServiceInstance(
@@ -425,6 +447,49 @@ class VoteController {
       next(err);
     }
   };
+
+  private async createComment(req: Request, res: Response, next: NextFunction) {
+    const {
+      body: { gatherId, comment },
+    } = req;
+
+    try {
+      await this.voteServiceInstance?.createComment(gatherId, comment);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
+  }
+
+  private async deleteComment(req: Request, res: Response, next: NextFunction) {
+    const {
+      body: { gatherId, commentId },
+    } = req;
+
+    try {
+      await this.voteServiceInstance?.deleteComment(gatherId, commentId);
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
+  }
+
+  private async patchComment(req: Request, res: Response, next: NextFunction) {
+    const {
+      body: { gatherId, commentId, comment },
+    } = req;
+
+    try {
+      await this.voteServiceInstance?.patchComment(
+        gatherId,
+        commentId,
+        comment,
+      );
+      res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
+  }
 }
 
 const voteController = new VoteController();

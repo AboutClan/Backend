@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import mongoose, { model, Schema, Model, Document } from "mongoose";
+import mongoose, { Document, model, Model, Schema } from "mongoose";
 import { IPlace } from "./place";
 import { IUser } from "./user";
 
@@ -14,6 +14,11 @@ export interface ITimeStartToEndHM {
   };
 }
 
+export interface CommentProps {
+  user: string | IUser;
+  comment: string;
+}
+
 export interface IPlaceStatus {
   status?: "pending" | "waiting_confirm" | "open" | "dismissed" | "free";
 }
@@ -24,6 +29,7 @@ export interface IParticipation extends IPlaceStatus, ITimeStartToEndHM {
   absences?: IAbsence[];
   startTime?: Date;
   endTime?: Date;
+  comments:CommentProps
 }
 
 export interface ITimeStartToEnd {
@@ -67,6 +73,20 @@ const ParticipantTimeSchema: Schema<ITimeStartToEnd> = new Schema(
   { _id: false }
 );
 
+export const commentSchema: Schema<CommentProps> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 const AttendanceSchema: Schema<IAttendance> = new Schema(
   {
     user: {
@@ -113,6 +133,7 @@ const ParticipationSchema: Schema<IParticipation> = new Schema(
     absences: [AbsenceSchema],
     startTime: Date,
     endTime: Date,
+    comments:[commentSchema],
     status: {
       type: Schema.Types.String,
       enum: ["pending", "waiting_confirm", "open", "dismissed", "free"],
