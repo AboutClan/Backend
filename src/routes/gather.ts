@@ -103,14 +103,14 @@ class GatherController {
     let gatherData;
     try {
       if (gatherIdNum) {
-        console.log(typeof gatherId);
-        if (gatherIdNum == -1)
-          gatherData = await this.gatherServiceInstance.getThreeGather();
-        else
-          gatherData =
-            await this.gatherServiceInstance.getGatherById(gatherIdNum);
+        gatherData =
+          await this.gatherServiceInstance.getGatherById(gatherIdNum);
       } else {
-        gatherData = await this.gatherServiceInstance.getGather(cursorNum);
+        if (cursorNum == -1) {
+          gatherData = await this.gatherServiceInstance.getThreeGather();
+        } else {
+          gatherData = await this.gatherServiceInstance.getGather(cursorNum);
+        }
       }
       res.status(200).json(gatherData);
     } catch (err: any) {
