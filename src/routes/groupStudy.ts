@@ -140,20 +140,22 @@ class GroupStudyController {
         filter?: string;
       };
 
+      let groupStudyData;
+
       if (groupStudyId) {
-        const groupStudyData =
+        groupStudyData =
           await this.groupStudyServiceInstance.getGroupStudyById(groupStudyId);
         return res.status(200).json(groupStudyData);
       } else {
         if (filter) {
-          const groupStudyData =
-            await this.groupStudyServiceInstance.getGroupStudy();
+          groupStudyData =
+            await this.groupStudyServiceInstance.getGroupStudyByFilter(filter);
         } else {
-          const groupStudyData =
-            await this.groupStudyServiceInstance.getGroupStudyByFilter();
+          groupStudyData = await this.groupStudyServiceInstance.getGroupStudy();
         }
-        return res.status(200).json(groupStudyData);
       }
+
+      return res.status(200).json(groupStudyData);
     } catch (err) {
       next(err);
     }
