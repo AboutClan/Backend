@@ -135,19 +135,27 @@ class GroupStudyController {
 
   private async getGroupStudy(req: Request, res: Response, next: NextFunction) {
     try {
-      const { groupStudyId } = req.query as {
+      const { groupStudyId, filter } = req.query as {
         groupStudyId?: string;
+        filter?: string;
       };
 
+      let groupStudyData;
+
       if (groupStudyId) {
-        const groupStudyData =
+        groupStudyData =
           await this.groupStudyServiceInstance.getGroupStudyById(groupStudyId);
         return res.status(200).json(groupStudyData);
       } else {
-        const groupStudyData =
-          await this.groupStudyServiceInstance.getGroupStudy();
-        return res.status(200).json(groupStudyData);
+        if (filter) {
+          groupStudyData =
+            await this.groupStudyServiceInstance.getGroupStudyByFilter(filter);
+        } else {
+          groupStudyData = await this.groupStudyServiceInstance.getGroupStudy();
+        }
       }
+
+      return res.status(200).json(groupStudyData);
     } catch (err) {
       next(err);
     }

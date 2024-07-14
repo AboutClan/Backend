@@ -20,6 +20,56 @@ export default class GroupStudyService {
     }
   }
 
+  async getGroupStudyByFilter(filter: string) {
+    let groupStudyData;
+
+    switch (filter) {
+      case "end":
+        groupStudyData = await GroupStudy.find({ status: "end" })
+          .populate({
+            path: "organizer",
+            select: "name profileImage uid score avatar comment",
+          })
+          .populate({
+            path: "participants.user",
+            select: "name profileImage uid score avatar comment",
+          })
+          .populate({
+            path: "waiting.user",
+            select: "name profileImage uid score avatar comment",
+          })
+          .populate({
+            path: "comment.user",
+            select: "name profileImage uid score avatar comment location",
+          })
+          .select("-_id");
+        break;
+      case "pending":
+        groupStudyData = await GroupStudy.find({ status: "pending" })
+          .populate({
+            path: "organizer",
+            select: "name profileImage uid score avatar comment",
+          })
+          .populate({
+            path: "participants.user",
+            select: "name profileImage uid score avatar comment",
+          })
+          .populate({
+            path: "waiting.user",
+            select: "name profileImage uid score avatar comment",
+          })
+          .populate({
+            path: "comment.user",
+            select: "name profileImage uid score avatar comment location",
+          })
+          .select("-_id");
+        break;
+      default:
+        break;
+    }
+    return groupStudyData;
+  }
+
   async getGroupStudyById(groupStudyId: string) {
     try {
       const groupStudyIdNum = parseInt(groupStudyId);
