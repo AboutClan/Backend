@@ -1,16 +1,15 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-import express, { Express, NextFunction, Request, Response } from "express";
-import cors from "cors";
-import ErrorHandler from "./middlewares/ErrorHandler";
-import helmet from "helmet";
 import compression from "compression";
-import dbConnect from "./db/conn";
+import cors from "cors";
+import express from "express";
+import helmet from "helmet";
 import { config } from "./config/config";
-import { dbSet } from "./middlewares/dbSet";
+import dbConnect from "./db/conn";
 import tokenValidator from "./middlewares/auth";
-import { User } from "./db/models/user";
+import { dbSet } from "./middlewares/dbSet";
+import ErrorHandler from "./middlewares/ErrorHandler";
 import "./schedule/schedule";
 const bodyParser = require("body-parser");
 
@@ -24,7 +23,7 @@ const book = require("./routes/book");
 const gift = require("./routes/gift");
 const log = require("./routes/log");
 const gather = require("./routes/gather");
-const plaza = require("./routes/plaza");
+const square = require("./routes/square");
 const register = require("./routes/register");
 const image = require("./routes/image");
 const admin = require("./routes/admin/admin");
@@ -78,7 +77,7 @@ class App {
     this.app.use("/gift", gift);
     this.app.use("/log", log);
     this.app.use("/gather", gather);
-    this.app.use("/plaza", plaza);
+    this.app.use("/square", square);
     this.app.use("/notice", notice);
     this.app.use("/image", image);
     this.app.use("/dailyCheck", dailyCheck);

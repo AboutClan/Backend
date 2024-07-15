@@ -55,7 +55,7 @@
 #             - read:pets
 # components:
 #   schemas:
-#     Plaza:
+#     Square:
 #       type: object
 #       properties:
 #         category:

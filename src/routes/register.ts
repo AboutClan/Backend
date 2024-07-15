@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response, Router } from "express";
-import RegisterService from "../services/registerService";
 import { body } from "express-validator";
 import validateCheck from "../middlewares/validator";
+import RegisterService from "../services/registerService";
 
 const router = express.Router();
 
@@ -47,8 +47,8 @@ class RegisterController {
     next: NextFunction,
   ) {
     const { decodedToken } = req;
-    const plazaService = new RegisterService(decodedToken);
-    this.setRegisterServiceInstance(plazaService);
+    const registerService = new RegisterService(decodedToken);
+    this.setRegisterServiceInstance(registerService);
     next();
   }
 

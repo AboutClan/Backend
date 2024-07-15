@@ -5,7 +5,7 @@ interface IVoteList {
   value: string;
 }
 
-export interface IPlazaData {
+export interface ISquareData {
   category: string;
   title: string;
   content: string;
@@ -17,7 +17,7 @@ export interface IPlazaData {
   suggestContent?: any;
 }
 
-export const PlazaSchema: Schema<IPlazaData> = new Schema({
+export const SquareSchema: Schema<ISquareData> = new Schema({
   category: {
     type: String,
   },
@@ -40,6 +40,6 @@ export const PlazaSchema: Schema<IPlazaData> = new Schema({
     // type: [{}],
   },
 });
-export const Plaza =
-  (mongoose.models.Plaza as Model<IPlazaData, {}, {}, {}>) ||
-  model<IPlazaData>("Plaza", PlazaSchema);
+export const Square =
+  (mongoose.models.Square as Model<ISquareData, {}, {}, {}>) ||
+  model<ISquareData>("Square", SquareSchema);
