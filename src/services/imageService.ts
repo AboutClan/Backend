@@ -21,26 +21,36 @@ export default class ImageService {
     });
   }
 
-  async uploadImg(myFile: any, path: any, buffer: any) {
+  async uploadImgCom(path: any, buffer: any) {
     const params = {
       Bucket: "studyabout",
       Key: `${path}/${Math.floor(Date.now() / 1000).toString()}`,
       Body: buffer,
     };
 
-    await this.s3.upload(params, async (error: any, data: any) => {
-      if (error) {
-        throw new Error();
-      }
+    try {
+      const data = await this.s3.upload(params).promise();
+      await this.saveImage(data.Location);
+      return data.Location;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
 
-      try {
-        await this.saveImage(data.Location);
+  async uploadImg(path: any, buffer: any) {
+    const params = {
+      Bucket: "studyabout",
+      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}`,
+      Body: buffer,
+    };
 
-        return data;
-      } catch (err) {
-        throw new Error();
-      }
-    });
+    try {
+      const data = await this.s3.upload(params).promise();
+      await this.saveImage(data.Location);
+      return data;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
 
   getToday() {

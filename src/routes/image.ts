@@ -49,13 +49,7 @@ class ImageController {
     let buffer = req.file?.buffer;
 
     try {
-      const data = await this.imageServiceInstance.uploadImg(
-        myFile,
-        path,
-        buffer,
-      );
-
-      console.log(data);
+      const data = await this.imageServiceInstance.uploadImg(path, buffer);
 
       return res.status(201).json({
         ok: true,
