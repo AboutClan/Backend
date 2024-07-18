@@ -21,6 +21,7 @@ import SquareService from "../services/SquareService";
 import UserService from "../services/userService";
 import VoteService from "../services/voteService";
 import WebPushService from "../services/webPushService";
+import FeedService from "../services/feedService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -54,6 +55,7 @@ declare global {
       imageServiceInstance?: ImageService;
       promotionServiceInstance?: PromotionService;
       webPushServiceInstance?: WebPushService;
+      feedServiceInstance?: FeedService;
     }
   }
 }

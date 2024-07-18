@@ -33,6 +33,7 @@ const collection = require("./routes/collection");
 const groupStudy = require("./routes/groupStudy");
 const promotion = require("./routes/promotion");
 const webpush = require("./routes/webpush");
+const feed = require("./routes/feed");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
@@ -85,6 +86,7 @@ class App {
     this.app.use("/groupStudy", groupStudy);
     this.app.use("/promotion", promotion);
     this.app.use("/webpush", webpush);
+    this.app.use("/feed", feed);
     this.app.use(ErrorHandler);
   }
 

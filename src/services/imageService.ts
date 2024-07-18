@@ -9,8 +9,7 @@ let multerS3 = require("multer-s3");
 
 export default class ImageService {
   private token: JWT;
-  private upload;
-  private s3;
+  private s3: any;
 
   constructor(token?: JWT) {
     this.token = token as JWT;
@@ -20,37 +19,38 @@ export default class ImageService {
       secretAccessKey: process.env.AWS_KEY,
       region: "ap-northeast-2",
     });
-
-    this.upload = multer({
-      storage: multerS3({
-        s3: this.s3,
-        bucket: "studyabout",
-        acl: "public-read",
-        metadata: function (req: any, file: any, cb: any) {
-          cb(null, { fieldName: file.fieldname });
-        },
-        key: function (req: any, file: any, cb: any) {
-          cb(null, Date.now());
-        },
-      }),
-    });
   }
 
-  async uploadImg(img: any) {
-    const stringObject = JSON.stringify(img);
-    const objectStream = Readable.from([stringObject]);
-
+  async uploadImgCom(path: any, buffer: any) {
     const params = {
       Bucket: "studyabout",
-      Key: "test.jpg",
-      Body: objectStream,
+      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}`,
+      Body: buffer,
     };
 
-    await this.s3.upload(params, (err: any, data: any) => {
-      if (err) throw err;
-    });
+    try {
+      const data = await this.s3.upload(params).promise();
+      await this.saveImage(data.Location);
+      return data.Location;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
 
-    return;
+  async uploadImg(path: any, buffer: any) {
+    const params = {
+      Bucket: "studyabout",
+      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}`,
+      Body: buffer,
+    };
+
+    try {
+      const data = await this.s3.upload(params).promise();
+      await this.saveImage(data.Location);
+      return data;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
 
   getToday() {
