@@ -19,7 +19,7 @@ import PlaceService from "../services/placeService";
 import PromotionService from "../services/promotionService";
 import RegisterService from "../services/registerService";
 import RequestService from "../services/requestService";
-import SquareService from "../services/squareService2";
+import SquareService from "../services/squareService";
 import UserService from "../services/userService";
 import VoteService from "../services/voteService";
 import WebPushService from "../services/webPushService";
