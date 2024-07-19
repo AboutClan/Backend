@@ -38,7 +38,7 @@ declare global {
       voteServiceInstance?: VoteService;
       placeServiceInstance?: PlaceService;
       requestServiceInstance?: RequestService;
-      SquareServiceInstance?: SquareService;
+      squareServiceInstance?: SquareService;
       bookServiceInstance?: BookService;
       giftServiceInstance?: StoreService;
       noticeServiceInstance?: NoticeService;

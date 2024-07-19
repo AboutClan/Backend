@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import { body } from "express-validator";
 import validateCheck from "../middlewares/validator";
-import SquareService from "../services/SquareService";
+import SquareService from "../services/squareService";
 
 const router: Router = express.Router();
 class SquareController {
