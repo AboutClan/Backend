@@ -8,6 +8,8 @@ import BookService from "../services/bookService";
 import CollectionService from "../services/collectionService";
 import CounterService from "../services/counterService";
 import DailyCheckService from "../services/dailyCheckService";
+import FcmService from "../services/fcmService";
+import FeedService from "../services/feedService";
 import GatherService from "../services/gatherService";
 import StoreService from "../services/giftService";
 import GroupStudyService from "../services/groupStudyService";
@@ -17,12 +19,10 @@ import PlaceService from "../services/placeService";
 import PromotionService from "../services/promotionService";
 import RegisterService from "../services/registerService";
 import RequestService from "../services/requestService";
-import SquareService from "../services/SquareService";
+import SquareService from "../services/squareService2";
 import UserService from "../services/userService";
 import VoteService from "../services/voteService";
 import WebPushService from "../services/webPushService";
-import FeedService from "../services/feedService";
-import FcmService from "../services/fcmService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
