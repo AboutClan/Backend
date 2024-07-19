@@ -34,6 +34,7 @@ const groupStudy = require("./routes/groupStudy");
 const promotion = require("./routes/promotion");
 const webpush = require("./routes/webpush");
 const feed = require("./routes/feed");
+const fcm = require("./routes/fcm");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
@@ -87,6 +88,7 @@ class App {
     this.app.use("/promotion", promotion);
     this.app.use("/webpush", webpush);
     this.app.use("/feed", feed);
+    this.app.use("/fcm", fcm);
     this.app.use(ErrorHandler);
   }
 
