@@ -53,19 +53,19 @@ class GatherController {
     this.router
       .route("/comment")
       .post(
-        body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+        body("id").notEmpty().isNumeric().withMessage("id필요"),
         body("comment").notEmpty().isString().withMessage("comment필요"),
         validateCheck,
         this.createComment.bind(this),
       )
       .delete(
-        body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+        body("id").notEmpty().isNumeric().withMessage("id필요"),
         body("commentId").notEmpty().withMessage("commentId필요"),
         validateCheck,
         this.deleteComment.bind(this),
       )
       .patch(
-        body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
+        body("id").notEmpty().isNumeric().withMessage("id필요"),
         body("comment").notEmpty().isString().withMessage("string필요"),
         body("commentId").notEmpty().withMessage("commentId필요"),
         validateCheck,
@@ -198,11 +198,11 @@ class GatherController {
 
   private async createComment(req: Request, res: Response, next: NextFunction) {
     const {
-      body: { gatherId, comment },
+      body: { id, comment },
     } = req;
 
     try {
-      await this.gatherServiceInstance?.createComment(gatherId, comment);
+      await this.gatherServiceInstance?.createComment(id, comment);
       res.status(200).end();
     } catch (err: any) {
       next(err);
@@ -211,11 +211,11 @@ class GatherController {
 
   private async deleteComment(req: Request, res: Response, next: NextFunction) {
     const {
-      body: { gatherId, commentId },
+      body: { id, commentId },
     } = req;
 
     try {
-      await this.gatherServiceInstance?.deleteComment(gatherId, commentId);
+      await this.gatherServiceInstance?.deleteComment(id, commentId);
       res.status(200).end();
     } catch (err: any) {
       next(err);
@@ -224,15 +224,11 @@ class GatherController {
 
   private async patchComment(req: Request, res: Response, next: NextFunction) {
     const {
-      body: { gatherId, commentId, comment },
+      body: { id, commentId, comment },
     } = req;
 
     try {
-      await this.gatherServiceInstance?.patchComment(
-        gatherId,
-        commentId,
-        comment,
-      );
+      await this.gatherServiceInstance?.patchComment(id, commentId, comment);
       res.status(200).end();
     } catch (err: any) {
       next(err);
