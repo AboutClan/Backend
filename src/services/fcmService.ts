@@ -39,6 +39,19 @@ export default class FcmService {
     }
   }
 
+  async deleteToken(uid: string, platform: string) {
+    await FcmToken.updateOne(
+      {
+        uid,
+      },
+      {
+        $pull: {
+          devices: { platform },
+        },
+      },
+    );
+  }
+
   async registerToken(uid: string, fcmToken: string, platform: string) {
     try {
       const fcmTokenOne = await FcmToken.findOne({ uid });
