@@ -20,7 +20,11 @@ class FcmController {
     this.router.use("/", this.createFcmServiceInstance.bind(this));
     this.router.get("/test", this.test.bind(this));
     this.router.post("/send-notification", this.sendNotification.bind(this));
-    this.router.post("/register-token", this.registerToken.bind(this));
+    this.router
+      .route("/token")
+      .post(this.registerToken.bind(this))
+      .delete(this.deleteToken.bind(this));
+    this.router.route("/register-token").post(this.registerToken.bind(this));
   }
 
   private async createFcmServiceInstance(
@@ -62,6 +66,17 @@ class FcmController {
         platform,
       );
       return res.status(200).json(registered);
+    } catch (err: any) {
+      next(err);
+    }
+  }
+
+  private async deleteToken(req: Request, res: Response, next: NextFunction) {
+    const { uid, platform } = req.body;
+
+    try {
+      const deleted = this.fcmServiceInstance?.deleteToken(uid, platform);
+      return res.status(200).json(deleted);
     } catch (err: any) {
       next(err);
     }
