@@ -63,6 +63,7 @@ class App {
     this.app.use(compression());
     this.app.use(dbSet);
     this.app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    this.app.use("/fcm", fcm);
     this.app.use(tokenValidator);
   }
 
@@ -88,7 +89,6 @@ class App {
     this.app.use("/promotion", promotion);
     this.app.use("/webpush", webpush);
     this.app.use("/feed", feed);
-    this.app.use("/fcm", fcm);
     this.app.use(ErrorHandler);
   }
 

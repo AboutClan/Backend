@@ -3,7 +3,7 @@ import admin from "firebase-admin";
 import { FcmToken } from "../db/models/fcmToken";
 
 export default class FcmService {
-  private token: JWT;
+  private token?: JWT;
 
   constructor(token?: JWT) {
     this.token = token as JWT;
