@@ -83,7 +83,11 @@ class FcmController {
   }
 
   private async test() {
-    this.fcmServiceInstance?.sendNotificationToX("2283035576");
+    this.fcmServiceInstance?.sendNotificationToX(
+      "2283035576",
+      "hello",
+      "hello",
+    );
   }
 }
 

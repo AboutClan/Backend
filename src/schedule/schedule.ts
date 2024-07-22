@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { User } from "../db/models/user";
 import AdminVoteService from "../services/adminVoteServices";
 import WebPushService from "../services/webPushService";
+import FcmService from "../services/fcmService";
 
 const schedule = require("node-schedule");
 
@@ -14,10 +15,16 @@ export function sendNoti() {
     rule.tz = "Asia/Seoul"; // 한국 시간대
 
     const webPushServiceInstance = new WebPushService();
+    const fcmServiceInstance = new FcmService();
 
     const job = schedule.scheduleJob(
       rule,
       webPushServiceInstance.sendNotificationAllUser,
+      () =>
+        fcmServiceInstance.sendNotificationAllUser(
+          "스터디 투표",
+          "스터디 마감이 얼마 남지 않았어요. 지금 신청하세요!",
+        ),
     );
   } catch (err: any) {
     throw new Error(err);
@@ -37,9 +44,11 @@ export const voteResult = schedule.scheduleJob("0 23 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
     const webPushServiceInstance = new WebPushService();
+    const fcmServiceInstance = new FcmService();
 
     await adminVoteServiceInstance.confirm(dayjs().toDate().toString());
     await webPushServiceInstance.sendNotificationVoteResult();
+    await fcmServiceInstance.sendNotificationVoteResult();
 
     console.log("vote result succeess");
   } catch (err: any) {
