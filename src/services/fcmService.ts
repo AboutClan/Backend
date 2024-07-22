@@ -23,9 +23,15 @@ export default class FcmService {
         title: message?.notification.title || "알림",
         body: message?.notification.body || "알림",
       },
+      android: {
+        notification: {
+          icon: "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/144.png",
+        },
+      },
       webpush: {
         headers: {
           TTL: "1",
+          icon: "https://studyabout.s3.ap-northeast-2.amazonaws.com/%EB%8F%99%EC%95%84%EB%A6%AC/144.png",
         },
       },
     };
