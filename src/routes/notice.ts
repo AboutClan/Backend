@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response, Router } from "express";
 import NoticeService from "../services/noticeService";
 import WebPushService from "../services/webPushService";
 import { JWT } from "next-auth/jwt";
+import FcmService from "../services/fcmService";
 
 const router = express.Router();
 
@@ -10,11 +11,13 @@ class NoticeController {
   public router: Router;
   private noticeServiceInstance: NoticeService;
   private webPushServiceInstance: WebPushService;
+  private fcmServiceInstance: FcmService;
 
   constructor() {
     this.router = Router();
     this.noticeServiceInstance = new NoticeService();
     this.webPushServiceInstance = new WebPushService();
+    this.fcmServiceInstance = new FcmService();
     this.decodedToken = null;
     this.initializeRoutes();
   }
@@ -86,6 +89,11 @@ class NoticeController {
         "좋아요를 받았어요!",
         `${this.decodedToken?.name}님이 좋아요를 보냈어요!`,
       );
+      await this.fcmServiceInstance?.sendNotificationToX(
+        to,
+        "좋아요를 받았어요!",
+        `${this.decodedToken?.name}님이 좋아요를 보냈어요!`,
+      );
       return res.end();
     } catch (err: any) {
       next(err);
@@ -137,6 +145,11 @@ class NoticeController {
     try {
       await this.noticeServiceInstance?.requestNotice("friend", toUid, message);
       await this.webPushServiceInstance?.sendNotificationToX(
+        toUid,
+        "친구요청을 받았어요!",
+        `${this.decodedToken?.name}님이 친구요청을 보냈어요!`,
+      );
+      await this.fcmServiceInstance?.sendNotificationToX(
         toUid,
         "친구요청을 받았어요!",
         `${this.decodedToken?.name}님이 친구요청을 보냈어요!`,
