@@ -1,4 +1,4 @@
-const dotenv = require("dotenv");
+import dotenv from "dotenv";
 dotenv.config();
 
 require("newrelic");
@@ -13,7 +13,7 @@ import tokenValidator from "./middlewares/auth";
 import { dbSet } from "./middlewares/dbSet";
 import ErrorHandler from "./middlewares/ErrorHandler";
 import "./schedule/schedule";
-const bodyParser = require("body-parser");
+import bodyParser from "body-parser";
 
 // 매월 1일 00:00:00에 실행되는 스케줄을 생성합니다.
 //router
