@@ -1,6 +1,8 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
+require("newrelic");
+
 import compression from "compression";
 import cors from "cors";
 import express from "express";
