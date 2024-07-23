@@ -1,45 +1,74 @@
 import mongoose, { model, Model, Schema } from "mongoose";
 
-interface IVoteList {
-  voteListIdx: number;
-  value: string;
+type Category = "일상" | "고민" | "정보" | "같이해요";
+
+type SquareType = "general" | "poll";
+
+interface PollItem {
+  id: number;
+  name: string;
+  count: number;
 }
 
-export interface ISquareData {
-  category: string;
+export interface ISquareItem {
+  category: Category;
   title: string;
   content: string;
-  voteList?: IVoteList[];
-  id?: string;
-  writer: string;
-  date?: string;
-  deadline?: any;
-  suggestContent?: any;
+  type: SquareType;
+  pollList: PollItem[];
+  canMultiple: boolean;
+  author: {
+    uid: string;
+    name: string;
+  };
+  viewCount: number;
 }
 
-export const SquareSchema: Schema<ISquareData> = new Schema({
-  category: {
+const PollSchema: Schema<PollItem> = new Schema({
+  id: {
+    type: Number,
+  },
+  name: {
     type: String,
   },
-  writer: {
-    type: String,
-  },
-  deadline: {
-    type: String,
-  },
-  title: {
-    type: String,
-  },
-  content: {
-    type: String,
-  },
-  suggestContent: {
-    type: String,
-  },
-  voteList: {
-    // type: [{}],
+  count: {
+    type: Number,
   },
 });
+
+export const SquareSchema: Schema<ISquareItem> = new Schema(
+  {
+    category: {
+      type: String,
+    },
+    title: {
+      type: String,
+    },
+    content: {
+      type: String,
+    },
+    type: {
+      type: String,
+    },
+    pollList: {
+      type: [PollSchema],
+    },
+    canMultiple: {
+      type: Boolean,
+    },
+    author: {
+      uid: { type: String, ref: "User" },
+      name: { type: String, ref: "User" },
+    },
+    viewCount: {
+      type: Number,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
 export const Square =
-  (mongoose.models.Square as Model<ISquareData, {}, {}, {}>) ||
-  model<ISquareData>("Square", SquareSchema);
+  (mongoose.models.Square as Model<ISquareItem>) ||
+  model<ISquareItem>("Square", SquareSchema);
