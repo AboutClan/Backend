@@ -1,9 +1,8 @@
-import express, { NextFunction, Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { body } from "express-validator";
 import validateCheck from "../middlewares/validator";
 import SquareService from "../services/squareService";
 
-const router: Router = express.Router();
 class SquareController {
   public router: Router;
   private SquareServiceInstance: SquareService;
@@ -22,7 +21,7 @@ class SquareController {
     this.router.use("/", this.createSquareServiceInstance.bind(this));
     this.router
       .route("/")
-      .get(this.getSquare.bind(this))
+      .get(this.getSquareList.bind(this))
       .post(
         body("Square").notEmpty().withMessage("Square필요"),
         validateCheck,
@@ -40,27 +39,52 @@ class SquareController {
     next();
   }
 
-  private async getSquare(req: Request, res: Response, next: NextFunction) {
+  private async getSquareList(req: Request, res: Response, next: NextFunction) {
     try {
-      const SquareData = await this.SquareServiceInstance.getSquare();
+      const SquareData = await this.SquareServiceInstance.getSquareList();
       res.status(200).json(SquareData);
-    } catch (err: any) {
+    } catch (err) {
       next(err);
     }
   }
 
   private async createSquare(req: Request, res: Response, next: NextFunction) {
     const {
-      body: { Square },
+      body: { square },
     } = req;
 
     try {
-      await this.SquareServiceInstance?.createSquare(Square);
+      await this.SquareServiceInstance?.createSquare(square);
       res.status(200).end();
-    } catch (err: any) {
+    } catch (err) {
       next(err);
     }
   }
+
+  private async deleteSquare(req: Request, res: Response, next: NextFunction) {
+    const {
+      body: { id: squareId },
+    } = req;
+
+    try {
+      await this.SquareServiceInstance?.deleteSquare();
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async getSquare(req, res, next) {}
+
+  private async getSquareComments(req, res, next) {}
+
+  private async createSquareComment(req, res, next) {}
+
+  private async deleteSquareComment(req, res, next) {}
+
+  private async putPoll(req, res, next) {}
+
+  private async canPoll(req, res, next) {}
 }
 
 const squareController = new SquareController();
