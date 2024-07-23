@@ -2,7 +2,7 @@ import mongoose, { model, Model, Schema } from "mongoose";
 
 type Category = "일상" | "고민" | "정보" | "같이해요";
 
-type SquareType = "general" | "poll";
+type SecretSquareType = "general" | "poll";
 
 interface PollItem {
   id: number;
@@ -10,11 +10,11 @@ interface PollItem {
   count: number;
 }
 
-export interface ISquareItem {
+export interface ISecretSquareItem {
   category: Category;
   title: string;
   content: string;
-  type: SquareType;
+  type: SecretSquareType;
   pollList: PollItem[];
   canMultiple: boolean;
   author: {
@@ -36,7 +36,7 @@ const PollSchema: Schema<PollItem> = new Schema({
   },
 });
 
-export const SquareSchema: Schema<ISquareItem> = new Schema(
+export const SecretSquareSchema: Schema<ISecretSquareItem> = new Schema(
   {
     category: {
       type: String,
@@ -69,6 +69,6 @@ export const SquareSchema: Schema<ISquareItem> = new Schema(
   },
 );
 
-export const Square =
-  (mongoose.models.Square as Model<ISquareItem>) ||
-  model<ISquareItem>("Square", SquareSchema);
+export const SecretSquare =
+  (mongoose.models.Square as Model<ISecretSquareItem>) ||
+  model<ISecretSquareItem>("Square", SecretSquareSchema);
