@@ -40,9 +40,13 @@ class FeedController {
 
   private async getFeed(req: Request, res: Response, next: NextFunction) {
     const { id } = req.query as { id: string };
-
-    const feed = await this.feedServiceInstance.findFeedById(id);
-    return res.status(200).json(feed);
+    if (id) {
+      const feed = await this.feedServiceInstance.findFeedById(id);
+      return res.status(200).json(feed);
+    } else {
+      const feeds = await this.feedServiceInstance.findAllFeeds();
+      return res.status(200).json(feeds);
+    }
   }
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {

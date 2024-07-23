@@ -1,7 +1,7 @@
+import { Types } from "mongoose";
 import { JWT } from "next-auth/jwt";
 import { Feed } from "../db/models/feed";
 import ImageService from "./imageService";
-import { Types } from "mongoose";
 
 export default class FeedService {
   private token: JWT;
@@ -24,6 +24,16 @@ export default class FeedService {
       throw new Error(err);
     }
   }
+
+  async findAllFeeds() {
+    try {
+      const feeds = await Feed.find();
+      return feeds;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async createFeed({ title, text, writer, type, buffer }: any) {
     try {
       const location = await this.imageServiceInstance.uploadImgCom(
