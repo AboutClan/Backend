@@ -24,7 +24,7 @@ class FeedController {
     this.router
       .route("/")
       .get(this.getFeed.bind(this))
-      .post(this.upload.single("image"), this.createFeed.bind(this));
+      .post(this.upload.array("images", 5), this.createFeed.bind(this));
   }
 
   private async createFeedServiceInstance(
@@ -39,19 +39,33 @@ class FeedController {
   }
 
   private async getFeed(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.query as { id: string };
+    const { id, type, cursor } = req.query as {
+      id?: string;
+      cursor?: string;
+      type?: string;
+    };
+
+    const cursorNum = cursor ? parseInt(cursor) : null;
+
     if (id) {
       const feed = await this.feedServiceInstance.findFeedById(id);
       return res.status(200).json(feed);
+    } else if (type) {
+      const feed = await this.feedServiceInstance.findFeedByType(type);
+      return res.status(200).json(feed);
     } else {
-      const feeds = await this.feedServiceInstance.findAllFeeds();
+      const feeds = await this.feedServiceInstance.findAllFeeds(cursorNum);
       return res.status(200).json(feeds);
     }
   }
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {
     const { title, text, writer, type } = req.body;
-    let buffer = req.file?.buffer;
+    let buffers: Buffer[] = [];
+
+    if (req.files && Array.isArray(req.files)) {
+      buffers = req.files.map((file: Express.Multer.File) => file.buffer);
+    }
 
     try {
       await this.feedServiceInstance.createFeed({
@@ -59,7 +73,7 @@ class FeedController {
         text,
         writer,
         type,
-        buffer,
+        buffers,
       });
 
       return res.status(200).json({ a: "success" });
