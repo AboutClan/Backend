@@ -19,6 +19,8 @@ class SquareController {
 
   private initializeRoutes() {
     this.router.use("/", this.createSquareServiceInstance.bind(this));
+
+    // TODO validation using express-validator
     this.router
       .route("/")
       .get(this.getSquareList.bind(this))
@@ -27,6 +29,26 @@ class SquareController {
         validateCheck,
         this.createSquare.bind(this),
       );
+
+    this.router
+      .route("/:squareId")
+      .get(this.getSquare.bind(this))
+      .delete(this.deleteSquare.bind(this));
+
+    this.router
+      .route("/:squareId/comments")
+      .get(this.getSquareComments.bind(this));
+
+    this.router.route("/comment").post(this.createSquareComment.bind(this));
+
+    this.router
+      .route("/comment/:commentId/")
+      .delete(this.deleteSquareComment.bind(this));
+
+    this.router
+      .route("/:squareId/poll")
+      .put(this.putPoll.bind(this))
+      .get(this.canPoll.bind(this));
   }
 
   private async createSquareServiceInstance(
@@ -41,8 +63,8 @@ class SquareController {
 
   private async getSquareList(req: Request, res: Response, next: NextFunction) {
     try {
-      const SquareData = await this.SquareServiceInstance.getSquareList();
-      res.status(200).json(SquareData);
+      const squareList = await this.SquareServiceInstance.getSquareList();
+      res.status(200).json(squareList);
     } catch (err) {
       next(err);
     }
