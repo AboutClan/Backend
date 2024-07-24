@@ -21,33 +21,24 @@ export default class ImageService {
     });
   }
 
-  async uploadImgCom(path: any, buffer: any) {
-    const params = {
-      Bucket: "studyabout",
-      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}`,
-      Body: buffer,
-    };
-
-    try {
-      const data = await this.s3.upload(params).promise();
-      await this.saveImage(data.Location);
-      return data.Location;
-    } catch (error: any) {
-      throw new Error(error.message);
-    }
+  async uploadImgCom(path: any, buffers: Buffer[]) {
+    const uploadPromises = buffers.map((buffer) =>
+      this.uploadSingleImage(path, buffer),
+    );
+    const imageUrls = await Promise.all(uploadPromises);
+    return imageUrls;
   }
 
-  async uploadImg(path: any, buffer: any) {
+  async uploadSingleImage(path: String, buffer: Buffer) {
     const params = {
       Bucket: "studyabout",
-      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}`,
+      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}.jpg`,
       Body: buffer,
     };
 
     try {
       const data = await this.s3.upload(params).promise();
-      await this.saveImage(data.Location);
-      return data;
+      return data.Location;
     } catch (error: any) {
       throw new Error(error.message);
     }

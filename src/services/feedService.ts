@@ -34,11 +34,11 @@ export default class FeedService {
     }
   }
 
-  async createFeed({ title, text, writer, type, buffer }: any) {
+  async createFeed({ title, text, writer, type, buffers }: any) {
     try {
       const location = await this.imageServiceInstance.uploadImgCom(
         "feed",
-        buffer,
+        buffers,
       );
 
       await Feed.create({ title, text, writer, type, imageUrl: location });

@@ -3,7 +3,7 @@ import mongoose, { model, Schema, Model } from "mongoose";
 export interface IFeed {
   title: string,
   text: string,
-  imageUrl: string,
+  imageUrl: string[],
   writer: string,
   type: string
 }
@@ -16,7 +16,7 @@ export const FeedSchema: Schema<IFeed> = new Schema({
     type: String
   },
   imageUrl:{
-    type: String
+    type: [String]
   },
   writer:{
     type: String
