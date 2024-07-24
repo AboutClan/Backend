@@ -1,21 +1,15 @@
-import mongoose, { model, Model, Schema } from "mongoose";
+import mongoose, { model, Model, Schema, Types } from "mongoose";
 
 type Category = "일상" | "고민" | "정보" | "같이해요";
 
 type SecretSquareType = "general" | "poll";
 
-interface PollItem {
-  id: number;
-  name: string;
-  count: number;
-}
-
-export interface ISecretSquareItem {
+export interface SecretSquareItem {
   category: Category;
   title: string;
   content: string;
   type: SecretSquareType;
-  pollList: PollItem[];
+  pollId: Types.ObjectId;
   canMultiple: boolean;
   author: {
     uid: string;
@@ -24,19 +18,7 @@ export interface ISecretSquareItem {
   viewCount: number;
 }
 
-const PollSchema: Schema<PollItem> = new Schema({
-  id: {
-    type: Number,
-  },
-  name: {
-    type: String,
-  },
-  count: {
-    type: Number,
-  },
-});
-
-export const SecretSquareSchema: Schema<ISecretSquareItem> = new Schema(
+export const secretSquareSchema = new Schema<SecretSquareItem>(
   {
     category: {
       type: String,
@@ -50,14 +32,15 @@ export const SecretSquareSchema: Schema<ISecretSquareItem> = new Schema(
     type: {
       type: String,
     },
-    pollList: {
-      type: [PollSchema],
+    pollId: {
+      type: Schema.Types.ObjectId,
+      ref: "Poll",
     },
     canMultiple: {
       type: Boolean,
     },
     author: {
-      uid: { type: String, ref: "User" },
+      uid: { type: Schema.Types.ObjectId, ref: "User" },
       name: { type: String, ref: "User" },
     },
     viewCount: {
@@ -70,5 +53,5 @@ export const SecretSquareSchema: Schema<ISecretSquareItem> = new Schema(
 );
 
 export const SecretSquare =
-  (mongoose.models.Square as Model<ISecretSquareItem>) ||
-  model<ISecretSquareItem>("Square", SecretSquareSchema);
+  (mongoose.models.Square as Model<SecretSquareItem>) ||
+  model<SecretSquareItem>("SecretSquare", secretSquareSchema);
