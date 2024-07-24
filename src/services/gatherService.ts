@@ -106,6 +106,7 @@ export default class GatherService {
       const user = await User.findOne({ _id: id });
       if (!user) throw new Error();
       user.score += 5;
+      user.monthScore += 5;
       await user.save();
       logger.logger.info("번개 모임 참여", {
         metadata: {
