@@ -1,4 +1,5 @@
 import mongoose, { model, Model, Schema, Types } from "mongoose";
+import { SecretSquarePoll } from "./secretSquarePoll";
 
 type Category = "일상" | "고민" | "정보" | "같이해요";
 
@@ -34,7 +35,7 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
     },
     pollId: {
       type: Schema.Types.ObjectId,
-      ref: "Poll",
+      ref: SecretSquarePoll,
     },
     canMultiple: {
       type: Boolean,

@@ -2,7 +2,7 @@ import { model, Schema, Types } from "mongoose";
 
 interface PollItem {
   name: string;
-  users: Types.ObjectId[]
+  users: Types.ObjectId[];
 }
 
 const pollItemSchema = new Schema<PollItem>({
@@ -15,7 +15,7 @@ const pollItemSchema = new Schema<PollItem>({
   },
 });
 
-export const PollSchema = new Schema({
+export const SecretSquarePollSchema = new Schema({
   squareId: {
     type: String,
     ref: "SecretSquare",
@@ -23,4 +23,7 @@ export const PollSchema = new Schema({
   pollItems: [pollItemSchema],
 });
 
-export const Poll = model("Poll", PollSchema);
+export const SecretSquarePoll = model(
+  "SecretSquarePoll",
+  SecretSquarePollSchema,
+);
