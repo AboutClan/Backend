@@ -12,6 +12,15 @@ export default class FeedService {
     this.imageServiceInstance = new ImageService(token);
   }
 
+  async findFeedByType(type: string) {
+    try {
+      const feed = await Feed.find({ type });
+      return feed;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async findFeedById(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
@@ -25,9 +34,16 @@ export default class FeedService {
     }
   }
 
-  async findAllFeeds() {
+  async findAllFeeds(cursor: number | null) {
     try {
-      const feeds = await Feed.find();
+      const gap = 12;
+      let start = gap * (cursor || 0);
+
+      const feeds = await Feed.find()
+        .skip(start)
+        .limit(gap + 1)
+        .select("-_id");
+
       return feeds;
     } catch (err: any) {
       throw new Error(err);

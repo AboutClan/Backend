@@ -39,12 +39,22 @@ class FeedController {
   }
 
   private async getFeed(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.query as { id: string };
+    const { id, type, cursor } = req.query as {
+      id?: string;
+      cursor?: string;
+      type?: string;
+    };
+
+    const cursorNum = cursor ? parseInt(cursor) : null;
+
     if (id) {
       const feed = await this.feedServiceInstance.findFeedById(id);
       return res.status(200).json(feed);
+    } else if (type) {
+      const feed = await this.feedServiceInstance.findFeedByType(type);
+      return res.status(200).json(feed);
     } else {
-      const feeds = await this.feedServiceInstance.findAllFeeds();
+      const feeds = await this.feedServiceInstance.findAllFeeds(cursorNum);
       return res.status(200).json(feeds);
     }
   }
