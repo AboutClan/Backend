@@ -24,7 +24,7 @@ class FeedController {
     this.router
       .route("/")
       .get(this.getFeed.bind(this))
-      .post(this.upload.single("image"), this.createFeed.bind(this));
+      .post(this.upload.array("images", 5), this.createFeed.bind(this));
   }
 
   private async createFeedServiceInstance(
@@ -51,7 +51,11 @@ class FeedController {
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {
     const { title, text, writer, type } = req.body;
-    let buffer = req.file?.buffer;
+    let buffers: Buffer[] = [];
+
+    if (req.files && Array.isArray(req.files)) {
+      buffers = req.files.map((file: Express.Multer.File) => file.buffer);
+    }
 
     try {
       await this.feedServiceInstance.createFeed({
@@ -59,7 +63,7 @@ class FeedController {
         text,
         writer,
         type,
-        buffer,
+        buffers,
       });
 
       return res.status(200).json({ a: "success" });

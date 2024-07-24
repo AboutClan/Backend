@@ -48,8 +48,18 @@ class ImageController {
     let path = req.body.path;
     let buffer = req.file?.buffer;
 
+    if (!buffer)
+      return res.status(400).json({
+        ok: false,
+        message: "사진 파일이 잘못되었습니다.",
+      });
+
     try {
-      const data = await this.imageServiceInstance.uploadImg(path, buffer);
+      const location = await this.imageServiceInstance.uploadSingleImage(
+        path,
+        buffer,
+      );
+      await this.imageServiceInstance.saveImage(location);
 
       return res.status(201).json({
         ok: true,
