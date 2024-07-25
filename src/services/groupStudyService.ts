@@ -171,12 +171,12 @@ export default class GroupStudyService {
 
   async getGroupStudy(cursor: number | null) {
     try {
-      const gap = 8;
+      const gap = 7;
       let start = gap * (cursor || 0);
 
       const groupStudyData = await GroupStudy.find()
         .skip(start)
-        .limit(gap)
+        .limit(gap + 1)
         // .populate([
         //   "organizer",
         //   "participants.user",
