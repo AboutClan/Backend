@@ -148,7 +148,7 @@ class GroupStudyController {
         groupStudyData =
           await this.groupStudyServiceInstance.getGroupStudyById(groupStudyId);
         return res.status(200).json(groupStudyData);
-      } else if (category) {
+      } else if (category && category !== "전체") {
         groupStudyData =
           await this.groupStudyServiceInstance.getGroupStudyByCategory(
             category,
