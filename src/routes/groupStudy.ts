@@ -173,7 +173,7 @@ class GroupStudyController {
         const userParticipatingGroupStudy =
           await this.groupStudyServiceInstance.getUserParticipatingGroupStudy();
 
-        const idArr = groupStudyData.map((item) => item._id);
+        const idArr = groupStudyData.map((item) => item.id);
         const myArr = userParticipatingGroupStudy.filter((obj) => {
           if (idArr.includes(obj._id)) return false;
           return true;
