@@ -135,9 +135,11 @@ class GroupStudyController {
 
   private async getGroupStudy(req: Request, res: Response, next: NextFunction) {
     try {
-      const { groupStudyId, filter } = req.query as {
+      const { groupStudyId, filter, category, cursor } = req.query as {
         groupStudyId?: string;
         filter?: string;
+        category?: string;
+        cursor?: string;
       };
 
       let groupStudyData;
@@ -146,13 +148,21 @@ class GroupStudyController {
         groupStudyData =
           await this.groupStudyServiceInstance.getGroupStudyById(groupStudyId);
         return res.status(200).json(groupStudyData);
+      } else if (category) {
+        groupStudyData =
+          await this.groupStudyServiceInstance.getGroupStudyByCategory(
+            category,
+          );
+        return res.status(200).json(groupStudyData);
+      } else if (filter) {
+        groupStudyData =
+          await this.groupStudyServiceInstance.getGroupStudyByFilter(filter);
+        return res.status(200).json(groupStudyData);
       } else {
-        if (filter) {
-          groupStudyData =
-            await this.groupStudyServiceInstance.getGroupStudyByFilter(filter);
-        } else {
-          groupStudyData = await this.groupStudyServiceInstance.getGroupStudy();
-        }
+        const cursorNum = cursor ? parseInt(cursor) : null;
+
+        groupStudyData =
+          await this.groupStudyServiceInstance.getGroupStudy(cursorNum);
       }
 
       return res.status(200).json(groupStudyData);
