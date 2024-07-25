@@ -178,11 +178,7 @@ class GroupStudyController {
           ...groupStudyData,
         ];
 
-        const uniqueGroupStudyData = Array.from(
-          new Map(allGroupStudyData.map((item) => [item._id, item])).values(),
-        );
-
-        groupStudyData = uniqueGroupStudyData;
+        groupStudyData = allGroupStudyData;
       }
 
       return res.status(200).json(groupStudyData);
