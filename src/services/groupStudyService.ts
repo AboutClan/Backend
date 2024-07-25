@@ -20,53 +20,69 @@ export default class GroupStudyService {
     }
   }
 
-  async getGroupStudyByFilter(filter: string) {
+  async getGroupStudyByFilterAndCategory(
+    filter: string,
+    category: string,
+    cursor: number | null,
+  ) {
     let groupStudyData;
+    const gap = 8;
+    let start = gap * (cursor || 0);
 
-    switch (filter) {
-      case "end":
-        groupStudyData = await GroupStudy.find({ status: "end" })
-          .populate({
-            path: "organizer",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "participants.user",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "waiting.user",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "comment.user",
-            select: "name profileImage uid score avatar comment location",
-          })
-          .select("-_id");
-        break;
-      case "pending":
-        groupStudyData = await GroupStudy.find({ status: "pending" })
-          .populate({
-            path: "organizer",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "participants.user",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "waiting.user",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "comment.user",
-            select: "name profileImage uid score avatar comment location",
-          })
-          .select("-_id");
-        break;
-      default:
-        break;
-    }
+    const filterQuery = { status: filter, "category.main": category };
+
+    groupStudyData = await GroupStudy.find(filterQuery)
+      .skip(start)
+      .limit(gap + 1)
+      .populate({
+        path: "organizer",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "participants.user",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "waiting.user",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "comment.user",
+        select: "name profileImage uid score avatar comment location",
+      })
+      .select("-_id");
+
+    return groupStudyData;
+  }
+
+  async getGroupStudyByFilter(filter: string, cursor: number | null) {
+    let groupStudyData;
+    const gap = 8;
+    let start = gap * (cursor || 0);
+
+    const filterQuery = { status: filter };
+
+    groupStudyData = await GroupStudy.find(filterQuery)
+      .skip(start)
+      .limit(gap + 1)
+      .populate({
+        path: "organizer",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "participants.user",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "waiting.user",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "comment.user",
+        select: "name profileImage uid score avatar comment location",
+      })
+      .select("-_id");
+
     return groupStudyData;
   }
 
@@ -126,6 +142,31 @@ export default class GroupStudyService {
     } catch (err: any) {
       throw new Error(err);
     }
+  }
+
+  async getUserParticipatingGroupStudy() {
+    const userParticipatingGroupStudy = await GroupStudy.find({
+      participants: { $elemMatch: { $eq: this.token.uid } },
+    })
+      .populate({
+        path: "organizer",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "participants.user",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "waiting.user",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "comment.user",
+        select: "name profileImage uid score avatar comment location",
+      })
+      .select("-_id");
+
+    return userParticipatingGroupStudy;
   }
 
   async getGroupStudy(cursor: number | null) {
