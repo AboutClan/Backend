@@ -146,7 +146,7 @@ export default class GroupStudyService {
 
   async getUserParticipatingGroupStudy() {
     const userParticipatingGroupStudy = await GroupStudy.find({
-      "participants.user": this.token.id,
+      "participants.user": this.token.id as string,
     })
       .populate({
         path: "organizer",
