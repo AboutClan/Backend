@@ -1,51 +1,80 @@
 import mongoose, { model, Model, Schema, Types } from "mongoose";
-import { SecretSquarePoll } from "./secretSquarePoll";
 
-type Category = "일상" | "고민" | "정보" | "같이해요";
+export type SecretSquareCategory = "일상" | "고민" | "정보" | "같이해요";
 
-type SecretSquareType = "general" | "poll";
+export type SecretSquareType = "general" | "poll";
 
-export interface SecretSquareItem {
-  category: Category;
+// TODO add fields (likeCount, images)
+interface SecretSquareItem {
+  category: SecretSquareCategory;
   title: string;
   content: string;
   type: SecretSquareType;
-  pollId: Types.ObjectId;
-  canMultiple: boolean;
-  author: {
-    uid: string;
-    name: string;
+  poll: {
+    pollItems: PollItem[];
+    canMultiple: boolean;
   };
+  author: Types.ObjectId;
   viewCount: number;
 }
+
+interface PollItem {
+  name: string;
+  users: Types.ObjectId[];
+}
+
+const pollItemSchema = new Schema<PollItem>({
+  name: {
+    type: String,
+    required: true,
+  },
+  users: {
+    type: [Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
+  },
+});
+
+const pollSchema = new Schema({
+  pollItems: {
+    type: [pollItemSchema],
+    required: true,
+  },
+  canMultiple: {
+    type: Boolean,
+    required: true,
+  },
+});
 
 export const secretSquareSchema = new Schema<SecretSquareItem>(
   {
     category: {
       type: String,
+      required: true,
     },
     title: {
       type: String,
+      required: true,
     },
     content: {
       type: String,
+      required: true,
     },
     type: {
       type: String,
+      required: true,
     },
-    pollId: {
-      type: Schema.Types.ObjectId,
-      ref: SecretSquarePoll,
-    },
-    canMultiple: {
-      type: Boolean,
+    poll: {
+      type: pollSchema,
     },
     author: {
-      uid: { type: Schema.Types.ObjectId, ref: "User" },
-      name: { type: String, ref: "User" },
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     viewCount: {
       type: Number,
+      default: 0,
     },
   },
   {
