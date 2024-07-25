@@ -177,11 +177,10 @@ class GroupStudyController {
           ...userParticipatingGroupStudy,
           ...groupStudyData,
         ];
+
         const uniqueGroupStudyData = Array.from(
-          new Set(allGroupStudyData.map((item) => item._id)),
-        ).map((id) => {
-          return allGroupStudyData.find((item) => item._id === id);
-        });
+          new Map(allGroupStudyData.map((item) => [item._id, item])).values(),
+        );
 
         groupStudyData = uniqueGroupStudyData;
       }
