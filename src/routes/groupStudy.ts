@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import { body } from "express-validator";
+import { GroupStudyStatus } from "../db/models/groupStudy";
 import validateCheck from "../middlewares/validator";
 import GroupStudyService from "../services/groupStudyService";
 
@@ -137,7 +138,7 @@ class GroupStudyController {
     try {
       const { groupStudyId, filter, category, cursor } = req.query as {
         groupStudyId?: string;
-        filter?: string;
+        filter?: GroupStudyStatus;
         category?: string;
         cursor?: string;
       };
@@ -176,15 +177,21 @@ class GroupStudyController {
 
       if (cursorNum === 0) {
         const idArr = groupStudyData.map((item) => item.id);
-        const myArr = userParticipatingGroupStudy.filter((obj) => {
-          if (idArr.includes(obj.id)) return false;
-          return true;
-        });
+        const myArr =
+          filter === "end"
+            ? []
+            : userParticipatingGroupStudy.filter((obj) => {
+                if (idArr.includes(obj.id)) return false;
+                return true;
+              });
         const allGroupStudyData = [...groupStudyData, ...myArr];
 
         groupStudyData = allGroupStudyData;
       } else {
-        const myArr = userParticipatingGroupStudy.map((item) => item.id);
+        const myArr =
+          filter === "end"
+            ? []
+            : userParticipatingGroupStudy.map((item) => item.id);
         const groupArr = groupStudyData.filter((obj) => {
           if (myArr.includes(obj.id)) return false;
           return true;
