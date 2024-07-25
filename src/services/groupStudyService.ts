@@ -176,7 +176,7 @@ export default class GroupStudyService {
 
       const groupStudyData = await GroupStudy.find()
         .skip(start)
-        .limit(gap + 1)
+        .limit(gap)
         // .populate([
         //   "organizer",
         //   "participants.user",
