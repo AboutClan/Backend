@@ -4,7 +4,7 @@ export type SecretSquareCategory = "일상" | "고민" | "정보" | "같이해�
 
 export type SecretSquareType = "general" | "poll";
 
-// TODO add fields (likeCount, images)
+// TODO add fields (images)
 interface SecretSquareItem {
   category: SecretSquareCategory;
   title: string;
@@ -16,6 +16,7 @@ interface SecretSquareItem {
   };
   author: Types.ObjectId;
   viewCount: number;
+  likeCount: number;
 }
 
 interface PollItem {
@@ -73,6 +74,10 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
       required: true,
     },
     viewCount: {
+      type: Number,
+      default: 0,
+    },
+    likeCount: {
       type: Number,
       default: 0,
     },

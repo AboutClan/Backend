@@ -68,8 +68,16 @@ export default class SquareService {
   }
 
   async getSquare(squareId: string) {
-    const square = await SecretSquare.findById(squareId);
-    return square;
+    const secretSquare = await SecretSquare.findByIdAndUpdate(squareId, {
+      $inc: { viewCount: 1 },
+    });
+
+    // TODO 404 NOT FOUND
+    if (!secretSquare) {
+      throw new Error("SecretSquare not found");
+    }
+
+    return secretSquare;
   }
 
   async getSquareComments(squareId: string) {
@@ -104,6 +112,7 @@ export default class SquareService {
   }) {
     const secretSquare = await SecretSquare.findById(squareId);
 
+    // TODO 404 NOT FOUND
     if (!secretSquare) {
       throw new Error("SecretSquare not found");
     }
@@ -145,6 +154,7 @@ export default class SquareService {
   }) {
     const secretSquare = await SecretSquare.findById(squareId);
 
+    // TODO 404 NOT FOUND
     if (!secretSquare) {
       throw new Error("SecretSquare not found");
     }
@@ -156,5 +166,17 @@ export default class SquareService {
     });
 
     return pollItems;
+  }
+
+  async putLikeSquare({ squareId }: { squareId: string }) {
+    await SecretSquare.findByIdAndUpdate(squareId, {
+      $inc: { likeCount: 1 },
+    });
+  }
+
+  async deleteLikeSquare({ squareId }: { squareId: string }) {
+    await SecretSquare.findByIdAndUpdate(squareId, {
+      $inc: { likeCount: -1 },
+    });
   }
 }

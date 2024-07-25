@@ -50,6 +50,11 @@ class SquareController {
       .route("/:squareId/poll")
       .patch(this.patchPoll.bind(this))
       .get(this.getCurrentPollItems.bind(this));
+
+    this.router
+      .route("/:squareId/like")
+      .put(this.putLikeSquare.bind(this))
+      .delete(this.deleteLikeSquare.bind(this));
   }
 
   private async createSquareServiceInstance(
@@ -181,6 +186,32 @@ class SquareController {
           uid,
         });
       res.status(200).end({ pollItems: currentPollItems });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async putLikeSquare(req: Request, res: Response, next: NextFunction) {
+    const { squareId } = req.params;
+
+    try {
+      await this.SquareServiceInstance.putLikeSquare({ squareId });
+      res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async deleteLikeSquare(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { squareId } = req.params;
+
+    try {
+      await this.SquareServiceInstance.deleteLikeSquare({ squareId });
+      res.status(204).end();
     } catch (err) {
       next(err);
     }
