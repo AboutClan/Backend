@@ -37,7 +37,7 @@ export default class ImageService {
   async uploadSingleImage(path: String, buffer: Buffer, index?: number) {
     const params = {
       Bucket: "studyabout",
-      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}${index}.jpg`,
+      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}${index ? index : ""}.jpg`,
       Body: buffer,
     };
 
@@ -59,6 +59,7 @@ export default class ImageService {
   }
 
   async saveImage(imageUrl: string) {
+    console.log(imageUrl);
     const vote = await findOneVote(strToDate(this.getToday()).toDate());
     if (!vote) throw new Error();
 
