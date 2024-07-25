@@ -64,7 +64,7 @@ export default class GroupStudyService {
 
     groupStudyData = await GroupStudy.find(filterQuery)
       .skip(start)
-      .limit(gap + 1)
+      .limit(gap)
       .populate({
         path: "organizer",
         select: "name profileImage uid score avatar comment",
