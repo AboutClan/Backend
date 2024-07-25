@@ -157,6 +157,7 @@ class GroupStudyController {
               category,
               cursorNum,
             );
+          return res.status(200).json(groupStudyData);
         } else {
           groupStudyData =
             await this.groupStudyServiceInstance.getGroupStudyByFilter(
@@ -167,21 +168,28 @@ class GroupStudyController {
       } else {
         groupStudyData =
           await this.groupStudyServiceInstance.getGroupStudy(cursorNum);
+        return res.status(200).json(groupStudyData);
       }
 
-      if (cursorNum === 0) {
-        const userParticipatingGroupStudy =
-          await this.groupStudyServiceInstance.getUserParticipatingGroupStudy();
+      const userParticipatingGroupStudy =
+        await this.groupStudyServiceInstance.getUserParticipatingGroupStudy();
 
+      if (cursorNum === 0) {
         const idArr = groupStudyData.map((item) => item.id);
         const myArr = userParticipatingGroupStudy.filter((obj) => {
-          if (idArr.includes(obj._id)) return false;
+          if (idArr.includes(obj.id)) return false;
           return true;
         });
-
         const allGroupStudyData = [...groupStudyData, ...myArr];
 
         groupStudyData = allGroupStudyData;
+      } else {
+        const myArr = userParticipatingGroupStudy.map((item) => item.id);
+        const groupArr = groupStudyData.filter((obj) => {
+          if (myArr.includes(obj.id)) return false;
+          return true;
+        });
+        groupStudyData = groupArr;
       }
 
       return res.status(200).json(groupStudyData);
