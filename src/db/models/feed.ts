@@ -1,14 +1,16 @@
-import mongoose, { model, Schema, Model } from "mongoose";
+import mongoose, { model, Model, Schema } from "mongoose";
 
 export interface IFeed {
   title: string,
   text: string,
   imageUrl: string[],
   writer: string,
-  type: string
+  type: string,
+  typeId: string,
   like: string[],
   addLike(userId: string): Promise<void>;
 }
+
 
 export const FeedSchema: Schema<IFeed> = new Schema({
   title:{
@@ -24,6 +26,9 @@ export const FeedSchema: Schema<IFeed> = new Schema({
     type: String
   },
   type:{
+    type: String
+  },
+  typeId:{
     type: String
   },
   like:{

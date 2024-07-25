@@ -77,7 +77,7 @@ class FeedController {
   }
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {
-    const { title, text, writer, type } = req.body;
+    const { title, text, writer, type, typeId } = req.body;
     let buffers: Buffer[] = [];
 
     if (req.files && Array.isArray(req.files)) {
@@ -91,6 +91,7 @@ class FeedController {
         writer,
         type,
         buffers,
+        typeId,
       });
 
       return res.status(200).json({ a: "success" });

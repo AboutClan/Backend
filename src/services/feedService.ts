@@ -2,7 +2,6 @@ import { Types } from "mongoose";
 import { JWT } from "next-auth/jwt";
 import { Feed } from "../db/models/feed";
 import ImageService from "./imageService";
-import { IUser } from "../db/models/user";
 
 export default class FeedService {
   private token: JWT;
@@ -51,15 +50,20 @@ export default class FeedService {
     }
   }
 
-  async createFeed({ title, text, writer, type, buffers }: any) {
+  async createFeed({ title, text, writer, type, buffers, typeId }: any) {
     try {
       const location = await this.imageServiceInstance.uploadImgCom(
         "feed",
         buffers,
       );
-
-      await Feed.create({ title, text, writer, type, imageUrl: location });
-
+      await Feed.create({
+        title,
+        text,
+        writer,
+        type,
+        typeId,
+        imageUrl: location,
+      });
       return;
     } catch (err: any) {
       throw new Error(err);
