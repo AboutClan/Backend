@@ -52,6 +52,12 @@ export default class GroupStudyService {
       })
       .select("-_id");
 
+    if (cursor === 0) {
+      const userParticipatingGroupStudy =
+        await this.getUserParticipatingGroupStudy();
+      return [...userParticipatingGroupStudy, ...groupStudyData];
+    }
+
     return groupStudyData;
   }
 
@@ -82,6 +88,12 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
+
+    if (cursor === 0) {
+      const userParticipatingGroupStudy =
+        await this.getUserParticipatingGroupStudy();
+      return [...userParticipatingGroupStudy, ...groupStudyData];
+    }
 
     return groupStudyData;
   }

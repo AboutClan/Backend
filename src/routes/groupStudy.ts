@@ -143,8 +143,7 @@ class GroupStudyController {
       };
 
       let groupStudyData;
-
-      const cursorNum = cursor ? parseInt(cursor) : null;
+      const cursorNum = cursor ? parseInt(cursor) : 0;
 
       if (groupStudyId) {
         groupStudyData =
@@ -165,34 +164,16 @@ class GroupStudyController {
               cursorNum,
             );
         }
-        return res.status(200).json(groupStudyData);
       } else {
         groupStudyData =
           await this.groupStudyServiceInstance.getGroupStudy(cursorNum);
       }
+
       if (cursorNum === 0) {
         const userParticipatingGroupStudy =
           await this.groupStudyServiceInstance.getUserParticipatingGroupStudy();
         groupStudyData = [...userParticipatingGroupStudy, ...groupStudyData];
       }
-
-      // else if (category && category !== "전체") {
-      //   groupStudyData =
-      //     await this.groupStudyServiceInstance.getGroupStudyByCategory(
-      //       category,
-      //     );
-      //   return res.status(200).json(groupStudyData);
-      // } else if (filter) {
-      //   groupStudyData =
-      //     await this.groupStudyServiceInstance.getGroupStudyByFilter(
-      //       filter,
-      //       cursorNum,
-      //     );
-      //   return res.status(200).json(groupStudyData);
-      // } else {
-      //   groupStudyData =
-      //     await this.groupStudyServiceInstance.getGroupStudy(cursorNum);
-      // }
 
       return res.status(200).json(groupStudyData);
     } catch (err) {
