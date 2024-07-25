@@ -25,6 +25,23 @@ class FeedController {
       .route("/")
       .get(this.getFeed.bind(this))
       .post(this.upload.array("images", 5), this.createFeed.bind(this));
+
+    this.router
+      .route("/like")
+      .get(this.getFeed.bind(this))
+      .post(this.createLike.bind(this));
+  }
+
+  private async createLike(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.body;
+
+      await this.feedServiceInstance.toggleLike(id);
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   }
 
   private async createFeedServiceInstance(
