@@ -22,17 +22,22 @@ export default class ImageService {
   }
 
   async uploadImgCom(path: any, buffers: Buffer[]) {
-    const uploadPromises = buffers.map((buffer) =>
-      this.uploadSingleImage(path, buffer),
-    );
-    const imageUrls = await Promise.all(uploadPromises);
+    const imageUrls: string[] = [];
+
+    console.log(buffers.length);
+
+    for (let i = 0; i < buffers.length; i++) {
+      const url = await this.uploadSingleImage(path, buffers[i], i);
+      imageUrls.push(url);
+    }
+
     return imageUrls;
   }
 
-  async uploadSingleImage(path: String, buffer: Buffer) {
+  async uploadSingleImage(path: String, buffer: Buffer, index?: number) {
     const params = {
       Bucket: "studyabout",
-      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}.jpg`,
+      Key: `${path}/${Math.floor(Date.now() / 1000).toString()}${index ? index : ""}.jpg`,
       Body: buffer,
     };
 
@@ -54,6 +59,7 @@ export default class ImageService {
   }
 
   async saveImage(imageUrl: string) {
+    console.log(imageUrl);
     const vote = await findOneVote(strToDate(this.getToday()).toDate());
     if (!vote) throw new Error();
 
