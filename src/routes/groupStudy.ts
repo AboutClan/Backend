@@ -184,7 +184,14 @@ class GroupStudyController {
         groupStudyData = allGroupStudyData;
         return res
           .status(200)
-          .json({ groupStudyData, myArr, allGroupStudyData, idArr, cursorNum });
+          .json({
+            groupStudyData,
+            myArr,
+            allGroupStudyData,
+            idArr,
+            userParticipatingGroupStudy,
+            cursorNum,
+          });
       }
 
       return res.status(200).json({ groupStudyData });
