@@ -52,12 +52,6 @@ export default class GroupStudyService {
       })
       .select("-_id");
 
-    if (cursor === 0) {
-      const userParticipatingGroupStudy =
-        await this.getUserParticipatingGroupStudy();
-      return [...userParticipatingGroupStudy, ...groupStudyData];
-    }
-
     return groupStudyData;
   }
 
@@ -88,12 +82,6 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
-
-    if (cursor === 0) {
-      const userParticipatingGroupStudy =
-        await this.getUserParticipatingGroupStudy();
-      return [...userParticipatingGroupStudy, ...groupStudyData];
-    }
 
     return groupStudyData;
   }
@@ -212,32 +200,6 @@ export default class GroupStudyService {
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
-
-      if (cursor === 0) {
-        const userParticipatingGroupStudy = await GroupStudy.find({
-          participants: { $elemMatch: { $eq: this.token.uid } },
-        })
-          .populate({
-            path: "organizer",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "participants.user",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "waiting.user",
-            select: "name profileImage uid score avatar comment",
-          })
-          .populate({
-            path: "comment.user",
-            select: "name profileImage uid score avatar comment location",
-          })
-          .select("-_id");
-
-        // 두 결과 병합
-        return [...userParticipatingGroupStudy, ...groupStudyData];
-      }
 
       return groupStudyData;
     } catch (err: any) {

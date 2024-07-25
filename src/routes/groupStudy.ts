@@ -172,7 +172,17 @@ class GroupStudyController {
       if (cursorNum === 0) {
         const userParticipatingGroupStudy =
           await this.groupStudyServiceInstance.getUserParticipatingGroupStudy();
-        groupStudyData = [...userParticipatingGroupStudy, ...groupStudyData];
+
+        const allGroupStudyData = [
+          ...userParticipatingGroupStudy,
+          ...groupStudyData,
+        ];
+        const uniqueGroupStudyData = Array.from(
+          new Map(
+            allGroupStudyData.map((item) => [item._id.toString(), item]),
+          ).values(),
+        );
+        groupStudyData = uniqueGroupStudyData;
       }
 
       return res.status(200).json(groupStudyData);
