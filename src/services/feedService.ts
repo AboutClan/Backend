@@ -12,9 +12,9 @@ export default class FeedService {
     this.imageServiceInstance = new ImageService(token);
   }
 
-  async findFeedByType(type: string) {
+  async findFeedByType(type: string, typeId: string) {
     try {
-      const feed = await Feed.find({ type });
+      const feed = await Feed.find({ type, typeId });
       return feed;
     } catch (err: any) {
       throw new Error(err);
