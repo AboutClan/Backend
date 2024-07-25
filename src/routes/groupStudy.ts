@@ -182,9 +182,12 @@ class GroupStudyController {
         const allGroupStudyData = [...groupStudyData, ...myArr];
 
         groupStudyData = allGroupStudyData;
+        return res
+          .status(200)
+          .json({ groupStudyData, myArr, allGroupStudyData, idArr, cursorNum });
       }
 
-      return res.status(200).json(groupStudyData);
+      return res.status(200).json({ groupStudyData });
     } catch (err) {
       next(err);
     }
