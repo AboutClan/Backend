@@ -48,10 +48,12 @@ export const FeedSchema: Schema<IFeed> = new Schema({
   typeId:{
     type: String
   },
-  like:{
-    type: [likeSchema],
-   ref:"User"
-  },
+  like:[
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
 }, {  timestamps: true});
 
 FeedSchema.methods.addLike = async function (userId: string) {
