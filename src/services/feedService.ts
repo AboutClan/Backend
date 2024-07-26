@@ -16,10 +16,12 @@ export default class FeedService {
 
   async findFeedByType(type?: string, typeId?: string) {
     try {
-      const feeds = await Feed.find({ type, typeId }).populate([
-        "writer",
-        "like",
-      ]);
+      const query: any = { type };
+      if (typeId && typeId.trim() !== "") {
+        query.typeId = typeId;
+      }
+
+      const feeds = await Feed.find(query).populate(["writer", "like"]);
 
       return feeds?.map((feed) => {
         const myLike = (feed?.like as IUser[])?.find(
