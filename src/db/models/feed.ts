@@ -4,7 +4,7 @@ import { IUser } from "./user";
 export interface IFeed {
   title: string,
   text: string,
-  imageUrl: string[],
+  images: string[],
   writer: string | IUser,
   type: string,
   typeId: string,
@@ -20,7 +20,7 @@ export const FeedSchema: Schema<IFeed> = new Schema({
   text:{
     type: String
   },
-  imageUrl:{
+  images:{
     type: [String]
   },
   writer:{

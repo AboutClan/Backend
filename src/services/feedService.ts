@@ -53,7 +53,7 @@ export default class FeedService {
 
   async createFeed({ title, text, type, buffers, typeId }: any) {
     try {
-      const location = await this.imageServiceInstance.uploadImgCom(
+      const images = await this.imageServiceInstance.uploadImgCom(
         "feed",
         buffers,
       );
@@ -63,7 +63,7 @@ export default class FeedService {
         writer: this.token.id,
         type,
         typeId,
-        imageUrl: location,
+        images,
       });
       return;
     } catch (err: any) {
