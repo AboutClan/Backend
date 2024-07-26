@@ -16,7 +16,10 @@ export default class FeedService {
 
   async findFeedByType(type: string, typeId: string) {
     try {
-      const feed = await Feed.find({ type, typeId }).populate(["writer"]);
+      const feed = await Feed.find({ type, typeId }).populate([
+        "writer",
+        "like",
+      ]);
       return feed;
     } catch (err: any) {
       throw new Error(err);
@@ -29,7 +32,7 @@ export default class FeedService {
         console.log("이게 머지");
       }
 
-      const feed = await Feed.findById(id).populate(["writer"]);
+      const feed = await Feed.findById(id).populate(["writer", "like"]);
       return feed;
     } catch (err: any) {
       throw new Error(err);
@@ -53,7 +56,7 @@ export default class FeedService {
       let start = gap * (cursor || 0);
 
       const feeds = await Feed.find()
-        .populate(["writer"])
+        .populate(["writer", "like"])
         .skip(start)
         .limit(gap + 1)
         .select("-_id");
