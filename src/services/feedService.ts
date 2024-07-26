@@ -78,17 +78,6 @@ export default class FeedService {
     }
   }
 
-  async findFeedById2(id: string) {
-    try {
-      if (!Types.ObjectId.isValid(id)) {
-        console.log("이게 머지");
-      }
-      const feed = await Feed.findById(id).populate(["writer", "like"]);
-      return feed;
-    } catch (err: any) {
-      throw new Error(err);
-    }
-  }
   async findFeedLikeById(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
@@ -160,8 +149,7 @@ export default class FeedService {
 
   async toggleLike(feedId: string) {
     try {
-      const feed = await this.findFeedById2(feedId);
-
+      const feed = await Feed.findById(feedId);
       await feed?.addLike(this.token.id as unknown as string);
 
       return;
