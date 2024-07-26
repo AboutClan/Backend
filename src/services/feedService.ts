@@ -21,11 +21,27 @@ export default class FeedService {
         "like",
       ]);
 
-      return feeds?.map((feed) => ({
-        ...feed.toObject(),
-        like: feed?.like?.slice(0, 8),
-        likeCnt: feed?.like?.length,
-      }));
+      return feeds?.map((feed) => {
+        const myLike = (feed?.like as IUser[])?.find(
+          (who) => who.uid === this.token.uid,
+        );
+        let modifiedLike;
+        if (myLike) {
+          modifiedLike = [
+            myLike,
+            ...(feed.like as IUser[])
+              .filter((who) => who.uid !== myLike.uid)
+              .slice(0, 7),
+          ];
+        } else {
+          modifiedLike = feed.like.slice(0, 8);
+        }
+        return {
+          ...feed.toObject(),
+          like: modifiedLike,
+          likeCnt: feed?.like?.length,
+        };
+      });
     } catch (err: any) {
       throw new Error(err);
     }
@@ -38,9 +54,23 @@ export default class FeedService {
       }
 
       const feed = await Feed.findById(id).populate(["writer", "like"]);
+      const myLike = (feed?.like as IUser[])?.find(
+        (who) => who.uid === this.token.uid,
+      );
+      let modifiedLike;
+      if (myLike) {
+        modifiedLike = [
+          myLike,
+          ...(feed?.like as IUser[])
+            .filter((who) => who.uid !== myLike.uid)
+            .slice(0, 7),
+        ];
+      } else {
+        modifiedLike = feed?.like.slice(0, 8);
+      }
       return {
         ...feed?.toObject(),
-        like: feed?.like?.slice(0, 8),
+        like: modifiedLike,
         likeCnt: feed?.like?.length,
       };
     } catch (err: any) {
@@ -82,11 +112,27 @@ export default class FeedService {
         .limit(gap + 1)
         .select("-_id");
 
-      return feeds?.map((feed) => ({
-        ...feed.toObject(),
-        like: feed?.like?.slice(0, 8),
-        likeCnt: feed?.like?.length,
-      }));
+      return feeds?.map((feed) => {
+        const myLike = (feed?.like as IUser[])?.find(
+          (who) => who.uid === this.token.uid,
+        );
+        let modifiedLike;
+        if (myLike) {
+          modifiedLike = [
+            myLike,
+            ...(feed.like as IUser[])
+              .filter((who) => who.uid !== myLike.uid)
+              .slice(0, 7),
+          ];
+        } else {
+          modifiedLike = feed.like.slice(0, 8);
+        }
+        return {
+          ...feed.toObject(),
+          like: modifiedLike,
+          likeCnt: feed?.like?.length,
+        };
+      });
     } catch (err: any) {
       throw new Error(err);
     }
