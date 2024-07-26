@@ -16,11 +16,16 @@ export default class FeedService {
 
   async findFeedByType(type: string, typeId: string) {
     try {
-      const feed = await Feed.find({ type, typeId }).populate([
+      const feeds = await Feed.find({ type, typeId }).populate([
         "writer",
         "like",
       ]);
-      return feed;
+
+      return feeds?.map((feed) => ({
+        ...feed,
+        like: feed?.like?.slice(0, 8),
+        likeCnt: feed?.like?.length,
+      }));
     } catch (err: any) {
       throw new Error(err);
     }
@@ -32,6 +37,22 @@ export default class FeedService {
         console.log("이게 머지");
       }
 
+      const feed = await Feed.findById(id).populate(["writer", "like"]);
+      return {
+        ...feed,
+        like: feed?.like?.slice(0, 8),
+        likeCnt: feed?.like?.length,
+      };
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async findFeedById2(id: string) {
+    try {
+      if (!Types.ObjectId.isValid(id)) {
+        console.log("이게 머지");
+      }
       const feed = await Feed.findById(id).populate(["writer", "like"]);
       return feed;
     } catch (err: any) {
@@ -61,7 +82,11 @@ export default class FeedService {
         .limit(gap + 1)
         .select("-_id");
 
-      return feeds;
+      return feeds?.map((feed) => ({
+        ...feed,
+        like: feed?.like?.slice(0, 8),
+        likeCnt: feed?.like?.length,
+      }));
     } catch (err: any) {
       throw new Error(err);
     }
@@ -89,7 +114,8 @@ export default class FeedService {
 
   async toggleLike(feedId: string) {
     try {
-      const feed = await this.findFeedById(feedId);
+      const feed = await this.findFeedById2(feedId);
+
       await feed?.addLike(this.token.id as unknown as string);
 
       return;
