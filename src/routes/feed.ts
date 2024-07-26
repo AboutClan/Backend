@@ -28,7 +28,7 @@ class FeedController {
 
     this.router
       .route("/like")
-      .get(this.getFeed.bind(this))
+      .get(this.getLike.bind(this))
       .post(this.createLike.bind(this));
   }
 
@@ -75,6 +75,14 @@ class FeedController {
       const feeds = await this.feedServiceInstance.findAllFeeds(cursorNum);
       return res.status(200).json(feeds);
     }
+  }
+
+  private async getLike(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.query as {
+      id: string;
+    };
+    const feed = await this.feedServiceInstance.findFeedLikeById(id);
+    return res.status(200).json(feed);
   }
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {

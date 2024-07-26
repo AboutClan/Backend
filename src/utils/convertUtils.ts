@@ -1,20 +1,36 @@
 import { avatarType, IUser } from "../db/models/user";
 
-export interface UserSummaryProps {
+export interface IUserSummary2 extends IUserSummary {
   birth: string;
-  avatar: avatarType;
   comment: string;
   isActive?: boolean;
   location: string;
-  name: string;
-  profileImage: string;
   score: number;
-  uid: string;
-  _id: string;
   monthScore: number;
 }
 
-export const convertUserToSummary = (user: IUser): UserSummaryProps => {
+export interface IUserSummary {
+  uid: string;
+  _id: string;
+  avatar: avatarType;
+  name: string;
+  profileImage: string;
+}
+
+export const convertUsersToSummary = (users: IUser[]): IUserSummary[] => {
+  return users?.map((user) => {
+    const { avatar, name, profileImage, uid, _id } = user;
+    return {
+      avatar,
+      name,
+      profileImage,
+      _id,
+      uid,
+    };
+  });
+};
+
+export const convertUserToSummary2 = (user: IUser): IUserSummary2 => {
   const {
     birth,
     avatar,

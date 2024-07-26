@@ -1,4 +1,5 @@
 import mongoose, { model, Model, Schema } from "mongoose";
+
 import { IUser } from "./user";
 
 export interface IFeed {
@@ -8,10 +9,24 @@ export interface IFeed {
   writer: string | IUser,
   type: string,
   typeId: string,
-  like: string[],
+  like: string[] | IUser[],
   addLike(userId: string): Promise<void>;
 }
 
+export interface likeType {
+  like: string | IUser;
+ 
+}
+
+export const likeSchema: Schema<likeType> = new Schema(
+  {
+    like: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  { _id: false }
+);
 
 export const FeedSchema: Schema<IFeed> = new Schema({
   title:{
@@ -34,8 +49,8 @@ export const FeedSchema: Schema<IFeed> = new Schema({
     type: String
   },
   like:{
-    type: [String],
-    default: []
+    type: [likeSchema],
+   ref:"User"
   },
 }, {  timestamps: true});
 

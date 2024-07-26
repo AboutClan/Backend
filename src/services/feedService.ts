@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
 import { JWT } from "next-auth/jwt";
 import { Feed } from "../db/models/feed";
+import { IUser } from "../db/models/user";
+import { convertUsersToSummary } from "../utils/convertUtils";
 import ImageService from "./imageService";
 
 export default class FeedService {
@@ -29,6 +31,17 @@ export default class FeedService {
 
       const feed = await Feed.findById(id).populate(["writer"]);
       return feed;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+  async findFeedLikeById(id: string) {
+    try {
+      if (!Types.ObjectId.isValid(id)) {
+        console.log("이게 머지");
+      }
+      const feed = await Feed.findById(id).populate(["like"]);
+      return convertUsersToSummary(feed?.like as IUser[]);
     } catch (err: any) {
       throw new Error(err);
     }
@@ -74,7 +87,7 @@ export default class FeedService {
   async toggleLike(feedId: string) {
     try {
       const feed = await this.findFeedById(feedId);
-      await feed?.addLike(this.token.uid);
+      await feed?.addLike(this.token.id as unknown as string);
 
       return;
     } catch (err: any) {

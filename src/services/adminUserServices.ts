@@ -1,7 +1,7 @@
 import { JWT } from "next-auth/jwt";
 import { IUser, User } from "../db/models/user";
 import { UserFilterType } from "../routes/admin/user";
-import { convertUserToSummary } from "../utils/convertUtils";
+import { convertUserToSummary2 } from "../utils/convertUtils";
 
 const logger = require("../../logger");
 
@@ -39,7 +39,7 @@ export default class AdminUserService {
 
       const users = await User.find(query);
 
-      if (isSummary) return users.map((user) => convertUserToSummary(user));
+      if (isSummary) return users.map((user) => convertUserToSummary2(user));
       else return users;
     } catch (err) {
       throw new Error();

@@ -8,7 +8,7 @@ import { Place } from "../db/models/place";
 import { Promotion } from "../db/models/promotion";
 import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
-import { convertUserToSummary } from "../utils/convertUtils";
+import { convertUserToSummary2 } from "../utils/convertUtils";
 import { getProfile } from "../utils/oAuthUtils";
 
 const logger = require("../../logger");
@@ -187,7 +187,7 @@ export default class UserService {
           {
             uid: user.uid,
             cnt: 0,
-            userSummary: convertUserToSummary(user),
+            userSummary: convertUserToSummary2(user),
           },
         ];
       }, []);
