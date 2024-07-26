@@ -14,7 +14,7 @@ export default class FeedService {
     this.imageServiceInstance = new ImageService(token);
   }
 
-  async findFeedByType(type: string, typeId: string) {
+  async findFeedByType(type?: string, typeId?: string) {
     try {
       const feeds = await Feed.find({ type, typeId }).populate([
         "writer",

@@ -58,7 +58,7 @@ class FeedController {
   private async getFeed(req: Request, res: Response, next: NextFunction) {
     const { id, type, typeId, cursor } = req.query as {
       id?: string;
-      typeId: string;
+      typeId?: string;
       cursor?: string;
       type?: string;
     };
