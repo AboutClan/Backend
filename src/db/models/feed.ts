@@ -36,8 +36,8 @@ export const FeedSchema: Schema<IFeed> = new Schema({
   like:{
     type: [String],
     default: []
-  }
-});
+  },
+}, {  timestamps: true});
 
 FeedSchema.methods.addLike = async function (userId: string) {
   const index = this.like.indexOf(userId);
