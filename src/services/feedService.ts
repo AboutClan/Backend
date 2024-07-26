@@ -14,7 +14,7 @@ export default class FeedService {
 
   async findFeedByType(type: string, typeId: string) {
     try {
-      const feed = await Feed.find({ type, typeId });
+      const feed = await Feed.find({ type, typeId }).populate(["writer"]);
       return feed;
     } catch (err: any) {
       throw new Error(err);
@@ -27,7 +27,7 @@ export default class FeedService {
         console.log("이게 머지");
       }
 
-      const feed = await Feed.findById(id);
+      const feed = await Feed.findById(id).populate(["writer"]);
       return feed;
     } catch (err: any) {
       throw new Error(err);
@@ -40,6 +40,7 @@ export default class FeedService {
       let start = gap * (cursor || 0);
 
       const feeds = await Feed.find()
+        .populate(["writer"])
         .skip(start)
         .limit(gap + 1)
         .select("-_id");
@@ -50,7 +51,7 @@ export default class FeedService {
     }
   }
 
-  async createFeed({ title, text, writer, type, buffers, typeId }: any) {
+  async createFeed({ title, text, type, buffers, typeId }: any) {
     try {
       const location = await this.imageServiceInstance.uploadImgCom(
         "feed",
@@ -59,7 +60,7 @@ export default class FeedService {
       await Feed.create({
         title,
         text,
-        writer,
+        writer: this.token.id,
         type,
         typeId,
         imageUrl: location,

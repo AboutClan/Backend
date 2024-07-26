@@ -78,7 +78,7 @@ class FeedController {
   }
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {
-    const { title, text, writer, type, typeId } = req.body;
+    const { title, text, type, typeId } = req.body;
     let buffers: Buffer[] = [];
 
     if (req.files && Array.isArray(req.files)) {
@@ -89,7 +89,6 @@ class FeedController {
       await this.feedServiceInstance.createFeed({
         title,
         text,
-        writer,
         type,
         buffers,
         typeId,

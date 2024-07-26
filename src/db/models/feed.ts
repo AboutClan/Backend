@@ -1,10 +1,11 @@
 import mongoose, { model, Model, Schema } from "mongoose";
+import { IUser } from "./user";
 
 export interface IFeed {
   title: string,
   text: string,
   imageUrl: string[],
-  writer: string,
+  writer: string | IUser,
   type: string,
   typeId: string,
   like: string[],
@@ -23,7 +24,8 @@ export const FeedSchema: Schema<IFeed> = new Schema({
     type: [String]
   },
   writer:{
-    type: String
+      type: Schema.Types.ObjectId,
+      ref: "User",
   },
   type:{
     type: String
