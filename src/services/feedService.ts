@@ -22,7 +22,7 @@ export default class FeedService {
       ]);
 
       return feeds?.map((feed) => ({
-        ...feed,
+        ...feed.toObject(),
         like: feed?.like?.slice(0, 8),
         likeCnt: feed?.like?.length,
       }));
@@ -39,7 +39,7 @@ export default class FeedService {
 
       const feed = await Feed.findById(id).populate(["writer", "like"]);
       return {
-        ...feed,
+        ...feed?.toObject(),
         like: feed?.like?.slice(0, 8),
         likeCnt: feed?.like?.length,
       };
@@ -83,7 +83,7 @@ export default class FeedService {
         .select("-_id");
 
       return feeds?.map((feed) => ({
-        ...feed,
+        ...feed.toObject(),
         like: feed?.like?.slice(0, 8),
         likeCnt: feed?.like?.length,
       }));
