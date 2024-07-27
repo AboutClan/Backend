@@ -36,6 +36,7 @@ export interface IUser extends Document, IRegistered {
   like: number;
   belong?: string;
   monthScore: number;
+  isPrivate?: boolean;
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -123,6 +124,10 @@ export const UserSchema: Schema<IUser> = new Schema({
   birth: {
     type: String,
     default: "",
+  },
+  isPrivate: {
+    type: Boolean,
+    default: false,
   },
   role: {
     type: String,

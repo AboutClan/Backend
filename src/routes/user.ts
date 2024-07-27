@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response, Router } from "express";
-import { body, query } from "express-validator";
+import { body } from "express-validator";
 import validateCheck from "../middlewares/validator";
 import UserService from "../services/userService";
 
@@ -47,6 +47,7 @@ class UserController {
       body("role").notEmpty().withMessage("Role is required."),
       this.patchRole.bind(this),
     );
+    this.router.patch("/isPrivate", this.patchIsPrivate.bind(this));
 
     this.router.patch("/rest", this.patchRest.bind(this));
     this.router.get(
@@ -244,6 +245,19 @@ class UserController {
     try {
       const { role } = req.body;
       await this.userServiceInstance.patchRole(role);
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+  private patchIsPrivate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { isPrivate } = req.body;
+      await this.userServiceInstance.patchIsPrivate(isPrivate);
       res.status(200).end();
     } catch (err) {
       next(err);

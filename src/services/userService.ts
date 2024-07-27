@@ -543,6 +543,18 @@ export default class UserService {
       throw new Error(err);
     }
   }
+  async patchIsPrivate(isPrivate: boolean) {
+    try {
+      const user = await User.findOne({ uid: this.token.uid });
+      if (!user) throw new Error();
+      user.isPrivate = isPrivate;
+      await user.save();
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    return;
+  }
 
   async setRest(info: Omit<restType, "restCnt" | "cumulativeSum">) {
     try {
