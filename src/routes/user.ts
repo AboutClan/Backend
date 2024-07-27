@@ -257,8 +257,8 @@ class UserController {
   ) => {
     try {
       const { isPrivate } = req.body;
-      await this.userServiceInstance.patchIsPrivate(isPrivate);
-      res.status(200).end();
+      // await this.userServiceInstance.patchIsPrivate(isPrivate);
+      res.status(200).json(isPrivate);
     } catch (err) {
       next(err);
     }
