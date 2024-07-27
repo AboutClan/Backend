@@ -22,6 +22,12 @@ class ImageController {
     this.router.use("/", this.createImageServiceInstance.bind(this));
 
     this.router.post(
+      "/upload",
+      this.upload.single("image"),
+      this.uploadImage.bind(this),
+    );
+
+    this.router.post(
       "/upload/vote",
       this.upload.single("image"),
       this.uploadVoteImage.bind(this),
@@ -37,6 +43,37 @@ class ImageController {
     const collectionService = new ImageService(decodedToken);
     this.setImageServiceInstance(collectionService);
     next();
+  }
+
+  private async uploadImage(req: Request, res: Response, next: NextFunction) {
+    let path = req.body.path;
+    let buffer = req.file?.buffer;
+
+    if (!buffer)
+      return res.status(400).json({
+        ok: false,
+        message: "사진 파일이 잘못되었습니다.",
+      });
+
+    try {
+      const location = await this.imageServiceInstance.uploadSingleImage(
+        path,
+        buffer,
+      );
+
+      return res.status(201).json({
+        ok: true,
+        message: "사진이 성공적으로 업로드 되었습니다.",
+        data: {
+          location,
+        },
+      });
+    } catch (err: any) {
+      return res.status(400).json({
+        ok: false,
+        message: "사진 파일이 잘못되었습니다.",
+      });
+    }
   }
 
   private async uploadVoteImage(
