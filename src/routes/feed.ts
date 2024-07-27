@@ -69,7 +69,7 @@ class FeedController {
       const feed = await this.feedServiceInstance.findFeedById(id);
       return res.status(200).json(feed);
     } else if (type) {
-      const feed = await this.feedServiceInstance.findFeedByType(type, typeId);
+      const feed = await this.feedServiceInstance.findFeedByType(type, typeId,cursorNum);
       return res.status(200).json(feed);
     } else {
       const feeds = await this.feedServiceInstance.findAllFeeds(cursorNum);

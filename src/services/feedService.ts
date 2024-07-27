@@ -14,14 +14,21 @@ export default class FeedService {
     this.imageServiceInstance = new ImageService(token);
   }
 
-  async findFeedByType(type?: string, typeId?: string) {
+  async findFeedByType(type?: string, typeId?: string, cursor?: number | null) {
     try {
+      const gap = 12;
+      let start = gap * (cursor || 0);
+
       const query: any = { type };
       if (typeId && typeId.trim() !== "") {
         query.typeId = typeId;
       }
 
-      const feeds = await Feed.find(query).populate(["writer", "like"]);
+      const feeds = await Feed.find(query)
+        .populate(["writer", "like"])
+        .skip(start)
+        .limit(gap + 1)
+        .select("-_id");
 
       return feeds?.map((feed) => {
         const myLike = (feed?.like as IUser[])?.find(
