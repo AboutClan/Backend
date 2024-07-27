@@ -543,11 +543,11 @@ export default class UserService {
       throw new Error(err);
     }
   }
-  async patchIsPrivate(isPrivate: "true" | "false") {
+  async patchIsPrivate(isPrivate: boolean) {
     try {
       const user = await User.findOne({ uid: this.token.uid });
       if (!user) throw new Error();
-      user.isPrivate = isPrivate === "true" ? true : false;
+      user.isPrivate = isPrivate;
       await user.save();
     } catch (err: any) {
       throw new Error(err);
