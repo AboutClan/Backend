@@ -42,6 +42,14 @@ class UserController {
         body("comment").notEmpty().withMessage("Comment is required."),
         this.updateComment.bind(this),
       );
+    this.router
+      .route("/instagram")
+      .get(this.getAllComments.bind(this))
+      .patch(
+        validateCheck,
+        body("instagram").notEmpty().withMessage("instagramId is required."),
+        this.updateInstagram.bind(this),
+      );
     this.router.patch(
       "/role",
       body("role").notEmpty().withMessage("Role is required."),
@@ -231,6 +239,20 @@ class UserController {
     try {
       const { comment } = req.body;
       await this.userServiceInstance.updateUser({ comment });
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private updateInstagram = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { instagram } = req.body;
+      await this.userServiceInstance.updateUser({ instagram });
       res.status(200).end();
     } catch (err) {
       next(err);
