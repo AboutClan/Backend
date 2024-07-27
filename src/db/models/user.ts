@@ -37,6 +37,7 @@ export interface IUser extends Document, IRegistered {
   belong?: string;
   monthScore: number;
   isPrivate?: boolean;
+  instagram?:string
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -184,6 +185,10 @@ export const UserSchema: Schema<IUser> = new Schema({
   like: {
     type: Number,
     default: 0,
+  },
+  instagram: {
+    type: String,
+    default: "",
   },
   studyPreference: {
     type: preferenceSchema,
