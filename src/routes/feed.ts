@@ -30,6 +30,8 @@ class FeedController {
       .route("/like")
       .get(this.getLike.bind(this))
       .post(this.createLike.bind(this));
+
+    this.router.route("/comment").post(this.createComment.bind(this));
   }
 
   private async createLike(req: Request, res: Response, next: NextFunction) {
@@ -37,6 +39,18 @@ class FeedController {
       const { id } = req.body;
 
       await this.feedServiceInstance.toggleLike(id);
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createComment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { feedId, comment } = req.body;
+
+      await this.feedServiceInstance.createComment(feedId, comment);
 
       return res.status(200).end();
     } catch (err) {
