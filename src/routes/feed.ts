@@ -69,7 +69,11 @@ class FeedController {
       const feed = await this.feedServiceInstance.findFeedById(id);
       return res.status(200).json(feed);
     } else if (type) {
-      const feed = await this.feedServiceInstance.findFeedByType(type, typeId,cursorNum);
+      const feed = await this.feedServiceInstance.findFeedByType(
+        type,
+        typeId,
+        cursorNum,
+      );
       return res.status(200).json(feed);
     } else {
       const feeds = await this.feedServiceInstance.findAllFeeds(cursorNum);
@@ -86,7 +90,7 @@ class FeedController {
   }
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {
-    const { title, text, type, typeId } = req.body;
+    const { title, text, type, typeId, isAnonymous } = req.body;
     let buffers: Buffer[] = [];
 
     if (req.files && Array.isArray(req.files)) {
@@ -100,6 +104,7 @@ class FeedController {
         type,
         buffers,
         typeId,
+        isAnonymous,
       });
 
       return res.status(200).json({ a: "success" });

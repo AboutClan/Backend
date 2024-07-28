@@ -9,6 +9,7 @@ export interface IFeed {
   writer: string | IUser,
   type: string,
   typeId: string,
+  isAnonymous?:boolean
   like: string[] | IUser[],
   addLike(userId: string): Promise<void>;
 }
@@ -47,6 +48,10 @@ export const FeedSchema: Schema<IFeed> = new Schema({
   },
   typeId:{
     type: String
+  },
+  isAnonymous: {
+    type: Boolean,
+    default:false,
   },
   like:[
       {
