@@ -5,9 +5,10 @@ export interface IContent{
     content: string
 }
 
-export interface IMessage {
-  fromUid: string;
-  toUid: string;
+export interface IChat {
+  user1: string;
+  user2: string;
+  status: string;
   contents: IContent[];
 }
 
@@ -24,21 +25,27 @@ const ContentSchema :Schema<IContent> = new Schema({
     timestamps: true
 })
 
-export const MessageSchema: Schema<IMessage> = new Schema({
-    fromUid: {
+export const ChatSchema: Schema<IChat> = new Schema({
+    user1: {
         type: String,
         required: true
     },
-    toUid: {
+    user2: {
         type: String,
         required: true
+    },
+    status: {
+        type: String,
+        required: true,
+        default: "normal"
     },
     contents: {
         type: [ContentSchema],
+        default: [],
         required: true
     }
 });
 
-export const Message =
-  (mongoose.models.Message as Model<IMessage, {}, {}, {}>) ||
-  model<IMessage>("Message", MessageSchema);
+export const Chat =
+  (mongoose.models.Chat as Model<IChat, {}, {}, {}>) ||
+  model<IChat>("Chat", ChatSchema);

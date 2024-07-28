@@ -23,7 +23,7 @@ import SquareService from "../services/squareService";
 import UserService from "../services/userService";
 import VoteService from "../services/voteService";
 import WebPushService from "../services/webPushService";
-import MessageService from "../services/messageService";
+import MessageService from "../services/chatService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;

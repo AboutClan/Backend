@@ -37,7 +37,7 @@ const promotion = require("./routes/promotion");
 const webpush = require("./routes/webpush");
 const feed = require("./routes/feed");
 const fcm = require("./routes/fcm");
-const message = require("./routes/message");
+const chat = require("./routes/chat");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
@@ -92,7 +92,7 @@ class App {
     this.app.use("/promotion", promotion);
     this.app.use("/webpush", webpush);
     this.app.use("/feed", feed);
-    this.app.use("/message", message);
+    this.app.use("/chat", chat);
     this.app.use(ErrorHandler);
   }
 
