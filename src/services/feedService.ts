@@ -25,7 +25,7 @@ export default class FeedService {
       }
 
       const feeds = await Feed.find(query)
-        .populate(["writer", "like"])
+        .populate(["writer", "like", "comments.user"])
         .skip(start)
         .limit(gap + 1);
 
@@ -61,7 +61,11 @@ export default class FeedService {
         console.log("이게 머지");
       }
 
-      const feed = await Feed.findById(id).populate(["writer", "like"]);
+      const feed = await Feed.findById(id).populate([
+        "writer",
+        "like",
+        "comments.user",
+      ]);
       const myLike = (feed?.like as IUser[])?.find(
         (who) => who.uid === this.token.uid,
       );
@@ -104,7 +108,7 @@ export default class FeedService {
       let start = gap * (cursor || 0);
 
       const feeds = await Feed.find()
-        .populate(["writer", "like"])
+        .populate(["writer", "like", "comments.user"])
         .skip(start)
         .limit(gap + 1);
 
