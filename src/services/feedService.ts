@@ -27,8 +27,7 @@ export default class FeedService {
       const feeds = await Feed.find(query)
         .populate(["writer", "like"])
         .skip(start)
-        .limit(gap + 1)
-        .select("-_id");
+        .limit(gap + 1);
 
       return feeds?.map((feed) => {
         const myLike = (feed?.like as IUser[])?.find(
@@ -107,8 +106,7 @@ export default class FeedService {
       const feeds = await Feed.find()
         .populate(["writer", "like"])
         .skip(start)
-        .limit(gap + 1)
-        .select("-_id");
+        .limit(gap + 1);
 
       return feeds?.map((feed) => {
         const myLike = (feed?.like as IUser[])?.find(
