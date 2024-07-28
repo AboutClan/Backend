@@ -2,6 +2,11 @@ import mongoose, { model, Model, Schema } from "mongoose";
 
 import { IUser } from "./user";
 
+export interface commentType {
+  user: string | IUser;
+  comment: string;
+}
+
 export interface IFeed {
   title: string,
   text: string,
@@ -10,6 +15,7 @@ export interface IFeed {
   type: string,
   typeId: string,
   like: string[] | IUser[],
+  comments: [commentType],
   addLike(userId: string): Promise<void>;
 }
 
@@ -17,6 +23,21 @@ export interface likeType {
   like: string | IUser;
  
 }
+
+export const commentSchema: Schema<commentType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 export const likeSchema: Schema<likeType> = new Schema(
   {
@@ -47,6 +68,10 @@ export const FeedSchema: Schema<IFeed> = new Schema({
   },
   typeId:{
     type: String
+  },
+  comments:{
+    type: [commentSchema],
+    default: []
   },
   like:[
       {

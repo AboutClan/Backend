@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { JWT } from "next-auth/jwt";
-import { Feed } from "../db/models/feed";
+import { commentType, Feed } from "../db/models/feed";
 import { IUser } from "../db/models/user";
 import { convertUsersToSummary } from "../utils/convertUtils";
 import ImageService from "./imageService";
@@ -150,6 +150,24 @@ export default class FeedService {
         typeId,
         images,
       });
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+  async createComment(feedId: string, content: string) {
+    try {
+      const feed = await Feed.findById(feedId);
+
+      console.log(this.token);
+
+      const message: commentType = {
+        user: this.token.id as IUser,
+        comment: content,
+      };
+      console.log(message);
+      await feed?.updateOne({ $push: { comments: message } });
+      await feed?.save();
       return;
     } catch (err: any) {
       throw new Error(err);
