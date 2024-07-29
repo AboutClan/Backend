@@ -1,10 +1,8 @@
 import mongoose, { model, Model, Schema } from "mongoose";
-import { IUser } from "./user";
 
 export interface IContent{
     uid: string;
     content: string
-    user: string | IUser;
     createdAt: string;
 }
 
@@ -20,10 +18,7 @@ const ContentSchema :Schema<IContent> = new Schema({
         type:String,
         require: true
     },
-    user: {
-        type: Schema.Types.ObjectId,
-      ref: "User",
-    },
+    
     content:{
         type:String,
         require: true

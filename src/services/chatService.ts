@@ -31,31 +31,11 @@ export default class ChatService {
     try {
       const chats = await Chat.find({
         $or: [{ user1: this.token.uid }, { user2: this.token.uid }],
-      }).populate(["contents.user"]);
-      interface Chat {
-        user1: string;
-        user2: string;
-      }
-      interface GroupedChats {
-        [key: string]: Chat[];
-      }
-
-      const groupedChats: GroupedChats = {};
-
-      chats.forEach((chat) => {
-        // 내 UID와 다른 UID를 구분합니다.
-        const otherUID =
-          chat.user1 === this.token.uid ? chat.user2 : chat.user1;
-
-        // 다른 UID를 키로 사용하여 그룹화합니다.
-        if (!groupedChats[otherUID]) {
-          groupedChats[otherUID] = [];
-        }
-        groupedChats[otherUID].push(chat);
       });
+
       return chats
         .map((chat) => ({
-          user: chat.contents?.[0]?.user,
+          //  user
           contents: chat.contents,
         }))
         .sort((a, b) => {
@@ -76,7 +56,6 @@ export default class ChatService {
       const chat = await Chat.findOne({ user1, user2 });
 
       const contentFill = {
-        user: this.token.id,
         uid: this.token.uid,
         content: message,
       };
