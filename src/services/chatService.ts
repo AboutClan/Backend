@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
-import { Chat } from "../db/models/chat";
+import { Chat, IContent } from "../db/models/chat";
 import { User } from "../db/models/user";
 import FcmService from "./fcmService";
 import WebPushService from "./webPushService";
@@ -52,6 +52,30 @@ export default class ChatService {
         const dateB = dayjs(b.contents[b.contents.length - 1].createdAt);
         return dateA.isAfter(dateB) ? -1 : 1;
       });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+  async getRecentChat() {
+    try {
+      const chats = await Chat.find({
+        $or: [{ user1: this.token.uid }, { user2: this.token.uid }],
+      });
+
+      let recentContent: IContent | null = null;
+
+      chats.forEach((chat) => {
+        chat.contents.forEach((content) => {
+          if (
+            !recentContent ||
+            dayjs(content.createdAt).isAfter(recentContent.createdAt)
+          ) {
+            recentContent = content;
+          }
+        });
+      });
+
+      return recentContent;
     } catch (err: any) {
       throw new Error(err);
     }
