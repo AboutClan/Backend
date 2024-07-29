@@ -68,7 +68,8 @@ export default class ChatService {
         chat.contents.forEach((content) => {
           if (
             !recentContent ||
-            dayjs(content.createdAt).isAfter(recentContent.createdAt)
+            (content.uid !== this.token.uid &&
+              dayjs(content.createdAt).isAfter(recentContent.createdAt))
           ) {
             recentContent = content;
           }
