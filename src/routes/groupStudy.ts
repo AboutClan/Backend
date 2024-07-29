@@ -181,7 +181,7 @@ class GroupStudyController {
           filter === "end"
             ? []
             : userParticipatingGroupStudy.filter((obj) => {
-                if (obj.status === "pending" && idArr.includes(obj.id))
+                if (obj.status !== "pending" && idArr.includes(obj.id))
                   return false;
                 return true;
               });
