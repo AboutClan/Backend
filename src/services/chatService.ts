@@ -14,6 +14,19 @@ export default class ChatService {
     this.webPushServiceInstance = new WebPushService();
   }
 
+  async getChat(toUid: string) {
+    const user1 = this.token.uid > toUid ? toUid : this.token.uid;
+    const user2 = this.token.uid < toUid ? toUid : this.token.uid;
+
+    console.log(user1, user2);
+    try {
+      const chat = await Chat.findOne({ user1, user2 });
+      return chat?.contents;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async createChat(toUid: string, message: string) {
     const user1 = this.token.uid > toUid ? toUid : this.token.uid;
     const user2 = this.token.uid < toUid ? toUid : this.token.uid;
