@@ -66,7 +66,6 @@ class ChatController {
 
     try {
       const chatList = await this.chatServiceInstance.getRecentChat();
-      console.log(chatList);
 
       return res.status(200).json(chatList);
     } catch (err: any) {

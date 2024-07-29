@@ -75,7 +75,8 @@ export default class ChatService {
         });
       });
 
-      return recentContent;
+      if (recentContent) return (recentContent as IContent)._id;
+      else return null;
     } catch (err: any) {
       throw new Error(err);
     }

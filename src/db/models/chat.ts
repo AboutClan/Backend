@@ -4,6 +4,7 @@ export interface IContent{
     uid: string;
     content: string
     createdAt: string;
+    _id: string;
 }
 
 export interface IChat {
