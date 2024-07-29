@@ -4,7 +4,7 @@ import { IUser } from "./user";
 export interface IContent{
     uid: string;
     content: string
-    id: string | IUser;
+    user: string | IUser;
 }
 
 export interface IChat {
@@ -19,7 +19,7 @@ const ContentSchema :Schema<IContent> = new Schema({
         type:String,
         require: true
     },
-    id: {
+    user: {
         type: Schema.Types.ObjectId,
       ref: "User",
     },

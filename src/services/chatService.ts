@@ -30,7 +30,7 @@ export default class ChatService {
     try {
       const chats = await Chat.find({
         $or: [{ user1: this.token.uid }, { user2: this.token.uid }],
-      });
+      }).populate(["user"]);
       interface Chat {
         user1: string;
         user2: string;
