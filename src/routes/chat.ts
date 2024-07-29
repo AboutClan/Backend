@@ -18,7 +18,10 @@ class ChatController {
   private initializeRoutes() {
     this.router.use("/", this.createChatServiceInstance.bind(this));
 
-    this.router.post("/", this.createChat.bind(this));
+    this.router
+      .route("/")
+      .post(this.createChat.bind(this))
+      .get(this.getChat.bind(this));
   }
 
   private async createChatServiceInstance(
@@ -32,12 +35,29 @@ class ChatController {
     next();
   }
 
+  private async getChat(req: Request, res: Response, next: NextFunction) {
+    const { toUid, cursor } = req.query as { toUid: string; cursor: string };
+
+    try {
+      const chatList = await this.chatServiceInstance.getChat(toUid);
+      console.log(chatList);
+
+      return res.status(200).json(chatList);
+    } catch (err: any) {
+      next(err);
+    }
+  }
+
   private async createChat(req: Request, res: Response, next: NextFunction) {
     const { toUid, message } = req.body;
 
-    await this.chatServiceInstance.createChat(toUid, message);
+    try {
+      await this.chatServiceInstance.createChat(toUid, message);
 
-    return res.status(200).end();
+      return res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   }
 }
 const chatController = new ChatController();
