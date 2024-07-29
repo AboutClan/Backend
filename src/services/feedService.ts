@@ -162,16 +162,42 @@ export default class FeedService {
     try {
       const feed = await Feed.findById(feedId);
 
-      console.log(this.token);
-
       const message: commentType = {
         user: this.token.id as IUser,
         comment: content,
       };
-      console.log(message);
       await feed?.updateOne({ $push: { comments: message } });
       await feed?.save();
       return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async deleteComment(feedId: string, commentId: string) {
+    try {
+      const feed = await Feed.findById(feedId);
+
+      await feed?.updateOne({ $pull: { comments: { _id: commentId } } });
+      await feed?.save();
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async updateComment(feedId: string, commentId: string, comment: string) {
+    try {
+      const result = await Feed.findOneAndUpdate(
+        { _id: feedId, "comments._id": commentId },
+        {
+          $set: {
+            "comments.$.comment": comment,
+          },
+        },
+      );
+
+      return result;
     } catch (err: any) {
       throw new Error(err);
     }

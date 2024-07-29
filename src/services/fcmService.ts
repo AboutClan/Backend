@@ -97,8 +97,6 @@ export default class FcmService {
   async sendNotificationToX(uid: string, title: string, body: string) {
     const user = await FcmToken.findOne({ uid });
 
-    this.sendNotification(user?.devices[0].token, {});
-
     try {
       user?.devices.forEach(async (device) => {
         const newPayload = {
