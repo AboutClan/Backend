@@ -18,10 +18,41 @@ export default class ChatService {
     const user1 = this.token.uid > toUid ? toUid : this.token.uid;
     const user2 = this.token.uid < toUid ? toUid : this.token.uid;
 
-    console.log(user1, user2);
     try {
       const chat = await Chat.findOne({ user1, user2 });
       return chat?.contents;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async getChats() {
+    try {
+      const chats = await Chat.find({
+        $or: [{ user1: this.token.uid }, { user2: this.token.uid }],
+      });
+      interface Chat {
+        user1: string;
+        user2: string;
+      }
+      interface GroupedChats {
+        [key: string]: Chat[];
+      }
+
+      const groupedChats: GroupedChats = {};
+
+      chats.forEach((chat) => {
+        // 내 UID와 다른 UID를 구분합니다.
+        const otherUID =
+          chat.user1 === this.token.uid ? chat.user2 : chat.user1;
+
+        // 다른 UID를 키로 사용하여 그룹화합니다.
+        if (!groupedChats[otherUID]) {
+          groupedChats[otherUID] = [];
+        }
+        groupedChats[otherUID].push(chat);
+      });
+      return chats;
     } catch (err: any) {
       throw new Error(err);
     }
