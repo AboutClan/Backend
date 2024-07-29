@@ -58,13 +58,11 @@ export default class ChatService {
           user: chat.contents?.[0]?.user,
           contents: chat.contents,
         }))
-        .sort((a, b) =>
-          dayjs(a.contents[a.contents.length - 1].createdAt).isAfter(
-            dayjs(b.contents[b.contents.length - 1].createdAt),
-          )
-            ? 1
-            : -1,
-        );
+        .sort((a, b) => {
+          const dateA = dayjs(a.contents[a.contents.length - 1].createdAt);
+          const dateB = dayjs(b.contents[b.contents.length - 1].createdAt);
+          return dateA.isAfter(dateB) ? 1 : -1;
+        });
     } catch (err: any) {
       throw new Error(err);
     }
