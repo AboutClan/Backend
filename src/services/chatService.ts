@@ -66,6 +66,7 @@ export default class ChatService {
       const chat = await Chat.findOne({ user1, user2 });
 
       const contentFill = {
+        id: this.token.id,
         uid: this.token.uid,
         content: message,
       };
