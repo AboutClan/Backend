@@ -52,7 +52,10 @@ export default class ChatService {
         }
         groupedChats[otherUID].push(chat);
       });
-      return chats.map((chat) => chat.contents);
+      return chats.map((chat) => ({
+        user: chat.contents?.[0]?.user,
+        contents: chat.contents,
+      }));
     } catch (err: any) {
       throw new Error(err);
     }
