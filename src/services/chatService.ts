@@ -50,7 +50,7 @@ export default class ChatService {
       return chatWithUsers.sort((a, b) => {
         const dateA = dayjs(a.contents[a.contents.length - 1].createdAt);
         const dateB = dayjs(b.contents[b.contents.length - 1].createdAt);
-        return dateA.isAfter(dateB) ? 1 : -1;
+        return dateA.isAfter(dateB) ? -1 : 1;
       });
     } catch (err: any) {
       throw new Error(err);
