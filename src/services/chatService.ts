@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { Chat } from "../db/models/chat";
+import { User } from "../db/models/user";
 import FcmService from "./fcmService";
 import WebPushService from "./webPushService";
 
@@ -33,16 +34,24 @@ export default class ChatService {
         $or: [{ user1: this.token.uid }, { user2: this.token.uid }],
       });
 
-      return chats
-        .map((chat) => ({
-          //  user
-          contents: chat.contents,
-        }))
-        .sort((a, b) => {
-          const dateA = dayjs(a.contents[a.contents.length - 1].createdAt);
-          const dateB = dayjs(b.contents[b.contents.length - 1].createdAt);
-          return dateA.isAfter(dateB) ? 1 : -1;
-        });
+      const chatWithUsers = await Promise.all(
+        chats.map(async (chat) => {
+          const opponentUid =
+            chat.user1 === this.token.uid ? chat.user2 : chat.user1;
+          const opponent = await User.findOne({ uid: opponentUid });
+
+          return {
+            user: opponent,
+            contents: chat.contents,
+          };
+        }),
+      );
+
+      return chatWithUsers.sort((a, b) => {
+        const dateA = dayjs(a.contents[a.contents.length - 1].createdAt);
+        const dateB = dayjs(b.contents[b.contents.length - 1].createdAt);
+        return dateA.isAfter(dateB) ? 1 : -1;
+      });
     } catch (err: any) {
       throw new Error(err);
     }
