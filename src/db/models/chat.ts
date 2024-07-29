@@ -1,21 +1,27 @@
-import mongoose, { model, Schema, Model } from "mongoose";
+import mongoose, { model, Model, Schema } from "mongoose";
+import { IUser } from "./user";
 
 export interface IContent{
     uid: string;
     content: string
+    id: string | IUser;
 }
 
 export interface IChat {
   user1: string;
   user2: string;
   status: string;
-  contents: IContent[];
+    contents: IContent[];
 }
 
 const ContentSchema :Schema<IContent> = new Schema({
     uid:{
         type:String,
         require: true
+    },
+    id: {
+        type: Schema.Types.ObjectId,
+      ref: "User",
     },
     content:{
         type:String,
