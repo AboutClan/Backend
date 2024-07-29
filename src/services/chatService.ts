@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { Chat } from "../db/models/chat";
 import FcmService from "./fcmService";
@@ -52,10 +53,18 @@ export default class ChatService {
         }
         groupedChats[otherUID].push(chat);
       });
-      return chats.map((chat) => ({
-        user: chat.contents?.[0]?.user,
-        contents: chat.contents,
-      }));
+      return chats
+        .map((chat) => ({
+          user: chat.contents?.[0]?.user,
+          contents: chat.contents,
+        }))
+        .sort((a, b) =>
+          dayjs(a.contents[a.contents.length - 1].createdAt).isAfter(
+            dayjs(b.contents[b.contents.length - 1].createdAt),
+          )
+            ? 1
+            : -1,
+        );
     } catch (err: any) {
       throw new Error(err);
     }
