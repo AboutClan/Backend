@@ -116,13 +116,13 @@ class FeedController {
         type,
         typeId,
         cursorNum,
-        isRecent === true || isRecent === "true",
+        isRecent === true || (isRecent as unknown as string) === "true",
       );
       return res.status(200).json(feed);
     } else {
       const feeds = await this.feedServiceInstance.findAllFeeds(
         cursorNum,
-        isRecent === true || isRecent === "true",
+        isRecent === true || (isRecent as unknown as string) === "true",
       );
       return res.status(200).json(feeds);
     }
