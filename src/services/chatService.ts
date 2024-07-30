@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
-import { Chat, IContent } from "../db/models/chat";
-import { User } from "../db/models/user";
+import { Chat } from "../db/models/chat";
+import { IUser, User } from "../db/models/user";
 import FcmService from "./fcmService";
 import WebPushService from "./webPushService";
 
@@ -20,8 +20,16 @@ export default class ChatService {
     const user1 = this.token.id > userId ? userId : this.token.id;
     const user2 = this.token.id < userId ? userId : this.token.id;
     try {
-      const chat = await Chat.findOne({ user1, user2 });
-      return chat?.contents;
+      const chat = await Chat.findOne({ user1, user2 }).populate([
+        "user1",
+        "user2",
+      ]);
+      if (!chat) return;
+      const opponent =
+        (chat.user1 as IUser).id == this.token.id
+          ? (chat.user2 as IUser)
+          : (chat.user1 as IUser);
+      return { opponent, contents: chat?.contents };
     } catch (err: any) {
       throw new Error(err);
     }
@@ -82,7 +90,6 @@ export default class ChatService {
       const chat = await Chat.findOne({ user1, user2 });
 
       const contentFill = {
-        userId: this.token.id,
         content: message,
       };
 

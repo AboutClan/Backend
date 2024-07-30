@@ -1,4 +1,5 @@
 import mongoose, { model, Model, Schema } from "mongoose";
+import { IUser } from "./user";
 
 export interface IContent{
     userId: String;
@@ -8,18 +9,14 @@ export interface IContent{
 }
 
 export interface IChat {
-  user1: String;
-  user2: String;
+  user1: String|IUser;
+  user2: String|IUser;
   status: string;
     contents: IContent[];
 }
 
 const ContentSchema :Schema<IContent> = new Schema({
-    userId:{
-        type:Schema.Types.ObjectId,
-        require: true,
-        ref: "User"
-    },
+
     
     content:{
         type:String,
