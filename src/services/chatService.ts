@@ -108,15 +108,18 @@ export default class ChatService {
       throw new Error(err);
     }
 
-    await this.fcmServiceInstance.sendNotificationToX(
-      toUserId,
-      "쪽지를 받았어요!",
-      message,
-    );
-    await this.webPushServiceInstance.sendNotificationToX(
-      toUserId,
-      "쪽지를 받았어요!",
-      message,
-    );
+    const toUser = await User.findById(toUserId);
+    if (toUser) {
+      await this.fcmServiceInstance.sendNotificationToX(
+        toUser.uid,
+        "쪽지를 받았어요!",
+        message,
+      );
+      await this.webPushServiceInstance.sendNotificationToX(
+        toUser.uid,
+        "쪽지를 받았어요!",
+        message,
+      );
+    }
   }
 }
