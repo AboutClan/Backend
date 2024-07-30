@@ -91,6 +91,7 @@ export default class ChatService {
 
       const contentFill = {
         content: message,
+        userId: this.token.id,
       };
 
       if (chat) {

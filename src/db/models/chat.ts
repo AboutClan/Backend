@@ -16,8 +16,10 @@ export interface IChat {
 }
 
 const ContentSchema :Schema<IContent> = new Schema({
-
-    
+    userId: {
+    type: String,
+      required:true,  
+    },
     content:{
         type:String,
         require: true
