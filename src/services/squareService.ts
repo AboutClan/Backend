@@ -30,41 +30,23 @@ export default class SquareService {
   }: {
     category: SecretSquareCategory | "all";
   }) {
-    if (category === "all") {
-      return await SecretSquare.aggregate([
-        {
-          $project: {
-            category: 1,
-            title: 1,
-            content: 1,
-            type: 1,
-            thumbnail: { $slice: ["$images", 1] },
-            viewCount: 1,
-            likeCount: { $size: "$like" },
-            commentsCount: { $size: "$comments" },
-          },
-        },
-      ]);
-    }
-    return await SecretSquare.aggregate([
-      {
-        $match: {
-          category,
+    return await SecretSquare.find(category === "all" ? {} : { category }, {
+      category: 1,
+      title: 1,
+      content: 1,
+      type: 1,
+      thumbnail: {
+        $cond: {
+          if: { $eq: [{ $size: "$images" }, 0] },
+          then: "",
+          else: { $arrayElemAt: ["$images", 1] },
         },
       },
-      {
-        $project: {
-          category: 1,
-          title: 1,
-          content: 1,
-          type: 1,
-          thumbnail: { $slice: ["$images", 1] },
-          viewCount: 1,
-          likeCount: { $size: "$like" },
-          commentsCount: { $size: "$comments" },
-        },
-      },
-    ]);
+      viewCount: 1,
+      likeCount: { $size: "$like" },
+      commentsCount: { $size: "$comments" },
+      createdAt: 1,
+    });
   }
 
   async createSquare(square: Square & { buffers: Buffer[] }) {
