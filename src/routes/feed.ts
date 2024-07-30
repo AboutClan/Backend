@@ -120,7 +120,10 @@ class FeedController {
       );
       return res.status(200).json(feed);
     } else {
-      const feeds = await this.feedServiceInstance.findAllFeeds(cursorNum);
+      const feeds = await this.feedServiceInstance.findAllFeeds(
+        cursorNum,
+        isRecent,
+      );
       return res.status(200).json(feeds);
     }
   }

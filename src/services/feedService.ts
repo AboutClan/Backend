@@ -108,14 +108,14 @@ export default class FeedService {
     }
   }
 
-  async findAllFeeds(cursor: number | null) {
+  async findAllFeeds(cursor: number | null, isRecent?: boolean) {
     try {
       const gap = 12;
       let start = gap * (cursor || 0);
 
       const feeds = await Feed.find()
         .populate(["writer", "like", "comments.user"])
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
         .limit(gap);
 
