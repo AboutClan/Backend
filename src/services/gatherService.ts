@@ -48,7 +48,7 @@ export default class GatherService {
       let gatherData = await Gather.find()
         .sort({ id: -1 })
         .skip(start)
-        .limit(gap + 1)
+        .limit(gap)
         .select("-_id");
 
       gatherData = await Gather.populate(gatherData, [
