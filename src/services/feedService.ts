@@ -28,7 +28,7 @@ export default class FeedService {
         .populate(["writer", "like", "comments.user"])
         .sort({ createdAt: -1 })
         .skip(start)
-        .limit(gap + 1);
+        .limit(gap);
 
       return feeds?.map((feed) => {
         const myLike = (feed?.like as IUser[])?.find(
@@ -112,7 +112,7 @@ export default class FeedService {
         .populate(["writer", "like", "comments.user"])
         .sort({ createdAt: -1 })
         .skip(start)
-        .limit(gap + 1);
+        .limit(gap);
 
       return feeds?.map((feed) => {
         const myLike = (feed?.like as IUser[])?.find(
