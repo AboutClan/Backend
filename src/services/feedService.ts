@@ -165,7 +165,7 @@ export default class FeedService {
       const feed = await Feed.findById(feedId);
 
       const message: commentType = {
-        user: this.token.id as IUser,
+        user: this.token.id,
         comment: content,
       };
       await feed?.updateOne({ $push: { comments: message } });

@@ -13,8 +13,9 @@ export interface kakaoProfileInfo {
 
 export const getRefreshedAccessToken = async (uid: string) => {
   const account = await Account.findOne({ providerAccountId: uid.toString() });
-
+  const user = await User.findOne({ uid });
   const token: JWT = {
+    id: user?._id,
     uid,
     refreshToken: account?.refresh_token,
   };

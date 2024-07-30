@@ -128,7 +128,7 @@ export default class GatherService {
 
     try {
       gather.participants = gather.participants.filter(
-        (participant) => participant.user != (this.token.id as IUser),
+        (participant) => participant.user != this.token.id,
       );
       await gather.save();
       const user = await User.findOne({ _id: this.token.id });
@@ -163,7 +163,7 @@ export default class GatherService {
 
     try {
       gather.comment.push({
-        user: this.token.id as IUser,
+        user: this.token.id,
         comment,
       });
 
