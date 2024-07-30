@@ -170,6 +170,11 @@ export default class FeedService {
       };
       await feed?.updateOne({ $push: { comments: message } });
       await feed?.save();
+
+      const user = await User.findOne({ uid: this.token.uid });
+      if (user) user.point += 2;
+      await user?.save();
+
       return;
     } catch (err: any) {
       throw new Error(err);
