@@ -108,10 +108,6 @@ class FeedController {
 
     const cursorNum = cursor ? parseInt(cursor) : null;
 
-    if (isRecent !== undefined) {
-      return res.status(200).json(isRecent);
-    }
-
     if (id) {
       const feed = await this.feedServiceInstance.findFeedById(id);
       return res.status(200).json(feed);
@@ -120,13 +116,13 @@ class FeedController {
         type,
         typeId,
         cursorNum,
-        isRecent,
+        isRecent === true || isRecent === "true",
       );
       return res.status(200).json(feed);
     } else {
       const feeds = await this.feedServiceInstance.findAllFeeds(
         cursorNum,
-        isRecent,
+        isRecent === true || isRecent === "true",
       );
       return res.status(200).json(feeds);
     }
