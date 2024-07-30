@@ -54,7 +54,6 @@ export default class FeedService {
           ...feed.toObject(),
           like: modifiedLike,
           likeCnt: feed?.like?.length,
-          isRecent,
         };
       });
     } catch (err: any) {
