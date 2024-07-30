@@ -33,7 +33,7 @@ export default class GroupStudyService {
 
     groupStudyData = await GroupStudy.find(filterQuery)
       .skip(start)
-      .limit(gap + 1)
+      .limit(gap)
       .populate({
         path: "organizer",
         select: "name profileImage uid score avatar comment",
@@ -255,11 +255,11 @@ export default class GroupStudyService {
     try {
       if (
         !groupStudy.participants.some(
-          (participant) => participant.user == (this.token.id as IUser),
+          (participant) => participant.user == this.token.id,
         )
       ) {
         groupStudy.participants.push({
-          user: this.token.id as IUser,
+          user: this.token.id,
           role: "member",
           attendCnt: 0,
         });
@@ -290,7 +290,7 @@ export default class GroupStudyService {
 
     try {
       groupStudy.participants = groupStudy.participants.filter(
-        (participant) => participant.user != (this.token.id as IUser),
+        (participant) => participant.user != this.token.id,
       );
 
       groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
@@ -351,7 +351,7 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      const user = { user: this.token.id as IUser, answer, pointType };
+      const user = { user: this.token.id, answer, pointType };
       if (groupStudy?.waiting) {
         if (groupStudy.waiting.includes(user)) {
           return;
@@ -485,13 +485,13 @@ export default class GroupStudyService {
     try {
       if (groupStudy?.comment) {
         groupStudy.comment.push({
-          user: this.token.id as IUser,
+          user: this.token.id,
           comment,
         });
       } else {
         groupStudy.comment = [
           {
-            user: this.token.id as IUser,
+            user: this.token.id,
             comment,
           },
         ];
