@@ -76,7 +76,7 @@ export default class ChatService {
         .sort({ createdAt: -1 })
         .limit(1);
 
-      return chat;
+      return chat?.[0]._id;
     } catch (err: any) {
       throw new Error(err);
     }
