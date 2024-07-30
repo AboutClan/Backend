@@ -14,7 +14,12 @@ export default class FeedService {
     this.imageServiceInstance = new ImageService(token);
   }
 
-  async findFeedByType(type?: string, typeId?: string, cursor?: number | null) {
+  async findFeedByType(
+    type?: string,
+    typeId?: string,
+    cursor?: number | null,
+    isRecent?: boolean,
+  ) {
     try {
       const gap = 12;
       let start = gap * (cursor || 0);
@@ -26,7 +31,7 @@ export default class FeedService {
 
       const feeds = await Feed.find(query)
         .populate(["writer", "like", "comments.user"])
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
         .limit(gap);
 

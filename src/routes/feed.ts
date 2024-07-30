@@ -98,11 +98,12 @@ class FeedController {
   }
 
   private async getFeed(req: Request, res: Response, next: NextFunction) {
-    const { id, type, typeId, cursor } = req.query as {
+    const { id, type, typeId, cursor, isRecent } = req.query as {
       id?: string;
       typeId?: string;
       cursor?: string;
       type?: string;
+      isRecent?: boolean;
     };
 
     const cursorNum = cursor ? parseInt(cursor) : null;
@@ -115,6 +116,7 @@ class FeedController {
         type,
         typeId,
         cursorNum,
+        isRecent,
       );
       return res.status(200).json(feed);
     } else {
