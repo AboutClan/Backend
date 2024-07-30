@@ -43,6 +43,7 @@ class SquareController {
         body(["category", "author"], "category or author are empty").notEmpty(),
         body("pollItems")
           .optional()
+          .isLength({ min: 2, max: 5 })
           .customSanitizer((pollItems) => JSON.parse(pollItems)),
         body("canMultiple").optional().toBoolean(),
         validateCheck,
