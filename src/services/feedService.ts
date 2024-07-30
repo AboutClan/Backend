@@ -26,6 +26,7 @@ export default class FeedService {
 
       const feeds = await Feed.find(query)
         .populate(["writer", "like", "comments.user"])
+        .sort({ createdAt: -1 })
         .skip(start)
         .limit(gap + 1);
 
