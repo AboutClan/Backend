@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 
-const { body, validationResult } = require("express-validator");
+import { validationResult } from "express-validator";
 
 export default function validateCheck(
   req: Request,

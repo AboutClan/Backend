@@ -4,7 +4,28 @@ export type SecretSquareCategory = "일상" | "고민" | "정보" | "같이해�
 
 export type SecretSquareType = "general" | "poll";
 
-// TODO add fields (images)
+interface Comment {
+  user: Types.ObjectId;
+  comment: string;
+}
+
+export const commentSchema = new Schema<Comment>(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    comment: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
 interface SecretSquareItem {
   category: SecretSquareCategory;
   title: string;
@@ -14,12 +35,15 @@ interface SecretSquareItem {
     pollItems: PollItem[];
     canMultiple: boolean;
   };
+  images: string[];
   author: Types.ObjectId;
   viewCount: number;
-  likeCount: number;
+  like: Types.ObjectId[];
+  comments: Comment[];
 }
 
 interface PollItem {
+  _id: Types.ObjectId;
   name: string;
   users: Types.ObjectId[];
 }
@@ -36,16 +60,21 @@ const pollItemSchema = new Schema<PollItem>({
   },
 });
 
-const pollSchema = new Schema({
-  pollItems: {
-    type: [pollItemSchema],
-    required: true,
+const pollSchema = new Schema(
+  {
+    pollItems: {
+      type: [pollItemSchema],
+      required: true,
+    },
+    canMultiple: {
+      type: Boolean,
+      required: true,
+    },
   },
-  canMultiple: {
-    type: Boolean,
-    required: true,
+  {
+    _id: false,
   },
-});
+);
 
 export const secretSquareSchema = new Schema<SecretSquareItem>(
   {
@@ -56,10 +85,12 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
     title: {
       type: String,
       required: true,
+      minLength: 3,
     },
     content: {
       type: String,
       required: true,
+      minLength: 10,
     },
     type: {
       type: String,
@@ -73,13 +104,21 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
       ref: "User",
       required: true,
     },
+    images: {
+      type: [String],
+      default: [],
+    },
     viewCount: {
       type: Number,
       default: 0,
     },
-    likeCount: {
-      type: Number,
-      default: 0,
+    like: {
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+    },
+    comments: {
+      type: [commentSchema],
+      default: [],
     },
   },
   {
