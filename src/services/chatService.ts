@@ -42,14 +42,19 @@ export default class ChatService {
 
           return {
             user: opponent,
-            contents: chat.contents,
+            content: chat.contents.length
+              ? chat.contents[chat.contents.length - 1]
+              : null,
           };
         }),
       );
 
       return chatWithUsers.sort((a, b) => {
-        const dateA = dayjs(a.contents[a.contents.length - 1].createdAt);
-        const dateB = dayjs(b.contents[b.contents.length - 1].createdAt);
+        if (!a.content || !b.content) {
+          return 1;
+        }
+        const dateA = dayjs(a.content.createdAt);
+        const dateB = dayjs(b.content.createdAt);
         return dateA.isAfter(dateB) ? -1 : 1;
       });
     } catch (err: any) {
