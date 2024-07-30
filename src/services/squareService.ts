@@ -107,7 +107,21 @@ export default class SquareService {
       title: 1,
       content: 1,
       type: 1,
-      poll: 1,
+      poll: {
+        pollItems: {
+          $map: {
+            input: "$poll.pollItems",
+            as: "pollItem",
+            in: {
+              _id: "$$pollItem._id",
+              name: "$$pollItem.name",
+              count: { $size: "$$pollItem.users" },
+              users: 0,
+            },
+          },
+        },
+        canMultiple: 1,
+      },
       images: 1,
       viewCount: 1,
       likeCount: { $size: "$like" },
