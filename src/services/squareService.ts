@@ -115,22 +115,40 @@ export default class SquareService {
     await SecretSquare.findByIdAndDelete(squareId);
   }
 
-  // TODO
-  // return updated viewCount
-  // omit user from comments array
   async getSquare(squareId: string) {
-    const secretSquare = await SecretSquare.findByIdAndUpdate(squareId, {
+    await SecretSquare.findByIdAndUpdate(squareId, {
       $inc: { viewCount: 1 },
     });
+
+    const secretSquare = await SecretSquare.findById(squareId, {
+      category: 1,
+      title: 1,
+      content: 1,
+      type: 1,
+      poll: 1,
+      images: 1,
+      viewCount: 1,
+      likeCount: { $size: "$like" },
+      comments: {
+        $map: {
+          input: "$comments",
+          as: "comment",
+          in: {
+            _id: "$$comment._id",
+            comment: "$$comment.comment",
+            createdAt: "$$comment.createdAt",
+            updatedAt: "$$comment.updatedAt",
+          },
+        },
+      },
+      createdAt: 1,
+      updatedAt: 1,
+    });
+
     // TODO 404 NOT FOUND
     if (!secretSquare) {
       throw new Error("not found");
     }
-
-    const processedComments = secretSquare.comments.map((comment) => {
-      const { user, ...restCommentFields } = comment;
-      return restCommentFields;
-    });
 
     return secretSquare;
   }

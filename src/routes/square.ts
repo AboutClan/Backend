@@ -55,7 +55,7 @@ class SquareController {
         param("squareId").notEmpty(),
         validateCheck,
         this.getSquare.bind(this),
-      ) // have problem
+      )
       .delete(
         param("squareId").notEmpty(),
         validateCheck,
