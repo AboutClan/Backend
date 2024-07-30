@@ -90,10 +90,14 @@ FeedSchema.methods.addLike = async function (userId: string) {
   const index = this.like.indexOf(userId);
   if (index === -1) {
     this.like.push(userId);
+    await this.save();
+    return true;
   } else {
     this.like.splice(index, 1); // Remove userId from the array
+    await this.save();
+    return false;
   }
-  await this.save();
+
 };
 
 export const Feed =

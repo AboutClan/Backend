@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { JWT } from "next-auth/jwt";
 import { commentType, Feed } from "../db/models/feed";
-import { IUser } from "../db/models/user";
+import { IUser, User } from "../db/models/user";
 import { convertUsersToSummary } from "../utils/convertUtils";
 import ImageService from "./imageService";
 
@@ -208,8 +208,15 @@ export default class FeedService {
   async toggleLike(feedId: string) {
     try {
       const feed = await Feed.findById(feedId);
-      await feed?.addLike(this.token.id as unknown as string);
+      const isLikePush = await feed?.addLike(
+        this.token.id as unknown as string,
+      );
 
+      const user = await User.findOne({ uid: this.token.uid });
+      if (!user) return;
+      if (isLikePush) user.point += 2;
+      else user.point -= 1;
+      await user.save();
       return;
     } catch (err: any) {
       throw new Error(err);
