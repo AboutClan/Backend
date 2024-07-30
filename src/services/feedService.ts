@@ -35,6 +35,10 @@ export default class FeedService {
         .skip(start)
         .limit(gap);
 
+      if (isRecent === false) {
+        feeds.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
+      }
+
       return feeds?.map((feed) => {
         const myLike = (feed?.like as IUser[])?.find(
           (who) => who.uid === this.token.uid,

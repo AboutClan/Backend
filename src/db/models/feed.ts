@@ -17,6 +17,7 @@ export interface IFeed {
   isAnonymous?:boolean
   like: string[] | IUser[],
   comments: [commentType],
+  createdAt:string,
   addLike(userId: string): Promise<void>;
 }
 
