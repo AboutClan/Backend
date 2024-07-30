@@ -65,9 +65,9 @@ class ChatController {
     const { cursor } = req.query as { cursor: string };
 
     try {
-      const chatList = await this.chatServiceInstance.getRecentChat();
+      const chat = await this.chatServiceInstance.getRecentChat();
 
-      return res.status(200).json(chatList);
+      return res.status(200).json(chat);
     } catch (err: any) {
       next(err);
     }

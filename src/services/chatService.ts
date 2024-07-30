@@ -16,10 +16,9 @@ export default class ChatService {
     this.webPushServiceInstance = new WebPushService();
   }
 
-  async getChat(toUid: string) {
-    const user1 = this.token.uid > toUid ? toUid : this.token.uid;
-    const user2 = this.token.uid < toUid ? toUid : this.token.uid;
-
+  async getChat(userId: string) {
+    const user1 = this.token.id > userId ? userId : this.token.id;
+    const user2 = this.token.id < userId ? userId : this.token.id;
     try {
       const chat = await Chat.findOne({ user1, user2 });
       return chat?.contents;
@@ -31,14 +30,14 @@ export default class ChatService {
   async getChats() {
     try {
       const chats = await Chat.find({
-        $or: [{ user1: this.token.uid }, { user2: this.token.uid }],
+        $or: [{ user1: this.token.id }, { user2: this.token.id }],
       });
 
       const chatWithUsers = await Promise.all(
         chats.map(async (chat) => {
           const opponentUid =
-            chat.user1 === this.token.uid ? chat.user2 : chat.user1;
-          const opponent = await User.findOne({ uid: opponentUid });
+            chat.user1 == this.token.id ? chat.user2 : chat.user1;
+          const opponent = await User.findById(opponentUid);
 
           return {
             user: opponent,
@@ -63,40 +62,27 @@ export default class ChatService {
   }
   async getRecentChat() {
     try {
-      const chats = await Chat.find({
-        $or: [{ user1: this.token.uid }, { user2: this.token.uid }],
-      });
+      const chat = await Chat.find({
+        $or: [{ user1: this.token.id }, { user2: this.token.id }],
+      })
+        .sort({ createdAt: -1 })
+        .limit(1);
 
-      let recentContent: IContent | null = null;
-
-      chats.forEach((chat) => {
-        chat.contents.forEach((content) => {
-          if (
-            !recentContent ||
-            (content.uid !== this.token.uid &&
-              dayjs(content.createdAt).isAfter(recentContent.createdAt))
-          ) {
-            recentContent = content;
-          }
-        });
-      });
-
-      if (recentContent) return (recentContent as IContent)._id;
-      else return null;
+      return chat;
     } catch (err: any) {
       throw new Error(err);
     }
   }
 
-  async createChat(toUid: string, message: string) {
-    const user1 = this.token.uid > toUid ? toUid : this.token.uid;
-    const user2 = this.token.uid < toUid ? toUid : this.token.uid;
+  async createChat(toUserId: string, message: string) {
+    const user1 = this.token.id > toUserId ? toUserId : this.token.id;
+    const user2 = this.token.id < toUserId ? toUserId : this.token.id;
 
     try {
       const chat = await Chat.findOne({ user1, user2 });
 
       const contentFill = {
-        uid: this.token.uid,
+        userId: this.token.id,
         content: message,
       };
 
@@ -115,12 +101,12 @@ export default class ChatService {
     }
 
     await this.fcmServiceInstance.sendNotificationToX(
-      toUid,
+      toUserId,
       "쪽지를 받았어요!",
       message,
     );
     await this.webPushServiceInstance.sendNotificationToX(
-      toUid,
+      toUserId,
       "쪽지를 받았어요!",
       message,
     );
