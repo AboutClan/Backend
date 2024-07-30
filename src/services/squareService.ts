@@ -39,7 +39,7 @@ export default class SquareService {
         $cond: {
           if: { $eq: [{ $size: "$images" }, 0] },
           then: "",
-          else: { $arrayElemAt: ["$images", 1] },
+          else: { $arrayElemAt: ["$images", 0] },
         },
       },
       viewCount: 1,
