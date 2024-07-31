@@ -149,7 +149,15 @@ export default class FeedService {
     }
   }
 
-  async createFeed({ title, text, type, buffers, typeId, isAnonymous }: any) {
+  async createFeed({
+    title,
+    text,
+    type,
+    buffers,
+    typeId,
+    isAnonymous,
+    subCategory,
+  }: any) {
     try {
       const images = await this.imageServiceInstance.uploadImgCom(
         "feed",
@@ -163,6 +171,7 @@ export default class FeedService {
         typeId,
         images,
         isAnonymous,
+        subCategory,
       });
       return;
     } catch (err: any) {
