@@ -19,6 +19,7 @@ export interface IFeed {
   comments: [commentType],
   createdAt:string,
   addLike(userId: string): Promise<void>;
+  subCategory: string,
 }
 
 export interface likeType {
@@ -74,6 +75,10 @@ export const FeedSchema: Schema<IFeed> = new Schema({
   isAnonymous: {
     type: Boolean,
     default: false,
+  },
+  subCategory: {
+    type: String,
+  
   },
   comments:{
     type: [commentSchema],
