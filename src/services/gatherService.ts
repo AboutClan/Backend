@@ -1,7 +1,13 @@
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
-import { Gather, gatherStatus, IGatherData } from "../db/models/gather";
+import {
+  Gather,
+  gatherStatus,
+  IGatherData,
+  subCommentType,
+} from "../db/models/gather";
 import { IUser, User } from "../db/models/user";
+import dbConnect from "../db/conn";
 
 const logger = require("../../logger");
 
@@ -157,12 +163,76 @@ export default class GatherService {
     }
   }
 
+  async createSubComment(gatherId: string, commentId: string, content: string) {
+    try {
+      const message: subCommentType = {
+        user: this.token.id,
+        comment: content,
+      };
+
+      await Gather.updateOne(
+        {
+          _id: gatherId,
+          "comments._id": commentId,
+        },
+        { $push: { "comments.$.subComments": message } },
+      );
+
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async deleteSubComment(
+    gatherId: string,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      await Gather.updateOne(
+        {
+          _id: gatherId,
+          "comments._id": commentId,
+        },
+        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+      );
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async updateSubComment(
+    gatherId: string,
+    commentId: string,
+    subCommentId: string,
+    comment: string,
+  ) {
+    try {
+      await Gather.updateOne(
+        {
+          _id: gatherId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+        {
+          arrayFilters: [{ "sub._id": subCommentId }],
+        },
+      );
+
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async createComment(gatherId: string, comment: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) throw new Error();
 
     try {
-      gather.comment.push({
+      gather.comments.push({
         user: this.token.id,
         comment,
       });
@@ -178,7 +248,7 @@ export default class GatherService {
     if (!gather) throw new Error();
 
     try {
-      gather.comment = gather.comment.filter(
+      gather.comments = gather.comments.filter(
         (com: any) => (com._id as string) != commentId,
       );
 
@@ -193,7 +263,7 @@ export default class GatherService {
     if (!gather) throw new Error();
 
     try {
-      gather.comment.forEach(async (com: any) => {
+      gather.comments.forEach(async (com: any) => {
         if ((com._id as string) == commentId) {
           com.comment = comment;
           await gather.save();
