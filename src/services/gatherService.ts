@@ -1,7 +1,7 @@
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { Gather, gatherStatus, IGatherData } from "../db/models/gather";
-import { IUser, User } from "../db/models/user";
+import { User } from "../db/models/user";
 
 const logger = require("../../logger");
 
@@ -25,7 +25,7 @@ export default class GatherService {
     const gatherData = await Gather.findOne({ id: gatherId }).populate([
       "user",
       "participants.user",
-      "comment.user",
+      "comments.user",
     ]);
 
     return gatherData;
@@ -33,7 +33,7 @@ export default class GatherService {
 
   async getThreeGather() {
     const gatherData = await Gather.find()
-      .populate(["user", "participants.user", "comment.user"])
+      .populate(["user", "participants.user", "comments.user"])
       .sort({ id: -1 })
       .limit(3);
 
@@ -54,7 +54,7 @@ export default class GatherService {
       gatherData = await Gather.populate(gatherData, [
         { path: "user" },
         { path: "participants.user" },
-        { path: "comment.user" },
+        { path: "comments.user" },
       ]);
       return gatherData;
     } catch (err: any) {
