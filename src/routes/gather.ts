@@ -71,6 +71,11 @@ class GatherController {
         validateCheck,
         this.patchComment.bind(this),
       );
+    this.router
+      .route("/subComment")
+      .post(this.createSubComment.bind(this))
+      .delete(this.deleteSubComment.bind(this))
+      .patch(this.updateSubComment.bind(this));
 
     this.router
       .route("/status")
@@ -231,6 +236,67 @@ class GatherController {
       await this.gatherServiceInstance?.patchComment(id, commentId, comment);
       res.status(200).end();
     } catch (err: any) {
+      next(err);
+    }
+  }
+
+  private async updateSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { gatherId, commentId, subCommentId, comment } = req.body;
+
+      await this.gatherServiceInstance.updateSubComment(
+        gatherId,
+        commentId,
+        subCommentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { gatherId, comment, commentId } = req.body;
+
+      await this.gatherServiceInstance.createSubComment(
+        gatherId,
+        commentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async deleteSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { gatherId, commentId, subCommentId } = req.body;
+
+      await this.gatherServiceInstance.deleteSubComment(
+        gatherId,
+        commentId,
+        subCommentId,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
       next(err);
     }
   }

@@ -119,6 +119,12 @@ class GroupStudyController {
       );
 
     this.router
+      .route("/subComment")
+      .post(this.createSubComment.bind(this))
+      .delete(this.deleteSubComment.bind(this))
+      .patch(this.updateSubComment.bind(this));
+
+    this.router
       .route("/belong/match")
       .patch(validateCheck, this.belongToParticipateGroupStudy.bind(this));
   }
@@ -291,6 +297,67 @@ class GroupStudyController {
         randomId,
       );
       res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async updateSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { groupStudyId, commentId, subCommentId, comment } = req.body;
+
+      await this.groupStudyServiceInstance.updateSubComment(
+        groupStudyId,
+        commentId,
+        subCommentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { groupStudyId, comment, commentId } = req.body;
+
+      await this.groupStudyServiceInstance.createSubComment(
+        groupStudyId,
+        commentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async deleteSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { groupStudyId, commentId, subCommentId } = req.body;
+
+      await this.groupStudyServiceInstance.deleteSubComment(
+        groupStudyId,
+        commentId,
+        subCommentId,
+      );
+
+      return res.status(200).end();
     } catch (err) {
       next(err);
     }

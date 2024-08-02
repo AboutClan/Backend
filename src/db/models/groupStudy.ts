@@ -7,6 +7,10 @@ interface ICategory {
   main: string;
   sub: string;
 }
+export interface subCommentType{
+  user: string | IUser;
+  comment: string;
+}
 
 export interface memberCntType {
   min: number;
@@ -29,6 +33,7 @@ interface IWaiting {
 export interface commentType {
   user: string | IUser;
   comment: string;
+  subComments?: subCommentType[]
 }
 
 export interface IGroupStudyData {
@@ -47,7 +52,7 @@ export interface IGroupStudyData {
   status: GroupStudyStatus;
   participants: participantsType[];
   user: string | IUser;
-  comment: commentType[];
+  comments: commentType[];
   id: number;
   location: string;
   image?: string;
@@ -152,6 +157,21 @@ export const participantsSchema: Schema<participantsType> = new Schema(
   { _id: false }
 );
 
+export const subCommentSchema: Schema<subCommentType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 export const commentSchema: Schema<commentType> = new Schema(
   {
     user: {
@@ -161,6 +181,10 @@ export const commentSchema: Schema<commentType> = new Schema(
     comment: {
       type: String,
     },
+    subComments:{
+      type: [subCommentSchema],
+      default: []
+    }
   },
   {
     timestamps: true,
@@ -263,7 +287,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     period: {
       type: String,
     },
-    comment: {
+    comments: {
       type: [commentSchema],
     },
     link: {
@@ -288,7 +312,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true}
 );
 
 export const GroupStudy =
