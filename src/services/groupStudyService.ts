@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { GroupStudy, IGroupStudyData } from "../db/models/groupStudy";
-import { IUser, User } from "../db/models/user";
+import { User } from "../db/models/user";
 import WebPushService from "./webPushService";
 
 export default class GroupStudyService {
@@ -47,7 +47,7 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment",
       })
       .populate({
-        path: "comment.user",
+        path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
@@ -78,7 +78,7 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment",
       })
       .populate({
-        path: "comment.user",
+        path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
@@ -104,7 +104,7 @@ export default class GroupStudyService {
           select: "name profileImage uid score avatar comment",
         })
         .populate({
-          path: "comment.user",
+          path: "comments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
@@ -133,7 +133,7 @@ export default class GroupStudyService {
           select: "name profileImage uid score avatar comment",
         })
         .populate({
-          path: "comment.user",
+          path: "comments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
@@ -161,7 +161,7 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment",
       })
       .populate({
-        path: "comment.user",
+        path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
@@ -181,7 +181,7 @@ export default class GroupStudyService {
         //   "organizer",
         //   "participants.user",
         //   "waiting.user",
-        //   "comment.user",
+        //   "comments.user",
         // ])
         .populate({
           path: "organizer",
@@ -196,7 +196,7 @@ export default class GroupStudyService {
           select: "name profileImage uid score avatar comment",
         })
         .populate({
-          path: "comment.user",
+          path: "comments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
