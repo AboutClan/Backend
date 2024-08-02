@@ -5,6 +5,12 @@ import { IUser } from "./user";
 export interface commentType {
   user: string | IUser;
   comment: string;
+  subComments?: subCommentType[]
+}
+
+export interface subCommentType{
+  user: string | IUser;
+  comment: string;
 }
 
 export interface IFeed {
@@ -16,7 +22,7 @@ export interface IFeed {
   typeId: string,
   isAnonymous?:boolean
   like: string[] | IUser[],
-  comments: [commentType],
+  comments: commentType[],
   createdAt:string,
   addLike(userId: string): Promise<void>;
   subCategory: string,
@@ -27,6 +33,21 @@ export interface likeType {
  
 }
 
+export const subCommentSchema: Schema<subCommentType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 export const commentSchema: Schema<commentType> = new Schema(
   {
     user: {
@@ -36,6 +57,10 @@ export const commentSchema: Schema<commentType> = new Schema(
     comment: {
       type: String,
     },
+    subComments:{
+      type: [subCommentSchema],
+      default: []
+    }
   },
   {
     timestamps: true,
