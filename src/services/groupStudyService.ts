@@ -1,17 +1,12 @@
 import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
-<<<<<<< HEAD
-import { GroupStudy, IGroupStudyData } from "../db/models/groupStudy";
-import { User } from "../db/models/user";
-=======
 import {
   GroupStudy,
   IGroupStudyData,
   subCommentType,
 } from "../db/models/groupStudy";
 import { IUser, User } from "../db/models/user";
->>>>>>> 997057b (Update subcomment)
 import WebPushService from "./webPushService";
 
 export default class GroupStudyService {
