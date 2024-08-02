@@ -36,6 +36,11 @@ class FeedController {
       .post(this.createComment.bind(this))
       .delete(this.deleteComment.bind(this))
       .patch(this.updateComment.bind(this));
+    this.router
+      .route("/subComment")
+      .post(this.createSubComment.bind(this))
+      .delete(this.deleteSubComment.bind(this))
+      .patch(this.updateSubComment.bind(this));
   }
 
   private async createLike(req: Request, res: Response, next: NextFunction) {
@@ -79,6 +84,67 @@ class FeedController {
       const { feedId, commentId } = req.body;
 
       await this.feedServiceInstance.deleteComment(feedId, commentId);
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async updateSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { feedId, commentId, subCommentId, comment } = req.body;
+
+      await this.feedServiceInstance.updateSubComment(
+        feedId,
+        commentId,
+        subCommentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { feedId, comment, commentId } = req.body;
+
+      await this.feedServiceInstance.createSubComment(
+        feedId,
+        commentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async deleteSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { feedId, commentId, subCommentId } = req.body;
+
+      await this.feedServiceInstance.deleteSubComment(
+        feedId,
+        commentId,
+        subCommentId,
+      );
 
       return res.status(200).end();
     } catch (err) {
