@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { JWT } from "next-auth/jwt";
-import { commentType, Feed } from "../db/models/feed";
+import { commentType, Feed, subCommentType } from "../db/models/feed";
 import { IUser, User } from "../db/models/user";
 import { convertUsersToSummary } from "../utils/convertUtils";
 import ImageService from "./imageService";
@@ -223,6 +223,70 @@ export default class FeedService {
       );
 
       return result;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createSubComment(feedId: string, commentId: string, content: string) {
+    try {
+      const message: subCommentType = {
+        user: this.token.id,
+        comment: content,
+      };
+
+      await Feed.updateOne(
+        {
+          _id: feedId,
+          "comments._id": commentId,
+        },
+        { $push: { "comments.$.subComments": message } },
+      );
+
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async deleteSubComment(
+    feedId: string,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      await Feed.updateOne(
+        {
+          _id: feedId,
+          "comments._id": commentId,
+        },
+        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+      );
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async updateSubComment(
+    feedId: string,
+    commentId: string,
+    subCommentId: string,
+    comment: string,
+  ) {
+    try {
+      await Feed.updateOne(
+        {
+          _id: feedId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+        {
+          arrayFilters: [{ "sub._id": subCommentId }],
+        },
+      );
+
+      return;
     } catch (err: any) {
       throw new Error(err);
     }
