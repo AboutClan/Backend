@@ -209,17 +209,26 @@ export default class GatherService {
     comment: string,
   ) {
     try {
-      await Gather.updateOne(
-        {
-          _id: gatherId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
-        },
-        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
-        {
-          arrayFilters: [{ "sub._id": subCommentId }],
-        },
-      );
+      const gathers = await Gather.find();
+
+      gathers.forEach((gather) => {
+        gather.comments.forEach((comment) => {
+          comment.subComments = [];
+        });
+        gather.save();
+      });
+
+      // await Gather.updateOne(
+      //   {
+      //     _id: gatherId,
+      //     "comments._id": commentId,
+      //     "comments.subComments._id": subCommentId,
+      //   },
+      //   { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+      //   {
+      //     arrayFilters: [{ "sub._id": subCommentId }],
+      //   },
+      // );
 
       return;
     } catch (err: any) {

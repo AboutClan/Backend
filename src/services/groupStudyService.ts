@@ -552,7 +552,7 @@ export default class GroupStudyService {
   }
 
   async createComment(groupStudyId: string, comment: string) {
-    const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
+    const groupStudy = await GroupStudy.findOne({ _id: groupStudyId });
     if (!groupStudy) throw new Error();
 
     try {

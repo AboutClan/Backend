@@ -99,7 +99,7 @@ class GroupStudyController {
     this.router
       .route("/comment")
       .post(
-        body("id").notEmpty().isNumeric().withMessage("id필요"),
+        body("id").notEmpty().withMessage("id필요"),
         body("comment").notEmpty().isString().withMessage("comment필요"),
         validateCheck,
         this.createComment.bind(this),
