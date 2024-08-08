@@ -100,6 +100,7 @@ class SquareController {
 
     this.router
       .route("/:squareId/like")
+      .get(param("squareId").notEmpty(), this.getIsLike.bind(this))
       .put(
         param("squareId").notEmpty(),
         validateCheck,
@@ -278,6 +279,17 @@ class SquareController {
     try {
       await this.SquareServiceInstance.deleteLikeSquare({ squareId });
       res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async getIsLike(req: Request, res: Response, next: NextFunction) {
+    const { squareId } = req.params;
+
+    try {
+      const isLike = await this.SquareServiceInstance.getIsLike({ squareId });
+      res.status(200).end({ isLike });
     } catch (err) {
       next(err);
     }

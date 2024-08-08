@@ -222,6 +222,8 @@ export default class SquareService {
     if (!secretSquare) {
       throw new Error("not found");
     }
+
+    // TODO remove type assertion
     const user = this.token.id as unknown as Types.ObjectId;
     const pollItems: string[] = [];
 
@@ -240,6 +242,7 @@ export default class SquareService {
       throw new Error("not found");
     }
 
+    // TODO remove type assertion
     const user = this.token.id as unknown as Types.ObjectId;
 
     if (secretSquare.like.includes(user)) {
@@ -256,5 +259,19 @@ export default class SquareService {
     await SecretSquare.findByIdAndUpdate(squareId, {
       $pull: { like: user },
     });
+  }
+
+  async getIsLike({ squareId }: { squareId: string }) {
+    const secretSquare = await SecretSquare.findById(squareId);
+
+    if (!secretSquare) {
+      throw new Error("not found");
+    }
+
+    // TODO remove type assertion
+    const user = this.token.id as unknown as Types.ObjectId;
+    const isLike = secretSquare.like.includes(user);
+
+    return isLike;
   }
 }
