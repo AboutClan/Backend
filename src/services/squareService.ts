@@ -1,3 +1,4 @@
+import { type JWT } from "next-auth/jwt/types";
 import {
   SecretSquareCategory,
   SecretSquare,
@@ -20,8 +21,10 @@ interface Square {
 
 export default class SquareService {
   private imageServiceInstance: ImageService;
+  private token: JWT;
 
-  constructor() {
+  constructor(token?: JWT) {
+    this.token = token as JWT;
     this.imageServiceInstance = new ImageService();
   }
 
@@ -46,7 +49,7 @@ export default class SquareService {
       likeCount: { $size: "$like" },
       commentsCount: { $size: "$comments" },
       createdAt: 1,
-    });
+    }).sort({ createdAt: "desc" });
   }
 
   async createSquare(square: Square & { buffers: Buffer[] }) {
@@ -98,6 +101,7 @@ export default class SquareService {
   }
 
   async getSquare(squareId: string) {
+    // FIXME count up the only 1 if the same user does the multiple request
     await SecretSquare.findByIdAndUpdate(squareId, {
       $inc: { viewCount: 1 },
     });
@@ -150,16 +154,14 @@ export default class SquareService {
   }
 
   async createSquareComment({
-    user,
     comment,
     squareId,
   }: {
-    user: string;
     comment: string;
     squareId: string;
   }) {
     await SecretSquare.findByIdAndUpdate(squareId, {
-      $push: { comments: { user, comment } },
+      $push: { comments: { user: this.token.id, comment } },
     });
   }
 
@@ -177,11 +179,9 @@ export default class SquareService {
 
   async patchPoll({
     squareId,
-    user,
     pollItems,
   }: {
     squareId: string;
-    user: string;
     pollItems: string[];
   }) {
     const secretSquare = await SecretSquare.findById(squareId);
@@ -191,9 +191,11 @@ export default class SquareService {
       throw new Error("not found");
     }
 
+    // HACK Is is correct to write type assertion? Another solution?
+    const user = this.token.id as unknown as Types.ObjectId;
+
     secretSquare.poll.pollItems.forEach((pollItem) => {
-      // HACK Is is correct to write type assertion? Another solution?
-      const index = pollItem.users.indexOf(user as unknown as Types.ObjectId);
+      const index = pollItem.users.indexOf(user);
       if (index > -1) {
         pollItem.users.splice(index, 1);
       }
@@ -205,9 +207,7 @@ export default class SquareService {
           pollItem._id.equals(pollItemId),
         );
         if (index > -1) {
-          secretSquare.poll.pollItems[index].users.push(
-            user as unknown as Types.ObjectId,
-          );
+          secretSquare.poll.pollItems[index].users.push(user);
         }
       });
     }
@@ -215,51 +215,44 @@ export default class SquareService {
     await secretSquare.save();
   }
 
-  async getCurrentPollItems({
-    squareId,
-    user,
-  }: {
-    squareId: string;
-    user: string;
-  }) {
+  async getCurrentPollItems({ squareId }: { squareId: string }) {
     const secretSquare = await SecretSquare.findById(squareId);
 
     // TODO 404 NOT FOUND
     if (!secretSquare) {
       throw new Error("not found");
     }
+    const user = this.token.id as unknown as Types.ObjectId;
     const pollItems: string[] = [];
 
     secretSquare.poll.pollItems.forEach((pollItem) => {
-      if (!pollItem.users.includes(user as unknown as Types.ObjectId)) return;
+      if (!pollItem.users.includes(user)) return;
       pollItems.push(pollItem._id.toString());
     });
 
     return pollItems;
   }
 
-  async putLikeSquare({ squareId, user }: { squareId: string; user: string }) {
+  async putLikeSquare({ squareId }: { squareId: string }) {
     const secretSquare = await SecretSquare.findById(squareId);
 
     if (!secretSquare) {
       throw new Error("not found");
     }
 
-    if (secretSquare.like.includes(user as unknown as Types.ObjectId)) {
+    const user = this.token.id as unknown as Types.ObjectId;
+
+    if (secretSquare.like.includes(user)) {
       throw new Error("already included");
     }
 
-    secretSquare.like.push(user as unknown as Types.ObjectId);
+    secretSquare.like.push(user);
     await secretSquare.save();
   }
 
-  async deleteLikeSquare({
-    squareId,
-    user,
-  }: {
-    squareId: string;
-    user: string;
-  }) {
+  async deleteLikeSquare({ squareId }: { squareId: string }) {
+    const user = this.token.id;
+
     await SecretSquare.findByIdAndUpdate(squareId, {
       $pull: { like: user },
     });

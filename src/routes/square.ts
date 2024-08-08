@@ -43,8 +43,7 @@ class SquareController {
         body(["category", "author"], "category or author are empty").notEmpty(),
         body("pollItems")
           .optional()
-          .isLength({ min: 2, max: 5 })
-          .customSanitizer((pollItems) => JSON.parse(pollItems)),
+          .customSanitizer((value) => JSON.parse(value)),
         body("canMultiple").optional().toBoolean(),
         validateCheck,
         this.createSquare.bind(this),
@@ -72,7 +71,6 @@ class SquareController {
           .notEmpty()
           .isLength({ min: 1 })
           .withMessage("min length of comment is 1"),
-        body("user").notEmpty().withMessage("user is empty"),
         validateCheck,
         this.createSquareComment.bind(this),
       );
@@ -90,14 +88,12 @@ class SquareController {
       .route("/:squareId/poll")
       .patch(
         param("squareId").notEmpty(),
-        body("user").notEmpty().withMessage("user is empty"),
         body("pollItems").isArray({ min: 0 }),
         validateCheck,
         this.patchPoll.bind(this),
       )
       .get(
         param("squareId").notEmpty(),
-        body("user").notEmpty().withMessage("user is empty"),
         validateCheck,
         this.getCurrentPollItems.bind(this),
       );
@@ -106,13 +102,11 @@ class SquareController {
       .route("/:squareId/like")
       .put(
         param("squareId").notEmpty(),
-        body("user").notEmpty().withMessage("user is empty"),
         validateCheck,
         this.putLikeSquare.bind(this),
       )
       .delete(
         param("squareId").notEmpty(),
-        body("user").notEmpty().withMessage("user is empty"),
         validateCheck,
         this.deleteLikeSquare.bind(this),
       );
@@ -123,7 +117,8 @@ class SquareController {
     res: Response,
     next: NextFunction,
   ) {
-    const squareService = new SquareService();
+    const { decodedToken } = req;
+    const squareService = new SquareService(decodedToken);
     this.setSquareServiceInstance(squareService);
     next();
   }
@@ -202,11 +197,10 @@ class SquareController {
     next: NextFunction,
   ) {
     const { squareId } = req.params;
-    const { user, comment } = req.body;
+    const { comment } = req.body;
 
     try {
       await this.SquareServiceInstance.createSquareComment({
-        user,
         comment,
         squareId,
       });
@@ -235,10 +229,10 @@ class SquareController {
 
   private async patchPoll(req: Request, res: Response, next: NextFunction) {
     const { squareId } = req.params;
-    const { user, pollItems = [] } = req.body;
+    const { pollItems = [] } = req.body;
 
     try {
-      await this.SquareServiceInstance.patchPoll({ squareId, user, pollItems });
+      await this.SquareServiceInstance.patchPoll({ squareId, pollItems });
       res.status(204).end();
     } catch (err) {
       next(err);
@@ -251,13 +245,11 @@ class SquareController {
     next: NextFunction,
   ) {
     const { squareId } = req.params;
-    const { user } = req.body;
 
     try {
       const currentPollItems =
         await this.SquareServiceInstance.getCurrentPollItems({
           squareId,
-          user,
         });
       res.status(200).json({ pollItems: currentPollItems });
     } catch (err) {
@@ -267,10 +259,9 @@ class SquareController {
 
   private async putLikeSquare(req: Request, res: Response, next: NextFunction) {
     const { squareId } = req.params;
-    const { user } = req.body;
 
     try {
-      await this.SquareServiceInstance.putLikeSquare({ squareId, user });
+      await this.SquareServiceInstance.putLikeSquare({ squareId });
       res.status(204).end();
     } catch (err) {
       next(err);
@@ -283,10 +274,9 @@ class SquareController {
     next: NextFunction,
   ) {
     const { squareId } = req.params;
-    const { user } = req.body;
 
     try {
-      await this.SquareServiceInstance.deleteLikeSquare({ squareId, user });
+      await this.SquareServiceInstance.deleteLikeSquare({ squareId });
       res.status(204).end();
     } catch (err) {
       next(err);
