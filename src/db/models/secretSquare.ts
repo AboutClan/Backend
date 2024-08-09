@@ -37,7 +37,7 @@ interface SecretSquareItem {
   };
   images: string[];
   author: Types.ObjectId;
-  viewCount: number;
+  viewers: Types.ObjectId[];
   like: Types.ObjectId[];
   comments: Comment[];
 }
@@ -108,9 +108,10 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
       type: [String],
       default: [],
     },
-    viewCount: {
-      type: Number,
-      default: 0,
+    viewers: {
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
     },
     like: {
       type: [Schema.Types.ObjectId],

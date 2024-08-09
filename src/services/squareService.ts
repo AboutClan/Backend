@@ -16,7 +16,6 @@ interface Square {
     pollItems: { name: string }[];
     canMultiple: boolean;
   };
-  author: string;
 }
 
 export default class SquareService {
@@ -45,7 +44,7 @@ export default class SquareService {
           else: { $arrayElemAt: ["$images", 0] },
         },
       },
-      viewCount: 1,
+      viewCount: { $size: "$viewers" },
       likeCount: { $size: "$like" },
       commentsCount: { $size: "$comments" },
       createdAt: 1,
@@ -58,7 +57,6 @@ export default class SquareService {
       title,
       content,
       type: squareType,
-      author,
       poll: { pollItems, canMultiple },
       buffers,
     } = square;
@@ -70,6 +68,8 @@ export default class SquareService {
         buffers,
       );
     }
+
+    const author = this.token.id;
 
     if (squareType === "poll") {
       await SecretSquare.create({
@@ -101,9 +101,8 @@ export default class SquareService {
   }
 
   async getSquare(squareId: string) {
-    // FIXME count up the only 1 if the same user does the multiple request
     await SecretSquare.findByIdAndUpdate(squareId, {
-      $inc: { viewCount: 1 },
+      $addToSet: { viewers: this.token.id },
     });
 
     const secretSquare = await SecretSquare.findById(squareId, {
@@ -127,7 +126,7 @@ export default class SquareService {
         canMultiple: 1,
       },
       images: 1,
-      viewCount: 1,
+      viewCount: { $size: "$viewers" },
       likeCount: { $size: "$like" },
       comments: {
         $map: {
@@ -191,7 +190,7 @@ export default class SquareService {
       throw new Error("not found");
     }
 
-    // HACK Is is correct to write type assertion? Another solution?
+    // HACK Is it correct to write type assertion? Another solution?
     const user = this.token.id as unknown as Types.ObjectId;
 
     secretSquare.poll.pollItems.forEach((pollItem) => {

@@ -40,7 +40,7 @@ class SquareController {
           .isLength({ min: 10 })
           .withMessage("min length is 10"),
         body("type").isIn(["poll", "general"]),
-        body(["category", "author"], "category or author are empty").notEmpty(),
+        body("category", "category is empty").notEmpty(),
         body("pollItems")
           .optional()
           .customSanitizer((value) => JSON.parse(value)),
@@ -142,7 +142,7 @@ class SquareController {
   private async createSquare(req: Request, res: Response, next: NextFunction) {
     const {
       files,
-      body: { category, title, content, type, pollItems, canMultiple, author },
+      body: { category, title, content, type, pollItems, canMultiple },
     } = req;
 
     let buffers: Buffer[] = [];
@@ -161,7 +161,6 @@ class SquareController {
           pollItems,
           canMultiple,
         },
-        author,
         buffers,
       });
       res.status(201).end();
