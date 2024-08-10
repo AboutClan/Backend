@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response, Router } from "express";
 import ImageService from "../services/imageService";
-const multer = require("multer");
+import multer from "multer";
 
 class ImageController {
   public router: Router;
   private imageServiceInstance: ImageService;
-  private upload: any;
+  private upload: multer.Multer;
 
   constructor() {
     this.router = Router();
@@ -46,8 +46,8 @@ class ImageController {
   }
 
   private async uploadImage(req: Request, res: Response, next: NextFunction) {
-    let path = req.body.path;
-    let buffer = req.file?.buffer;
+    const path = req.body.path;
+    const buffer = req.file?.buffer;
 
     if (!buffer)
       return res.status(400).json({
@@ -81,9 +81,8 @@ class ImageController {
     res: Response,
     next: NextFunction,
   ) {
-    let myFile = req.file?.originalname;
-    let path = req.body.path;
-    let buffer = req.file?.buffer;
+    const path = req.body.path;
+    const buffer = req.file?.buffer;
 
     if (!buffer)
       return res.status(400).json({
