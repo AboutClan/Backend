@@ -6,7 +6,7 @@ import {
   IGroupStudyData,
   subCommentType,
 } from "../db/models/groupStudy";
-import { IUser, User } from "../db/models/user";
+import { User } from "../db/models/user";
 import WebPushService from "./webPushService";
 
 export default class GroupStudyService {
@@ -552,7 +552,7 @@ export default class GroupStudyService {
   }
 
   async createComment(groupStudyId: string, comment: string) {
-    const groupStudy = await GroupStudy.findOne({ _id: groupStudyId });
+    const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
     if (!groupStudy) throw new Error();
 
     try {
