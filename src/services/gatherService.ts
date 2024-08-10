@@ -38,7 +38,12 @@ export default class GatherService {
 
   async getThreeGather() {
     const gatherData = await Gather.find()
-      .populate(["user", "participants.user", "comments.user"])
+      .populate([
+        "user",
+        "participants.user",
+        "comments.user",
+        "comments.subComments.user",
+      ])
       .sort({ id: -1 })
       .limit(3);
 
@@ -60,6 +65,7 @@ export default class GatherService {
         { path: "user" },
         { path: "participants.user" },
         { path: "comments.user" },
+        { path: "comments.subComments.user" },
       ]);
       return gatherData;
     } catch (err: any) {
