@@ -225,7 +225,7 @@ export default class GroupStudyService {
       await GroupStudy.updateMany({}, { $rename: { comment: "comments" } });
       await GroupStudy.updateOne(
         {
-          _id: groupStudyId,
+          id: groupStudyId,
           "comments._id": commentId,
         },
         { $push: { "comments.$.subComments": message } },
@@ -245,7 +245,7 @@ export default class GroupStudyService {
     try {
       await GroupStudy.updateOne(
         {
-          _id: groupStudyId,
+          id: groupStudyId,
           "comments._id": commentId,
         },
         { $pull: { "comments.$.subComments": { _id: subCommentId } } },
@@ -264,7 +264,7 @@ export default class GroupStudyService {
     try {
       await GroupStudy.updateOne(
         {
-          _id: groupStudyId,
+          id: groupStudyId,
           "comments._id": commentId,
           "comments.subComments._id": subCommentId,
         },

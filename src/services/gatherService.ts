@@ -6,8 +6,7 @@ import {
   IGatherData,
   subCommentType,
 } from "../db/models/gather";
-import { IUser, User } from "../db/models/user";
-import dbConnect from "../db/conn";
+import { User } from "../db/models/user";
 
 const logger = require("../../logger");
 
@@ -172,7 +171,7 @@ export default class GatherService {
 
       await Gather.updateOne(
         {
-          _id: gatherId,
+          id: gatherId,
           "comments._id": commentId,
         },
         { $push: { "comments.$.subComments": message } },
@@ -192,7 +191,7 @@ export default class GatherService {
     try {
       await Gather.updateOne(
         {
-          _id: gatherId,
+          id: gatherId,
           "comments._id": commentId,
         },
         { $pull: { "comments.$.subComments": { _id: subCommentId } } },
