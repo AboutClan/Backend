@@ -7,16 +7,36 @@ import {
 import ImageService from "./imageService";
 import { type Types } from "mongoose";
 
-interface Square {
+interface BaseSecretSquareItem {
   category: SecretSquareCategory;
   title: string;
   content: string;
   type: SecretSquareType;
+  poll?: {
+    pollItems: { name: string }[];
+    canMultiple: boolean;
+  };
+}
+
+interface BaseSecretSquareItem {
+  category: SecretSquareCategory;
+  title: string;
+  content: string;
+}
+
+interface GeneralSecretSquareItem extends BaseSecretSquareItem {
+  type: "general";
+}
+
+interface PollSecretSquareItem extends BaseSecretSquareItem {
+  type: "poll";
   poll: {
     pollItems: { name: string }[];
     canMultiple: boolean;
   };
 }
+
+type SecretSquareItem = GeneralSecretSquareItem | PollSecretSquareItem;
 
 export default class SquareService {
   private imageServiceInstance: ImageService;
@@ -51,13 +71,13 @@ export default class SquareService {
     }).sort({ createdAt: "desc" });
   }
 
-  async createSquare(square: Square & { buffers: Buffer[] }) {
+  async createSquare(square: SecretSquareItem & { buffers: Buffer[] }) {
     const {
       category,
       title,
       content,
       type: squareType,
-      poll: { pollItems, canMultiple },
+      poll,
       buffers,
     } = square;
 
@@ -72,28 +92,27 @@ export default class SquareService {
     const author = this.token.id;
 
     if (squareType === "poll") {
-      await SecretSquare.create({
+      const { _id: squareId } = await SecretSquare.create({
         category,
         title,
         content,
         author,
         type: squareType,
-        poll: {
-          pollItems,
-          canMultiple,
-        },
+        poll,
         images,
       });
-    } else {
-      await SecretSquare.create({
-        category,
-        title,
-        content,
-        author,
-        type: squareType,
-        images,
-      });
+      return { squareId };
     }
+
+    const { _id: squareId } = await SecretSquare.create({
+      category,
+      title,
+      content,
+      author,
+      type: squareType,
+      images,
+    });
+    return { squareId };
   }
 
   async deleteSquare(squareId: string) {
@@ -111,20 +130,27 @@ export default class SquareService {
       content: 1,
       type: 1,
       poll: {
-        pollItems: {
-          $map: {
-            input: "$poll.pollItems",
-            as: "pollItem",
-            in: {
-              _id: "$$pollItem._id",
-              name: "$$pollItem.name",
-              count: { $size: "$$pollItem.users" },
-              users: 0,
+        $cond: {
+          if: { $eq: ["$type", "general"] },
+          then: null,
+          else: {
+            pollItems: {
+              $map: {
+                input: "$poll.pollItems",
+                as: "pollItem",
+                in: {
+                  _id: "$$pollItem._id",
+                  name: "$$pollItem.name",
+                  count: { $size: "$$pollItem.users" },
+                  users: 0,
+                },
+              },
             },
+            canMultiple: 1,
           },
         },
-        canMultiple: 1,
       },
+      isMySquare: { $eq: ["$author", { $toObjectId: this.token.id }] },
       images: 1,
       viewCount: { $size: "$viewers" },
       likeCount: { $size: "$like" },
@@ -220,6 +246,10 @@ export default class SquareService {
     // TODO 404 NOT FOUND
     if (!secretSquare) {
       throw new Error("not found");
+    }
+
+    if (secretSquare.type === "general") {
+      throw new Error("The type of this square is general");
     }
 
     // TODO remove type assertion

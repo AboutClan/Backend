@@ -152,7 +152,7 @@ class SquareController {
     }
 
     try {
-      await this.SquareServiceInstance.createSquare({
+      const { squareId } = await this.SquareServiceInstance.createSquare({
         category,
         title,
         content,
@@ -163,7 +163,7 @@ class SquareController {
         },
         buffers,
       });
-      res.status(201).end();
+      res.status(201).json({ squareId });
     } catch (err) {
       next(err);
     }
@@ -288,7 +288,7 @@ class SquareController {
 
     try {
       const isLike = await this.SquareServiceInstance.getIsLike({ squareId });
-      res.status(200).end({ isLike });
+      res.status(200).json({ isLike });
     } catch (err) {
       next(err);
     }
