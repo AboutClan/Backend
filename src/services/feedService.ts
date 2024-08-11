@@ -31,6 +31,10 @@ export default class FeedService {
 
       const feeds = await Feed.find(query)
         .populate(["writer", "like", "comments.user"])
+        .populate({
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
         .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
         .limit(gap);
@@ -71,11 +75,12 @@ export default class FeedService {
         console.log("이게 머지");
       }
 
-      const feed = await Feed.findById(id).populate([
-        "writer",
-        "like",
-        "comments.user",
-      ]);
+      const feed = await Feed.findById(id)
+        .populate(["writer", "like", "comments.user"])
+        .populate({
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        });
       const myLike = (feed?.like as IUser[])?.find(
         (who) => who.uid === this.token.uid,
       );
@@ -119,6 +124,10 @@ export default class FeedService {
 
       const feeds = await Feed.find()
         .populate(["writer", "like", "comments.user"])
+        .populate({
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
         .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
         .limit(gap);

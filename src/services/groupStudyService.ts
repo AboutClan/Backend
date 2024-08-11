@@ -54,6 +54,10 @@ export default class GroupStudyService {
         path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
+      .populate({
+        path: "comments.subComments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
       .select("-_id");
 
     return groupStudyData;
@@ -85,6 +89,10 @@ export default class GroupStudyService {
         path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
+      .populate({
+        path: "comments.subComments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
       .select("-_id");
 
     return groupStudyData;
@@ -109,6 +117,10 @@ export default class GroupStudyService {
         })
         .populate({
           path: "comments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
+        .populate({
+          path: "comments.subComments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
@@ -168,6 +180,10 @@ export default class GroupStudyService {
         path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
+      .populate({
+        path: "comments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
       .select("-_id");
 
     return userParticipatingGroupStudy;
@@ -201,6 +217,10 @@ export default class GroupStudyService {
         })
         .populate({
           path: "comments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
+        .populate({
+          path: "comments.subComments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");

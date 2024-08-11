@@ -27,23 +27,23 @@ export default class GatherService {
   }
 
   async getGatherById(gatherId: number) {
-    const gatherData = await Gather.findOne({ id: gatherId }).populate([
-      "user",
-      "participants.user",
-      "comments.user",
-    ]);
+    const gatherData = await Gather.findOne({ id: gatherId })
+      .populate(["user", "participants.user", "comments.user"])
+      .populate({
+        path: "comments.subComments.user",
+        select: "name profileImage uid score avatar comment location",
+      });
 
     return gatherData;
   }
 
   async getThreeGather() {
     const gatherData = await Gather.find()
-      .populate([
-        "user",
-        "participants.user",
-        "comments.user",
-        "comments.subComments.user",
-      ])
+      .populate(["user", "participants.user", "comments.user"])
+      .populate({
+        path: "comments.subComments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
       .sort({ id: -1 })
       .limit(3);
 
@@ -65,8 +65,12 @@ export default class GatherService {
         { path: "user" },
         { path: "participants.user" },
         { path: "comments.user" },
-        { path: "comments.subComments.user" },
+        {
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        },
       ]);
+
       return gatherData;
     } catch (err: any) {
       throw new Error(err);
