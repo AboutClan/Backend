@@ -228,6 +228,29 @@ export default class FeedService {
     }
   }
 
+  async createCommentLike(feedId: string, commentId: string) {
+    try {
+      const feed = await Feed.findOneAndUpdate(
+        {
+          _id: feedId,
+          "comments._id": commentId,
+        },
+        {
+          $addToSet: { "comments.$.likeList": this.token.id },
+        },
+        { new: true }, // 업데이트된 도큐먼트를 반환
+      );
+
+      if (feed) {
+        console.log("좋아요를 추가했습니다:", feed);
+      } else {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async createSubComment(feedId: string, commentId: string, content: string) {
     try {
       const message: subCommentType = {
