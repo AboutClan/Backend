@@ -146,7 +146,7 @@ export default class SquareService {
                 },
               },
             },
-            canMultiple: 1,
+            canMultiple: "$poll.canMultiple",
           },
         },
       },
