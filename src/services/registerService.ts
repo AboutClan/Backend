@@ -1,8 +1,8 @@
+import * as CryptoJS from "crypto-js";
 import { JWT } from "next-auth/jwt";
+import dbConnect from "../db/conn";
 import { IRegistered, Registered } from "../db/models/registered";
 import { User } from "../db/models/user";
-import * as CryptoJS from "crypto-js";
-import dbConnect from "../db/conn";
 
 const logger = require("../../logger");
 
@@ -36,7 +36,7 @@ export default class RegisterService {
     const { telephone } = subRegisterForm;
 
     // 전화번호 검증: 010으로 시작하고 11자리 숫자인지 확인
-    const telephoneRegex = /^010\d{8}$/;
+    const telephoneRegex = /^010-\d{4}-\d{4}$/;
     if (!telephoneRegex.test(telephone)) {
       throw new Error("Invalid telephone number");
     }
