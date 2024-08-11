@@ -85,12 +85,12 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
     title: {
       type: String,
       required: true,
-      minLength: 3,
+      minLength: 1,
     },
     content: {
       type: String,
       required: true,
-      minLength: 10,
+      minLength: 1,
     },
     type: {
       type: String,

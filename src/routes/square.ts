@@ -32,13 +32,13 @@ class SquareController {
         body("title", "title is empty")
           .trim()
           .notEmpty()
-          .isLength({ min: 2 })
-          .withMessage("min length is 2"),
+          .isLength({ min: 1 })
+          .withMessage("The min length of title field is 1"),
         body("content", "content is empty")
           .trim()
           .notEmpty()
-          .isLength({ min: 3 })
-          .withMessage("min length is 3"),
+          .isLength({ min: 1 })
+          .withMessage("The min length of content field is 1"),
         body("type").isIn(["poll", "general"]),
         body("category", "category is empty").notEmpty(),
         body("pollItems")
