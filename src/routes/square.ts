@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { body, param } from "express-validator";
+import multer from "multer";
+import { SecretSquareCategory } from "../db/models/secretSquare";
 import validateCheck from "../middlewares/validator";
 import SquareService from "../services/squareService";
-import { SecretSquareCategory } from "../db/models/secretSquare";
-import multer from "multer";
 
 class SquareController {
   public router: Router;
@@ -32,13 +32,13 @@ class SquareController {
         body("title", "title is empty")
           .trim()
           .notEmpty()
-          .isLength({ min: 3 })
-          .withMessage("min length is 3"),
+          .isLength({ min: 2 })
+          .withMessage("min length is 2"),
         body("content", "content is empty")
           .trim()
           .notEmpty()
-          .isLength({ min: 10 })
-          .withMessage("min length is 10"),
+          .isLength({ min: 3 })
+          .withMessage("min length is 3"),
         body("type").isIn(["poll", "general"]),
         body("category", "category is empty").notEmpty(),
         body("pollItems")
