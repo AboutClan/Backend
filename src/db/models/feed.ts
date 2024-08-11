@@ -5,6 +5,12 @@ import { IUser } from "./user";
 export interface commentType {
   user: string | IUser;
   comment: string;
+  subComments?: subCommentType[]
+}
+
+export interface subCommentType{
+  user: string | IUser;
+  comment: string;
 }
 
 export interface IFeed {
@@ -16,14 +22,31 @@ export interface IFeed {
   typeId: string,
   isAnonymous?:boolean
   like: string[] | IUser[],
-  comments: [commentType],
+  comments: commentType[],
+  createdAt:string,
   addLike(userId: string): Promise<void>;
+  subCategory: string,
 }
 
 export interface likeType {
   like: string | IUser;
  
 }
+
+export const subCommentSchema: Schema<subCommentType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 export const commentSchema: Schema<commentType> = new Schema(
   {
@@ -34,6 +57,10 @@ export const commentSchema: Schema<commentType> = new Schema(
     comment: {
       type: String,
     },
+    subComments:{
+      type: [subCommentSchema],
+      default: []
+    }
   },
   {
     timestamps: true,
@@ -74,6 +101,10 @@ export const FeedSchema: Schema<IFeed> = new Schema({
     type: Boolean,
     default: false,
   },
+  subCategory: {
+    type: String,
+  
+  },
   comments:{
     type: [commentSchema],
     default: []
@@ -90,10 +121,14 @@ FeedSchema.methods.addLike = async function (userId: string) {
   const index = this.like.indexOf(userId);
   if (index === -1) {
     this.like.push(userId);
+    await this.save();
+    return true;
   } else {
     this.like.splice(index, 1); // Remove userId from the array
+    await this.save();
+    return false;
   }
-  await this.save();
+
 };
 
 export const Feed =

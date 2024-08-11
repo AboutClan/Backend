@@ -99,7 +99,7 @@ class GroupStudyController {
     this.router
       .route("/comment")
       .post(
-        body("id").notEmpty().isNumeric().withMessage("id필요"),
+        body("id").notEmpty().withMessage("id필요"),
         body("comment").notEmpty().isString().withMessage("comment필요"),
         validateCheck,
         this.createComment.bind(this),
@@ -117,6 +117,12 @@ class GroupStudyController {
         validateCheck,
         this.patchComment.bind(this),
       );
+
+    this.router
+      .route("/subComment")
+      .post(this.createSubComment.bind(this))
+      .delete(this.deleteSubComment.bind(this))
+      .patch(this.updateSubComment.bind(this));
 
     this.router
       .route("/belong/match")
@@ -181,7 +187,7 @@ class GroupStudyController {
           filter === "end"
             ? []
             : userParticipatingGroupStudy.filter((obj) => {
-                if (obj.status === "pending" && idArr.includes(obj.id))
+                if (obj.status !== "pending" || idArr.includes(obj.id))
                   return false;
                 return true;
               });
@@ -291,6 +297,67 @@ class GroupStudyController {
         randomId,
       );
       res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async updateSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { groupStudyId, commentId, subCommentId, comment } = req.body;
+
+      await this.groupStudyServiceInstance.updateSubComment(
+        groupStudyId,
+        commentId,
+        subCommentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { groupStudyId, comment, commentId } = req.body;
+
+      await this.groupStudyServiceInstance.createSubComment(
+        groupStudyId,
+        commentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async deleteSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { groupStudyId, commentId, subCommentId } = req.body;
+
+      await this.groupStudyServiceInstance.deleteSubComment(
+        groupStudyId,
+        commentId,
+        subCommentId,
+      );
+
+      return res.status(200).end();
     } catch (err) {
       next(err);
     }

@@ -36,6 +36,11 @@ class FeedController {
       .post(this.createComment.bind(this))
       .delete(this.deleteComment.bind(this))
       .patch(this.updateComment.bind(this));
+    this.router
+      .route("/subComment")
+      .post(this.createSubComment.bind(this))
+      .delete(this.deleteSubComment.bind(this))
+      .patch(this.updateSubComment.bind(this));
   }
 
   private async createLike(req: Request, res: Response, next: NextFunction) {
@@ -86,6 +91,67 @@ class FeedController {
     }
   }
 
+  private async updateSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { feedId, commentId, subCommentId, comment } = req.body;
+
+      await this.feedServiceInstance.updateSubComment(
+        feedId,
+        commentId,
+        subCommentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { feedId, comment, commentId } = req.body;
+
+      await this.feedServiceInstance.createSubComment(
+        feedId,
+        commentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async deleteSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { feedId, commentId, subCommentId } = req.body;
+
+      await this.feedServiceInstance.deleteSubComment(
+        feedId,
+        commentId,
+        subCommentId,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
   private async createFeedServiceInstance(
     req: Request,
     res: Response,
@@ -98,11 +164,12 @@ class FeedController {
   }
 
   private async getFeed(req: Request, res: Response, next: NextFunction) {
-    const { id, type, typeId, cursor } = req.query as {
+    const { id, type, typeId, cursor, isRecent } = req.query as {
       id?: string;
       typeId?: string;
       cursor?: string;
       type?: string;
+      isRecent?: string;
     };
 
     const cursorNum = cursor ? parseInt(cursor) : null;
@@ -115,10 +182,14 @@ class FeedController {
         type,
         typeId,
         cursorNum,
+        isRecent === "true",
       );
       return res.status(200).json(feed);
     } else {
-      const feeds = await this.feedServiceInstance.findAllFeeds(cursorNum);
+      const feeds = await this.feedServiceInstance.findAllFeeds(
+        cursorNum,
+        isRecent === "true",
+      );
       return res.status(200).json(feeds);
     }
   }
@@ -132,7 +203,7 @@ class FeedController {
   }
 
   private async createFeed(req: Request, res: Response, next: NextFunction) {
-    const { title, text, type, typeId, isAnonymous } = req.body;
+    const { title, text, type, typeId, isAnonymous, subCategory } = req.body;
     let buffers: Buffer[] = [];
 
     if (req.files && Array.isArray(req.files)) {
@@ -147,6 +218,7 @@ class FeedController {
         buffers,
         typeId,
         isAnonymous,
+        subCategory,
       });
 
       return res.status(200).json({ a: "success" });

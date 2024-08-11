@@ -8,6 +8,8 @@ export interface ITime {
   minutes?: number;
 }
 
+
+
 export interface TitleType {
   title: string;
   subtitle?: string;
@@ -32,9 +34,15 @@ export interface participantsType {
   phase: string;
 }
 
+export interface subCommentType{
+  user: string | IUser;
+  comment: string;
+}
+
 export interface commentType {
   user: string | IUser;
   comment: string;
+  subComments?: subCommentType[];
 }
 
 export interface IGatherData {
@@ -51,7 +59,7 @@ export interface IGatherData {
   status: gatherStatus;
   participants: participantsType[];
   user: string | IUser;
-  comment: commentType[];
+  comments: commentType[];
   id: number;
   date: string;
   place?: string;
@@ -137,6 +145,21 @@ export const participantsSchema: Schema<participantsType> = new Schema(
   { _id: false , timestamps: false}
 );
 
+export const subCommentSchema: Schema<subCommentType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 export const commentSchema: Schema<commentType> = new Schema(
   {
     user: {
@@ -146,6 +169,10 @@ export const commentSchema: Schema<commentType> = new Schema(
     comment: {
       type: String,
     },
+    subComments:{
+      type: [subCommentSchema],
+      default: []
+    }
   },
   {
     timestamps: true,
@@ -198,7 +225,7 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
       default: "pending",
       required: true,
     },
-    comment: {
+    comments: {
       type: [commentSchema],
     },
     id: {
@@ -232,7 +259,7 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 export const Gather =

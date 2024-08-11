@@ -17,11 +17,13 @@ class ChatController {
 
   private initializeRoutes() {
     this.router.use("/", this.createChatServiceInstance.bind(this));
-
     this.router
       .route("/")
       .post(this.createChat.bind(this))
       .get(this.getChat.bind(this));
+
+    this.router.route("/mine").get(this.getChats.bind(this));
+    this.router.route("/recent").get(this.getRecentChat.bind(this));
   }
 
   private async createChatServiceInstance(
@@ -43,6 +45,29 @@ class ChatController {
       console.log(chatList);
 
       return res.status(200).json(chatList);
+    } catch (err: any) {
+      next(err);
+    }
+  }
+  private async getChats(req: Request, res: Response, next: NextFunction) {
+    const { cursor } = req.query as { cursor: string };
+
+    try {
+      const chatList = await this.chatServiceInstance.getChats();
+      console.log(chatList);
+
+      return res.status(200).json(chatList);
+    } catch (err: any) {
+      next(err);
+    }
+  }
+  private async getRecentChat(req: Request, res: Response, next: NextFunction) {
+    const { cursor } = req.query as { cursor: string };
+
+    try {
+      const chat = await this.chatServiceInstance.getRecentChat();
+
+      return res.status(200).json(chat);
     } catch (err: any) {
       next(err);
     }

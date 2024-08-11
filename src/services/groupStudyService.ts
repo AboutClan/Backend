@@ -1,8 +1,12 @@
 import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
-import { GroupStudy, IGroupStudyData } from "../db/models/groupStudy";
-import { IUser, User } from "../db/models/user";
+import {
+  GroupStudy,
+  IGroupStudyData,
+  subCommentType,
+} from "../db/models/groupStudy";
+import { User } from "../db/models/user";
 import WebPushService from "./webPushService";
 
 export default class GroupStudyService {
@@ -33,7 +37,7 @@ export default class GroupStudyService {
 
     groupStudyData = await GroupStudy.find(filterQuery)
       .skip(start)
-      .limit(gap + 1)
+      .limit(gap)
       .populate({
         path: "organizer",
         select: "name profileImage uid score avatar comment",
@@ -47,7 +51,7 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment",
       })
       .populate({
-        path: "comment.user",
+        path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
@@ -78,7 +82,7 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment",
       })
       .populate({
-        path: "comment.user",
+        path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
@@ -104,7 +108,7 @@ export default class GroupStudyService {
           select: "name profileImage uid score avatar comment",
         })
         .populate({
-          path: "comment.user",
+          path: "comments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
@@ -133,7 +137,7 @@ export default class GroupStudyService {
           select: "name profileImage uid score avatar comment",
         })
         .populate({
-          path: "comment.user",
+          path: "comments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
@@ -161,7 +165,7 @@ export default class GroupStudyService {
         select: "name profileImage uid score avatar comment",
       })
       .populate({
-        path: "comment.user",
+        path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
       .select("-_id");
@@ -181,7 +185,7 @@ export default class GroupStudyService {
         //   "organizer",
         //   "participants.user",
         //   "waiting.user",
-        //   "comment.user",
+        //   "comments.user",
         // ])
         .populate({
           path: "organizer",
@@ -196,12 +200,81 @@ export default class GroupStudyService {
           select: "name profileImage uid score avatar comment",
         })
         .populate({
-          path: "comment.user",
+          path: "comments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
 
       return groupStudyData;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createSubComment(
+    groupStudyId: string,
+    commentId: string,
+    content: string,
+  ) {
+    try {
+      const message: subCommentType = {
+        user: this.token.id,
+        comment: content,
+      };
+
+      await GroupStudy.updateMany({}, { $rename: { comment: "comments" } });
+      await GroupStudy.updateOne(
+        {
+          id: groupStudyId,
+          "comments._id": commentId,
+        },
+        { $push: { "comments.$.subComments": message } },
+      );
+
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async deleteSubComment(
+    groupStudyId: string,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      await GroupStudy.updateOne(
+        {
+          id: groupStudyId,
+          "comments._id": commentId,
+        },
+        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+      );
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async updateSubComment(
+    groupStudyId: string,
+    commentId: string,
+    subCommentId: string,
+    comment: string,
+  ) {
+    try {
+      await GroupStudy.updateOne(
+        {
+          id: groupStudyId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+        {
+          arrayFilters: [{ "sub._id": subCommentId }],
+        },
+      );
+
+      return;
     } catch (err: any) {
       throw new Error(err);
     }
@@ -255,11 +328,11 @@ export default class GroupStudyService {
     try {
       if (
         !groupStudy.participants.some(
-          (participant) => participant.user == (this.token.id as IUser),
+          (participant) => participant.user == this.token.id,
         )
       ) {
         groupStudy.participants.push({
-          user: this.token.id as IUser,
+          user: this.token.id,
           role: "member",
           attendCnt: 0,
         });
@@ -290,7 +363,7 @@ export default class GroupStudyService {
 
     try {
       groupStudy.participants = groupStudy.participants.filter(
-        (participant) => participant.user != (this.token.id as IUser),
+        (participant) => participant.user != this.token.id,
       );
 
       groupStudy.attendance.lastWeek = groupStudy.attendance.lastWeek.filter(
@@ -351,7 +424,7 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      const user = { user: this.token.id as IUser, answer, pointType };
+      const user = { user: this.token.id, answer, pointType };
       if (groupStudy?.waiting) {
         if (groupStudy.waiting.includes(user)) {
           return;
@@ -483,15 +556,15 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      if (groupStudy?.comment) {
-        groupStudy.comment.push({
-          user: this.token.id as IUser,
+      if (groupStudy?.comments) {
+        groupStudy.comments.push({
+          user: this.token.id,
           comment,
         });
       } else {
-        groupStudy.comment = [
+        groupStudy.comments = [
           {
-            user: this.token.id as IUser,
+            user: this.token.id,
             comment,
           },
         ];
@@ -508,7 +581,7 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      groupStudy.comment = groupStudy.comment.filter(
+      groupStudy.comments = groupStudy.comments.filter(
         (com: any) => (com._id as string) != commentId,
       );
 
@@ -523,7 +596,7 @@ export default class GroupStudyService {
     if (!groupStudy) throw new Error();
 
     try {
-      groupStudy.comment.forEach(async (com: any) => {
+      groupStudy.comments.forEach(async (com: any) => {
         if ((com._id as string) == commentId) {
           com.comment = comment;
           await groupStudy.save();
