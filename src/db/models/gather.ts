@@ -37,12 +37,14 @@ export interface participantsType {
 export interface subCommentType{
   user: string | IUser;
   comment: string;
+  likeList?: string[];
 }
 
 export interface commentType {
   user: string | IUser;
   comment: string;
   subComments?: subCommentType[];
+  likeList?: string[];
 }
 
 export interface IGatherData {
@@ -154,6 +156,10 @@ export const subCommentSchema: Schema<subCommentType> = new Schema(
     comment: {
       type: String,
     },
+    likeList:{
+      type: [String],
+      default: []
+    }
   },
   {
     timestamps: true,
@@ -171,6 +177,10 @@ export const commentSchema: Schema<commentType> = new Schema(
     },
     subComments:{
       type: [subCommentSchema],
+      default: []
+    },
+    likeList:{
+      type: [String],
       default: []
     }
   },

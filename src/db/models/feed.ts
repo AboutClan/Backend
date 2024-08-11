@@ -6,11 +6,13 @@ export interface commentType {
   user: string | IUser;
   comment: string;
   subComments?: subCommentType[]
+  likeList?: string[];
 }
 
 export interface subCommentType{
   user: string | IUser;
   comment: string;
+  likeList?: string[];
 }
 
 export interface IFeed {
@@ -42,6 +44,10 @@ export const subCommentSchema: Schema<subCommentType> = new Schema(
     comment: {
       type: String,
     },
+    likeList:{
+      type: [String],
+      default: []
+    }
   },
   {
     timestamps: true,
@@ -59,6 +65,10 @@ export const commentSchema: Schema<commentType> = new Schema(
     },
     subComments:{
       type: [subCommentSchema],
+      default: []
+    },
+    likeList:{
+      type: [String],
       default: []
     }
   },
