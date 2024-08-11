@@ -73,6 +73,9 @@ class GatherController {
       );
     this.router.route("/comment/like").post(this.createCommentLike.bind(this));
     this.router
+      .route("/subComment/like")
+      .post(this.createSubCommentLike.bind(this));
+    this.router
       .route("/subComment")
       .post(this.createSubComment.bind(this))
       .delete(this.deleteSubComment.bind(this))
@@ -250,6 +253,26 @@ class GatherController {
       const { gatherId, commentId } = req.body;
 
       await this.gatherServiceInstance?.createCommentLike(gatherId, commentId);
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubCommentLike(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { gatherId, commentId, subCommentId } = req.body;
+
+      await this.gatherServiceInstance?.createSubCommentLike(
+        gatherId,
+        commentId,
+        subCommentId,
+      );
 
       return res.status(200).end();
     } catch (err) {

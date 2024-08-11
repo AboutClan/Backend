@@ -37,6 +37,7 @@ export interface participantsType {
 export interface subCommentType{
   user: string | IUser;
   comment: string;
+  likeList?: string[];
 }
 
 export interface commentType {
@@ -155,6 +156,10 @@ export const subCommentSchema: Schema<subCommentType> = new Schema(
     comment: {
       type: String,
     },
+    likeList:{
+      type: [String],
+      default: []
+    }
   },
   {
     timestamps: true,

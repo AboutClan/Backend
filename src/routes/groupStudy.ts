@@ -59,6 +59,9 @@ class GroupStudyController {
       );
 
     this.router.route("/comment/like").post(this.createCommentLike.bind(this));
+    this.router
+      .route("/subComment/like")
+      .post(this.createSubCommentLike.bind(this));
 
     this.router
       .route("/waiting")
@@ -532,6 +535,26 @@ class GroupStudyController {
       await this.groupStudyServiceInstance.createCommentLike(
         groupStudyId,
         commentId,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubCommentLike(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { groupStudyId, commentId, subCommentId } = req.body;
+
+      await this.groupStudyServiceInstance.createSubCommentLike(
+        groupStudyId,
+        commentId,
+        subCommentId,
       );
 
       return res.status(200).end();

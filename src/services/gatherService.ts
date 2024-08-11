@@ -289,11 +289,11 @@ export default class GatherService {
     }
   }
 
-  async createCommentLike(gatherId: string, commentId: string) {
+  async createCommentLike(gatherId: number, commentId: string) {
     try {
       const feed = await Gather.findOneAndUpdate(
         {
-          _id: gatherId,
+          id: gatherId,
           "comments._id": commentId,
         },
         {
@@ -305,6 +305,41 @@ export default class GatherService {
       if (feed) {
         console.log("좋아요를 추가했습니다:", feed);
       } else {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createSubCommentLike(
+    gatherId: string,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      const gather = await Gather.findOneAndUpdate(
+        {
+          id: gatherId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        {
+          $addToSet: {
+            "comments.$[comment].subComments.$[subComment].likeList":
+              this.token.id,
+          },
+        },
+        {
+          arrayFilters: [
+            { "comment._id": commentId },
+            { "subComment._id": subCommentId },
+          ],
+          new: true, // 업데이트된 도큐먼트를 반환
+        },
+      );
+
+      if (!gather) {
         throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
       }
     } catch (err: any) {

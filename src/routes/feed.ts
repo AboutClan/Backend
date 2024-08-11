@@ -38,6 +38,9 @@ class FeedController {
       .patch(this.updateComment.bind(this));
     this.router.route("/comment/like").post(this.createCommentLike.bind(this));
     this.router
+      .route("/subComment/like")
+      .post(this.createSubCommentLike.bind(this));
+    this.router
       .route("/subComment")
       .post(this.createSubComment.bind(this))
       .delete(this.deleteSubComment.bind(this))
@@ -101,6 +104,26 @@ class FeedController {
       const { feedId, commentId } = req.body;
 
       await this.feedServiceInstance.createCommentLike(feedId, commentId);
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubCommentLike(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { feedId, commentId, subCommentId } = req.body;
+
+      await this.feedServiceInstance.createSubCommentLike(
+        feedId,
+        commentId,
+        subCommentId,
+      );
 
       return res.status(200).end();
     } catch (err) {

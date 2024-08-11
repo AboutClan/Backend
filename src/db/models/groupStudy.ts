@@ -10,6 +10,7 @@ interface ICategory {
 export interface subCommentType{
   user: string | IUser;
   comment: string;
+  likeList?: string[];
 }
 
 export interface memberCntType {
@@ -167,6 +168,10 @@ export const subCommentSchema: Schema<subCommentType> = new Schema(
     comment: {
       type: String,
     },
+    likeList:{
+      type:[String],
+      default: []
+    }
   },
   {
     timestamps: true,

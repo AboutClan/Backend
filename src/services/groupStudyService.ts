@@ -608,11 +608,11 @@ export default class GroupStudyService {
     }
   }
 
-  async createCommentLike(groupStudyId: string, commentId: string) {
+  async createCommentLike(groupStudyId: number, commentId: string) {
     try {
       const feed = await GroupStudy.findOneAndUpdate(
         {
-          _id: groupStudyId,
+          id: groupStudyId,
           "comments._id": commentId,
         },
         {
@@ -625,6 +625,41 @@ export default class GroupStudyService {
         console.log("좋아요를 추가했습니다:", feed);
       } else {
         throw new Error("해당 Id 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createSubCommentLike(
+    groupStudyId: number,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      const groupStudy = await GroupStudy.findOneAndUpdate(
+        {
+          id: groupStudyId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        {
+          $addToSet: {
+            "comments.$[comment].subComments.$[subComment].likeList":
+              this.token.id,
+          },
+        },
+        {
+          arrayFilters: [
+            { "comment._id": commentId },
+            { "subComment._id": subCommentId },
+          ],
+          new: true, // 업데이트된 도큐먼트를 반환
+        },
+      );
+
+      if (!groupStudy) {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
       }
     } catch (err: any) {
       throw new Error(err);
