@@ -65,8 +65,7 @@ class SquareController {
     this.router
       .route("/subComment")
       .post(this.createSubComment.bind(this))
-      .delete(this.deleteSubComment.bind(this))
-      .patch(this.updateSubComment.bind(this));
+      .delete(this.deleteSubComment.bind(this));
 
     this.router
       .route("/:squareId")
