@@ -31,6 +31,10 @@ export default class FeedService {
 
       const feeds = await Feed.find(query)
         .populate(["writer", "like", "comments.user"])
+        .populate({
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
         .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
         .limit(gap);
@@ -71,11 +75,12 @@ export default class FeedService {
         console.log("이게 머지");
       }
 
-      const feed = await Feed.findById(id).populate([
-        "writer",
-        "like",
-        "comments.user",
-      ]);
+      const feed = await Feed.findById(id)
+        .populate(["writer", "like", "comments.user"])
+        .populate({
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        });
       const myLike = (feed?.like as IUser[])?.find(
         (who) => who.uid === this.token.uid,
       );
@@ -119,6 +124,10 @@ export default class FeedService {
 
       const feeds = await Feed.find()
         .populate(["writer", "like", "comments.user"])
+        .populate({
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
         .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
         .limit(gap);
@@ -223,6 +232,66 @@ export default class FeedService {
       );
 
       return result;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createCommentLike(feedId: string, commentId: string) {
+    try {
+      const feed = await Feed.findOneAndUpdate(
+        {
+          _id: feedId,
+          "comments._id": commentId,
+        },
+        {
+          $addToSet: { "comments.$.likeList": this.token.id },
+        },
+        { new: true }, // 업데이트된 도큐먼트를 반환
+      );
+
+      if (feed) {
+        console.log("좋아요를 추가했습니다:", feed);
+      } else {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createSubCommentLike(
+    feedId: string,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      const feed = await Feed.findOneAndUpdate(
+        {
+          _id: feedId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        {
+          $addToSet: {
+            "comments.$[comment].subComments.$[subComment].likeList":
+              this.token.id,
+          },
+        },
+        {
+          arrayFilters: [
+            { "comment._id": commentId },
+            { "subComment._id": subCommentId },
+          ],
+          new: true, // 업데이트된 도큐먼트를 반환
+        },
+      );
+
+      if (feed) {
+        console.log("좋아요를 추가했습니다:", feed);
+      } else {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
+      }
     } catch (err: any) {
       throw new Error(err);
     }

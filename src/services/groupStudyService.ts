@@ -54,6 +54,10 @@ export default class GroupStudyService {
         path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
+      .populate({
+        path: "comments.subComments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
       .select("-_id");
 
     return groupStudyData;
@@ -85,6 +89,10 @@ export default class GroupStudyService {
         path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
+      .populate({
+        path: "comments.subComments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
       .select("-_id");
 
     return groupStudyData;
@@ -109,6 +117,10 @@ export default class GroupStudyService {
         })
         .populate({
           path: "comments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
+        .populate({
+          path: "comments.subComments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
@@ -168,6 +180,10 @@ export default class GroupStudyService {
         path: "comments.user",
         select: "name profileImage uid score avatar comment location",
       })
+      .populate({
+        path: "comments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
       .select("-_id");
 
     return userParticipatingGroupStudy;
@@ -201,6 +217,10 @@ export default class GroupStudyService {
         })
         .populate({
           path: "comments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
+        .populate({
+          path: "comments.subComments.user",
           select: "name profileImage uid score avatar comment location",
         })
         .select("-_id");
@@ -607,6 +627,65 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
+
+  async createCommentLike(groupStudyId: number, commentId: string) {
+    try {
+      const feed = await GroupStudy.findOneAndUpdate(
+        {
+          id: groupStudyId,
+          "comments._id": commentId,
+        },
+        {
+          $addToSet: { "comments.$.likeList": this.token.id },
+        },
+        { new: true }, // 업데이트된 도큐먼트를 반환
+      );
+
+      if (feed) {
+        console.log("좋아요를 추가했습니다:", feed);
+      } else {
+        throw new Error("해당 Id 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createSubCommentLike(
+    groupStudyId: number,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      const groupStudy = await GroupStudy.findOneAndUpdate(
+        {
+          id: groupStudyId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        {
+          $addToSet: {
+            "comments.$[comment].subComments.$[subComment].likeList":
+              this.token.id,
+          },
+        },
+        {
+          arrayFilters: [
+            { "comment._id": commentId },
+            { "subComment._id": subCommentId },
+          ],
+          new: true, // 업데이트된 도큐먼트를 반환
+        },
+      );
+
+      if (!groupStudy) {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   async belongToParticipateGroupStudy() {
     const groupStudies = await GroupStudy.find({});
     const allUser = await User.find({ isActive: true });
