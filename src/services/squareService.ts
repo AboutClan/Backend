@@ -1,11 +1,12 @@
+import { type Types } from "mongoose";
 import { type JWT } from "next-auth/jwt/types";
 import {
-  SecretSquareCategory,
   SecretSquare,
+  SecretSquareCategory,
   SecretSquareType,
+  subCommentType,
 } from "../db/models/secretSquare";
 import ImageService from "./imageService";
-import { type Types } from "mongoose";
 
 interface BaseSecretSquareItem {
   category: SecretSquareCategory;
@@ -159,10 +160,12 @@ export default class SquareService {
           input: "$comments",
           as: "comment",
           in: {
-            _id: "$$comment._id",
+            user: "$$comment.user",
             comment: "$$comment.comment",
             createdAt: "$$comment.createdAt",
             updatedAt: "$$comment.updatedAt",
+            _id: "$$comment._id",
+            subComments: "$$comment.subComments",
           },
         },
       },
@@ -200,6 +203,79 @@ export default class SquareService {
     await SecretSquare.findByIdAndUpdate(squareId, {
       $pull: { comments: { _id: commentId } },
     });
+  }
+
+  async createSubComment(squareId: string, commentId: string, content: string) {
+    try {
+      const message: subCommentType = {
+        user: this.token.id,
+        comment: content,
+      };
+      console.log(squareId, commentId);
+      await SecretSquare.updateOne(
+        {
+          _id: squareId,
+          "comments._id": commentId,
+        },
+        { $push: { "comments.$.subComments": message } },
+      );
+
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async deleteSubComment(
+    gatherId: string,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      await Gather.updateOne(
+        {
+          id: gatherId,
+          "comments._id": commentId,
+        },
+        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+      );
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async updateSubComment(
+    gatherId: string,
+    commentId: string,
+    subCommentId: string,
+    comment: string,
+  ) {
+    try {
+      const gathers = await Gather.find();
+
+      gathers.forEach((gather) => {
+        gather.comments.forEach((comment) => {
+          comment.subComments = [];
+        });
+        gather.save();
+      });
+
+      // await Gather.updateOne(
+      //   {
+      //     _id: gatherId,
+      //     "comments._id": commentId,
+      //     "comments.subComments._id": subCommentId,
+      //   },
+      //   { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+      //   {
+      //     arrayFilters: [{ "sub._id": subCommentId }],
+      //   },
+      // );
+
+      return;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async patchPoll({

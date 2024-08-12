@@ -63,9 +63,8 @@ class SquareController {
       );
 
     this.router
-      .route("/:squareId/comment/")
+      .route("/comment")
       .post(
-        param("squareId").notEmpty(),
         body("comment")
           .trim()
           .notEmpty()
@@ -74,6 +73,12 @@ class SquareController {
         validateCheck,
         this.createSquareComment.bind(this),
       );
+
+    this.router
+      .route("/subComment")
+      .post(this.createSubComment.bind(this))
+      .delete(this.deleteSubComment.bind(this))
+      .patch(this.updateSubComment.bind(this));
 
     this.router
       .route("/:squareId/comment/:commentId")
@@ -196,15 +201,76 @@ class SquareController {
     res: Response,
     next: NextFunction,
   ) {
-    const { squareId } = req.params;
-    const { comment } = req.body;
+    const { comment, squareId } = req.body;
 
     try {
+      console.log(comment, squareId);
       await this.SquareServiceInstance.createSquareComment({
         comment,
         squareId,
       });
       res.status(201).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async updateSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { gatherId, commentId, subCommentId, comment } = req.body;
+
+      await this.SquareServiceInstance.updateSubComment(
+        gatherId,
+        commentId,
+        subCommentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { squareId, comment, commentId } = req.body;
+
+      await this.SquareServiceInstance.createSubComment(
+        squareId,
+        commentId,
+        comment,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async deleteSubComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { gatherId, commentId, subCommentId } = req.body;
+
+      await this.SquareServiceInstance.deleteSubComment(
+        gatherId,
+        commentId,
+        subCommentId,
+      );
+
+      return res.status(200).end();
     } catch (err) {
       next(err);
     }

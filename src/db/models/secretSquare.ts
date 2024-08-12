@@ -1,4 +1,5 @@
 import mongoose, { model, Model, Schema, Types } from "mongoose";
+import { IUser } from "./user";
 
 export type SecretSquareCategory = "일상" | "고민" | "정보" | "같이해요";
 
@@ -6,8 +7,24 @@ export type SecretSquareType = "general" | "poll";
 
 interface Comment {
   user: Types.ObjectId;
-  comment: string;
+  comment: string;subComments?: subCommentType[];
 }
+
+
+export const subCommentSchema: Schema<subCommentType> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 export const commentSchema = new Schema<Comment>(
   {
@@ -19,13 +36,21 @@ export const commentSchema = new Schema<Comment>(
     comment: {
       type: String,
       required: true,
-    },
+    }, subComments:{
+      type: [subCommentSchema],
+      default: []
+    }
   },
   {
     timestamps: true,
   },
 );
 
+
+export interface subCommentType{
+  user: string | IUser;
+  comment: string;
+}
 interface SecretSquareItem {
   category: SecretSquareCategory;
   title: string;
@@ -85,12 +110,12 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
     title: {
       type: String,
       required: true,
-      minLength: 3,
+      minLength: 1,
     },
     content: {
       type: String,
       required: true,
-      minLength: 10,
+      minLength: 1,
     },
     type: {
       type: String,
