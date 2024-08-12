@@ -72,22 +72,28 @@ class SquareController {
           .withMessage("min length of comment is 1"),
         validateCheck,
         this.createSquareComment.bind(this),
-      );
-
+      )
+      .delete(this.deleteSquareComment.bind(this));
+    this.router.route("/comment/like").post(this.createCommentLike.bind(this));
     this.router
       .route("/subComment")
       .post(this.createSubComment.bind(this))
       .delete(this.deleteSubComment.bind(this))
       .patch(this.updateSubComment.bind(this));
 
+    this.router.route("/comment/like").post(this.createCommentLike.bind(this));
     this.router
-      .route("/:squareId/comment/:commentId")
-      .delete(
-        param("squareId").notEmpty(),
-        param("commentId").notEmpty(),
-        validateCheck,
-        this.deleteSquareComment.bind(this),
-      );
+      .route("/subComment/like")
+      .post(this.createSubCommentLike.bind(this));
+
+    // this.router
+    //   .route("/:squareId/comment/:commentId")
+    //   .delete(
+    //     param("squareId").notEmpty(),
+    //     param("commentId").notEmpty(),
+    //     validateCheck,
+    //     this.deleteSquareComment.bind(this),
+    //   );
 
     this.router
       .route("/:squareId/poll")
@@ -215,6 +221,42 @@ class SquareController {
     }
   }
 
+  private async deleteSquareComment(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    console.log("SS");
+    // const { squareId, commentId } = req.body;
+    // console.log(2, squareId, commentId);
+    try {
+      // await this.SquareServiceInstance.deleteSquareComment({
+      //   squareId,
+      //   commentId,
+      // });
+      res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // async patchComment(gatherId: string, commentId: string, comment: string) {
+  //   const gather = await Gather.findOne({ id: gatherId });
+  //   if (!gather) throw new Error();
+
+  //   try {
+  //     gather.comments.forEach(async (com: any) => {
+  //       if ((com._id as string) == commentId) {
+  //         com.comment = comment;
+  //         await gather.save();
+  //       }
+  //     });
+  //     return;
+  //   } catch (err) {
+  //     throw new Error();
+  //   }
+  // }
+
   private async updateSubComment(
     req: Request,
     res: Response,
@@ -229,6 +271,42 @@ class SquareController {
         subCommentId,
         comment,
       );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createSubCommentLike(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { squareId, commentId, subCommentId } = req.body;
+
+      await this.SquareServiceInstance?.createSubCommentLike(
+        squareId,
+        commentId,
+        subCommentId,
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async createCommentLike(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { squareId, commentId } = req.body;
+
+      await this.SquareServiceInstance?.createCommentLike(squareId, commentId);
 
       return res.status(200).end();
     } catch (err) {
@@ -271,23 +349,6 @@ class SquareController {
       );
 
       return res.status(200).end();
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  private async deleteSquareComment(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) {
-    const { squareId, commentId } = req.params;
-    try {
-      await this.SquareServiceInstance.deleteSquareComment({
-        squareId,
-        commentId,
-      });
-      res.status(204).end();
     } catch (err) {
       next(err);
     }

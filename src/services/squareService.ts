@@ -164,6 +164,7 @@ export default class SquareService {
             comment: "$$comment.comment",
             createdAt: "$$comment.createdAt",
             updatedAt: "$$comment.updatedAt",
+            likeList: "$$comment.likeList",
             _id: "$$comment._id",
             subComments: "$$comment.subComments",
           },
@@ -200,9 +201,10 @@ export default class SquareService {
     squareId: string;
     commentId: string;
   }) {
-    await SecretSquare.findByIdAndUpdate(squareId, {
-      $pull: { comments: { _id: commentId } },
-    });
+    console.log(1, squareId, commentId);
+    // await SecretSquare.findByIdAndUpdate(squareId, {
+    //   $pull: { comments: { _id: commentId } },
+    // });
   }
 
   async createSubComment(squareId: string, commentId: string, content: string) {
@@ -227,14 +229,15 @@ export default class SquareService {
   }
 
   async deleteSubComment(
-    gatherId: string,
+    squareId: string,
     commentId: string,
     subCommentId: string,
   ) {
     try {
-      await Gather.updateOne(
+      console.log(squareId, commentId, subCommentId);
+      await SecretSquare.updateOne(
         {
-          id: gatherId,
+          _id: squareId,
           "comments._id": commentId,
         },
         { $pull: { "comments.$.subComments": { _id: subCommentId } } },
@@ -245,39 +248,88 @@ export default class SquareService {
   }
 
   async updateSubComment(
-    gatherId: string,
+    squareId: string,
     commentId: string,
     subCommentId: string,
     comment: string,
   ) {
     try {
-      const gathers = await Gather.find();
-
-      gathers.forEach((gather) => {
-        gather.comments.forEach((comment) => {
-          comment.subComments = [];
-        });
-        gather.save();
-      });
-
-      // await Gather.updateOne(
-      //   {
-      //     _id: gatherId,
-      //     "comments._id": commentId,
-      //     "comments.subComments._id": subCommentId,
-      //   },
-      //   { $set: { "comments.$[].subComments.$[sub].comment": comment } },
-      //   {
-      //     arrayFilters: [{ "sub._id": subCommentId }],
-      //   },
-      // );
-
+      await SecretSquare.updateOne(
+        {
+          id: squareId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+        {
+          arrayFilters: [{ "sub._id": subCommentId }],
+        },
+      );
       return;
     } catch (err: any) {
       throw new Error(err);
     }
   }
 
+  async createCommentLike(squareId: string, commentId: string) {
+    console.log(3, squareId, commentId);
+    try {
+      const feed = await SecretSquare.findOneAndUpdate(
+        {
+          _id: squareId,
+          "comments._id": commentId,
+        },
+        {
+          $addToSet: { "comments.$.likeList": this.token.id },
+        },
+        { new: true }, // 업데이트된 도큐먼트를 반환
+      );
+
+      if (feed) {
+        console.log("좋아요를 추가했습니다:", feed);
+      } else {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async createSubCommentLike(
+    squareId: string,
+    commentId: string,
+    subCommentId: string,
+  ) {
+    try {
+      console.log(squareId, commentId, subCommentId);
+      const square = await SecretSquare.findOneAndUpdate(
+        {
+          _id: squareId,
+          "comments._id": commentId,
+          "comments.subComments._id": subCommentId,
+        },
+        {
+          $addToSet: {
+            "comments.$[comment].subComments.$[subComment].likeList":
+              this.token.id,
+          },
+        },
+        {
+          arrayFilters: [
+            { "comment._id": commentId },
+            { "subComment._id": subCommentId },
+          ],
+          new: true, // 업데이트된 도큐먼트를 반환
+        },
+      );
+
+      if (!square) {
+        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
   async patchPoll({
     squareId,
     pollItems,

@@ -7,7 +7,8 @@ export type SecretSquareType = "general" | "poll";
 
 interface Comment {
   user: Types.ObjectId;
-  comment: string;subComments?: subCommentType[];
+  comment: string;
+  subComments?: subCommentType[]; likeList?: string[];
 }
 
 
@@ -19,7 +20,10 @@ export const subCommentSchema: Schema<subCommentType> = new Schema(
     },
     comment: {
       type: String,
-    },
+    },likeList:{
+      type: [String],
+      default: []
+    }
   },
   {
     timestamps: true,
@@ -36,8 +40,12 @@ export const commentSchema = new Schema<Comment>(
     comment: {
       type: String,
       required: true,
-    }, subComments:{
+    },
+    subComments: {
       type: [subCommentSchema],
+      default: []
+    },  likeList:{
+      type: [String],
       default: []
     }
   },
@@ -50,6 +58,7 @@ export const commentSchema = new Schema<Comment>(
 export interface subCommentType{
   user: string | IUser;
   comment: string;
+  likeList?: string[];
 }
 interface SecretSquareItem {
   category: SecretSquareCategory;
