@@ -16,7 +16,7 @@
     "url": "git+https://github.com/VoteHelper/about-back.git"
   },
   "engines": {
-    "node": "16.13.1",
+    "node": "20.9.0",
     "npm": "8.1.2"
   },
   "author": "beming-dev",
