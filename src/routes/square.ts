@@ -50,6 +50,25 @@ class SquareController {
       );
 
     this.router
+      .route("/comment")
+      .post(
+        body("comment")
+          .trim()
+          .notEmpty()
+          .isLength({ min: 1 })
+          .withMessage("min length of comment is 1"),
+        validateCheck,
+        this.createSquareComment.bind(this),
+      )
+      .delete(this.deleteSquareComment.bind(this));
+
+    this.router
+      .route("/subComment")
+      .post(this.createSubComment.bind(this))
+      .delete(this.deleteSubComment.bind(this))
+      .patch(this.updateSubComment.bind(this));
+
+    this.router
       .route("/:squareId")
       .get(
         param("squareId").notEmpty(),
@@ -62,24 +81,7 @@ class SquareController {
         this.deleteSquare.bind(this),
       );
 
-    this.router
-      .route("/comment")
-      .post(
-        body("comment")
-          .trim()
-          .notEmpty()
-          .isLength({ min: 1 })
-          .withMessage("min length of comment is 1"),
-        validateCheck,
-        this.createSquareComment.bind(this),
-      )
-      .delete(this.deleteSquareComment.bind(this));
     this.router.route("/comment/like").post(this.createCommentLike.bind(this));
-    this.router
-      .route("/subComment")
-      .post(this.createSubComment.bind(this))
-      .delete(this.deleteSubComment.bind(this))
-      .patch(this.updateSubComment.bind(this));
 
     this.router.route("/comment/like").post(this.createCommentLike.bind(this));
     this.router
