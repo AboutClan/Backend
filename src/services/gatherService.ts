@@ -7,6 +7,7 @@ import {
   subCommentType,
 } from "../db/models/gather";
 import { User } from "../db/models/user";
+import { C_simpleUser } from "../utils/constants";
 
 const logger = require("../../logger");
 
@@ -31,7 +32,7 @@ export default class GatherService {
       .populate(["user", "participants.user", "comments.user"])
       .populate({
         path: "comments.subComments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       });
 
     return gatherData;
@@ -42,7 +43,7 @@ export default class GatherService {
       .populate(["user", "participants.user", "comments.user"])
       .populate({
         path: "comments.subComments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       })
       .sort({ id: -1 })
       .limit(3);
@@ -67,7 +68,7 @@ export default class GatherService {
         { path: "comments.user" },
         {
           path: "comments.subComments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         },
       ]);
 

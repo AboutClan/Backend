@@ -4,6 +4,7 @@ import { commentType, Feed, subCommentType } from "../db/models/feed";
 import { IUser, User } from "../db/models/user";
 import { convertUsersToSummary } from "../utils/convertUtils";
 import ImageService from "./imageService";
+import { C_simpleUser } from "../utils/constants";
 
 export default class FeedService {
   private token: JWT;
@@ -33,7 +34,7 @@ export default class FeedService {
         .populate(["writer", "like", "comments.user"])
         .populate({
           path: "comments.subComments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         })
         .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
@@ -79,7 +80,7 @@ export default class FeedService {
         .populate(["writer", "like", "comments.user"])
         .populate({
           path: "comments.subComments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         });
       const myLike = (feed?.like as IUser[])?.find(
         (who) => who.uid === this.token.uid,
@@ -126,7 +127,7 @@ export default class FeedService {
         .populate(["writer", "like", "comments.user"])
         .populate({
           path: "comments.subComments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         })
         .sort({ createdAt: isRecent ? -1 : 1 })
         .skip(start)
