@@ -8,6 +8,7 @@ import {
 } from "../db/models/groupStudy";
 import { User } from "../db/models/user";
 import WebPushService from "./webPushService";
+import { C_simpleUser } from "../utils/constants";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -44,19 +45,19 @@ export default class GroupStudyService {
       })
       .populate({
         path: "participants.user",
-        select: "name profileImage uid score avatar comment",
+        select: C_simpleUser,
       })
       .populate({
         path: "waiting.user",
-        select: "name profileImage uid score avatar comment",
+        select: C_simpleUser,
       })
       .populate({
         path: "comments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       })
       .populate({
         path: "comments.subComments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       })
       .select("-_id");
 
@@ -79,19 +80,19 @@ export default class GroupStudyService {
       })
       .populate({
         path: "participants.user",
-        select: "name profileImage uid score avatar comment",
+        select: C_simpleUser,
       })
       .populate({
         path: "waiting.user",
-        select: "name profileImage uid score avatar comment",
+        select: C_simpleUser,
       })
       .populate({
         path: "comments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       })
       .populate({
         path: "comments.subComments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       })
       .select("-_id");
 
@@ -109,19 +110,19 @@ export default class GroupStudyService {
         })
         .populate({
           path: "participants.user",
-          select: "name profileImage uid score avatar comment",
+          select: C_simpleUser,
         })
         .populate({
           path: "waiting.user",
-          select: "name profileImage uid score avatar comment",
+          select: C_simpleUser,
         })
         .populate({
           path: "comments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         })
         .populate({
           path: "comments.subComments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         })
         .select("-_id");
 
@@ -142,15 +143,15 @@ export default class GroupStudyService {
         })
         .populate({
           path: "participants.user",
-          select: "name profileImage uid score avatar comment",
+          select: C_simpleUser,
         })
         .populate({
           path: "waiting.user",
-          select: "name profileImage uid score avatar comment",
+          select: C_simpleUser,
         })
         .populate({
           path: "comments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         })
         .select("-_id");
 
@@ -170,19 +171,19 @@ export default class GroupStudyService {
       })
       .populate({
         path: "participants.user",
-        select: "name profileImage uid score avatar comment",
+        select: C_simpleUser,
       })
       .populate({
         path: "waiting.user",
-        select: "name profileImage uid score avatar comment",
+        select: C_simpleUser,
       })
       .populate({
         path: "comments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       })
       .populate({
         path: "comments.user",
-        select: "name profileImage uid score avatar comment location",
+        select: C_simpleUser,
       })
       .select("-_id");
 
@@ -209,19 +210,19 @@ export default class GroupStudyService {
         })
         .populate({
           path: "participants.user",
-          select: "name profileImage uid score avatar comment",
+          select: C_simpleUser,
         })
         .populate({
           path: "waiting.user",
-          select: "name profileImage uid score avatar comment",
+          select: C_simpleUser,
         })
         .populate({
           path: "comments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         })
         .populate({
           path: "comments.subComments.user",
-          select: "name profileImage uid score avatar comment location",
+          select: C_simpleUser,
         })
         .select("-_id");
 
