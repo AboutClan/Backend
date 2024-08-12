@@ -153,6 +153,10 @@ export default class GroupStudyService {
           path: "comments.user",
           select: C_simpleUser,
         })
+        .populate({
+          path: "comments.subComments.user",
+          select: "name profileImage uid score avatar comment location",
+        })
         .select("-_id");
 
       return groupStudyData;

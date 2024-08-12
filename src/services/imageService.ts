@@ -1,30 +1,26 @@
 import { JWT } from "next-auth/jwt";
-let AWS = require("aws-sdk");
-let multer = require("multer");
-import { Readable } from "stream";
+import S3 from "aws-sdk/clients/s3";
+
 import { findOneVote } from "../utils/voteUtils";
 import { IUser } from "../db/models/user";
 import { strToDate } from "../utils/dateUtils";
-let multerS3 = require("multer-s3");
 
 export default class ImageService {
   private token: JWT;
-  private s3: any;
+  private s3: S3;
 
   constructor(token?: JWT) {
     this.token = token as JWT;
 
-    this.s3 = new AWS.S3({
+    this.s3 = new S3({
       accessKeyId: process.env.AWS_ACCESS_KEY,
       secretAccessKey: process.env.AWS_KEY,
       region: "ap-northeast-2",
     });
   }
 
-  async uploadImgCom(path: any, buffers: Buffer[]) {
+  async uploadImgCom(path: string, buffers: Buffer[]) {
     const imageUrls: string[] = [];
-
-    console.log(buffers.length);
 
     for (let i = 0; i < buffers.length; i++) {
       const url = await this.uploadSingleImage(path, buffers[i], i);
@@ -34,7 +30,7 @@ export default class ImageService {
     return imageUrls;
   }
 
-  async uploadSingleImage(path: String, buffer: Buffer, index?: number) {
+  async uploadSingleImage(path: string, buffer: Buffer, index?: number) {
     const params = {
       Bucket: "studyabout",
       Key: `${path}/${Math.floor(Date.now() / 1000).toString()}${index ? index : ""}.jpg`,
@@ -50,10 +46,10 @@ export default class ImageService {
   }
 
   getToday() {
-    var date = new Date();
-    var year = date.getFullYear();
-    var month = ("0" + (1 + date.getMonth())).slice(-2);
-    var day = ("0" + date.getDate()).slice(-2);
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = ("0" + (1 + date.getMonth())).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
 
     return year + month + day;
   }
