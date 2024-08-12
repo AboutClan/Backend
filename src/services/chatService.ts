@@ -76,7 +76,11 @@ export default class ChatService {
         .sort({ createdAt: -1 })
         .limit(1);
 
-      return chat?.[0]._id;
+      if (chat.length) {
+        return chat?.[0]._id;
+      } else {
+        return "no chat";
+      }
     } catch (err: any) {
       throw new Error(err);
     }
