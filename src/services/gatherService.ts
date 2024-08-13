@@ -199,8 +199,8 @@ export default class GatherService {
     commentId: string,
     subCommentId: string,
   ) {
-    console.log(gatherId, commentId);
-    try {``
+    try {
+      ``;
       await Gather.updateOne(
         {
           id: gatherId,
@@ -299,9 +299,7 @@ export default class GatherService {
         { new: true }, // 업데이트된 도큐먼트를 반환
       );
 
-      if (feed) {
-        console.log("좋아요를 추가했습니다:", feed);
-      } else {
+      if (!feed) {
         throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
       }
     } catch (err: any) {

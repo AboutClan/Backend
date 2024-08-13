@@ -73,7 +73,7 @@ export default class FeedService {
   async findFeedById(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        console.log("이게 머지");
+        console.log("objectId type error");
       }
 
       const feed = await Feed.findById(id)
@@ -109,7 +109,7 @@ export default class FeedService {
   async findFeedLikeById(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        console.log("이게 머지");
+        console.log("ObjectId type error");
       }
       const feed = await Feed.findById(id).populate(["like"]);
       return convertUsersToSummary(feed?.like as IUser[]);
@@ -251,9 +251,7 @@ export default class FeedService {
         { new: true }, // 업데이트된 도큐먼트를 반환
       );
 
-      if (feed) {
-        console.log("좋아요를 추가했습니다:", feed);
-      } else {
+      if (!feed) {
         throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
       }
     } catch (err: any) {
@@ -288,9 +286,7 @@ export default class FeedService {
         },
       );
 
-      if (feed) {
-        console.log("좋아요를 추가했습니다:", feed);
-      } else {
+      if (!feed) {
         throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
       }
     } catch (err: any) {

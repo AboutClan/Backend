@@ -55,7 +55,6 @@ export default class ImageService {
   }
 
   async saveImage(imageUrl: string) {
-    console.log(imageUrl);
     const vote = await findOneVote(strToDate(this.getToday()).toDate());
     if (!vote) throw new Error();
 

@@ -308,8 +308,6 @@ export default class GroupStudyService {
   async createGroupStudy(data: IGroupStudyData) {
     const nextId = await this.getNextSequence("groupStudyId");
 
-    console.log(data);
-
     const groupStudyInfo: IGroupStudyData = {
       ...data,
       participants: [
@@ -335,7 +333,6 @@ export default class GroupStudyService {
     }
   }
   async updateGroupStudy(data: IGroupStudyData) {
-    console.log(data);
     const groupStudy = await GroupStudy.findOne({ id: data.id });
     if (!groupStudy) throw new Error();
 
@@ -646,9 +643,7 @@ export default class GroupStudyService {
         { new: true }, // 업데이트된 도큐먼트를 반환
       );
 
-      if (feed) {
-        console.log("좋아요를 추가했습니다:", feed);
-      } else {
+      if (!feed) {
         throw new Error("해당 Id 또는 commentId를 찾을 수 없습니다.");
       }
     } catch (err: any) {
