@@ -239,8 +239,8 @@ class SquareController {
     }
   }
 
-  // async patchComment(gatherId: string, commentId: string, comment: string) {
-  //   const gather = await Gather.findOne({ id: gatherId });
+  // async patchComment(squareId: string, commentId: string, comment: string) {
+  //   const gather = await Gather.findOne({ id: squareId });
   //   if (!gather) throw new Error();
 
   //   try {
@@ -262,10 +262,10 @@ class SquareController {
     next: NextFunction,
   ) {
     try {
-      const { gatherId, commentId, subCommentId, comment } = req.body;
+      const { squareId, commentId, subCommentId, comment } = req.body;
 
       await this.SquareServiceInstance.updateSubComment(
-        gatherId,
+        squareId,
         commentId,
         subCommentId,
         comment,
@@ -339,10 +339,10 @@ class SquareController {
     next: NextFunction,
   ) {
     try {
-      const { gatherId, commentId, subCommentId } = req.body;
+      const { squareId, commentId, subCommentId } = req.body;
 
       await this.SquareServiceInstance.deleteSubComment(
-        gatherId,
+        squareId,
         commentId,
         subCommentId,
       );

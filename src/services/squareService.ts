@@ -233,7 +233,6 @@ export default class SquareService {
     subCommentId: string,
   ) {
     try {
-      console.log(squareId, commentId, subCommentId);
       await SecretSquare.updateOne(
         {
           _id: squareId,
