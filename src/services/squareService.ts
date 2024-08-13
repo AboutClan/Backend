@@ -201,10 +201,9 @@ export default class SquareService {
     squareId: string;
     commentId: string;
   }) {
-    console.log(1, squareId, commentId);
-    // await SecretSquare.findByIdAndUpdate(squareId, {
-    //   $pull: { comments: { _id: commentId } },
-    // });
+    await SecretSquare.findByIdAndUpdate(squareId, {
+      $pull: { comments: { _id: commentId } },
+    });
   }
 
   async createSubComment(squareId: string, commentId: string, content: string) {

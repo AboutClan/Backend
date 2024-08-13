@@ -211,7 +211,6 @@ class SquareController {
     const { comment, squareId } = req.body;
 
     try {
-      console.log(comment, squareId);
       await this.SquareServiceInstance.createSquareComment({
         comment,
         squareId,
@@ -227,14 +226,13 @@ class SquareController {
     res: Response,
     next: NextFunction,
   ) {
-    console.log("SS");
-    // const { squareId, commentId } = req.body;
-    // console.log(2, squareId, commentId);
+    const { squareId, commentId } = req.body;
+
     try {
-      // await this.SquareServiceInstance.deleteSquareComment({
-      //   squareId,
-      //   commentId,
-      // });
+      await this.SquareServiceInstance.deleteSquareComment({
+        squareId,
+        commentId,
+      });
       res.status(204).end();
     } catch (err) {
       next(err);
