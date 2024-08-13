@@ -42,7 +42,6 @@ class ChatController {
 
     try {
       const chatList = await this.chatServiceInstance.getChat(toUid);
-      console.log(chatList);
 
       return res.status(200).json(chatList);
     } catch (err: any) {
@@ -54,7 +53,6 @@ class ChatController {
 
     try {
       const chatList = await this.chatServiceInstance.getChats();
-      console.log(chatList);
 
       return res.status(200).json(chatList);
     } catch (err: any) {
