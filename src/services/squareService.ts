@@ -50,9 +50,14 @@ export default class SquareService {
 
   async getSquareList({
     category,
+    cursorNum,
   }: {
     category: SecretSquareCategory | "all";
+    cursorNum: number | null;
   }) {
+    const gap = 12;
+    let start = gap * (cursorNum || 0);
+
     return await SecretSquare.find(category === "all" ? {} : { category }, {
       category: 1,
       title: 1,
@@ -69,7 +74,10 @@ export default class SquareService {
       likeCount: { $size: "$like" },
       commentsCount: { $size: "$comments" },
       createdAt: 1,
-    }).sort({ createdAt: "desc" });
+    })
+      .sort({ createdAt: "desc" })
+      .skip(start)
+      .limit(gap);
   }
 
   async createSquare(square: SecretSquareItem & { buffers: Buffer[] }) {

@@ -137,13 +137,15 @@ class SquareController {
   }
 
   private async getSquareList(req: Request, res: Response, next: NextFunction) {
-    const { category = "all" } = req.query as {
+    const { category = "all", cursor } = req.query as {
       category?: SecretSquareCategory;
+      cursor?: string;
     };
-
+    const cursorNum = cursor ? parseInt(cursor) : null;
     try {
       const squareList = await this.SquareServiceInstance.getSquareList({
         category,
+        cursorNum,
       });
       res.status(200).json({ squareList });
     } catch (err) {
