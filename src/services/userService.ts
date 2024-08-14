@@ -737,35 +737,85 @@ export default class UserService {
   }
 
   async test() {
-    // await Place.updateMany({}, { prefCnt: 0 });
+    const regionData = await User.aggregate([
+      {
+        $match: {
+          score: { $gte: 5 }, // score가 5 이상인 유저들만 선택
+        },
+      },
+      {
+        $group: {
+          _id: "$location", // 지역별로 그룹화
+          userCount: { $sum: 1 }, // 각 지역별 유저 수를 셈
+        },
+      },
+      {
+        $sort: { _id: 1 }, // 지역 이름(또는 ID)으로 정렬
+      },
+    ]);
 
-    // const users = await User.find();
+    console.log(regionData);
 
-    // users.forEach(async (user) => {
-    //   if (user?.studyPreference?.place) {
-    //     await Place.updateOne(
-    //       { _id: user.studyPreference.place },
-    //       { $inc: { prefCnt: 1 } },
-    //     );
-    //   }
+    // const oneMonthAgo = new Date();
+    // oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 2);
 
-    //   if (user?.studyPreference?.subPlace) {
-    //     user?.studyPreference?.subPlace.forEach(async (placeId) => {
-    //       await Place.updateOne({ _id: placeId }, { $inc: { prefCnt: 1 } });
-    //     });
-    //   }
-    // });
-    // return null;
+    // console.log(oneMonthAgo);
 
-    const users = await User.find({});
+    // const result = await Log.aggregate([
+    //   {
+    //     $addFields: {
+    //       metaUidString: { $toString: "$meta.uid" }, // meta.uid를 string으로 변환하여 새로운 필드에 저장
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "users", // User 컬렉션 이름
+    //       localField: "metaUidString", // 변환된 string 필드를 사용
+    //       foreignField: "uid", // User 컬렉션의 uid 필드 (string)
+    //       as: "userInfo", // 매칭된 User 데이터를 저장할 필드 이름
+    //     },
+    //   },
+    //   {
+    //     $unwind: "$userInfo", // userInfo 배열을 개별 문서로 펼침
+    //   },
+    //   {
+    //     $match: {
+    //       timestamp: { $gte: oneMonthAgo }, // 한 달 이내의 데이터만 필터링
+    //       message: {
+    //         $in: [
+    //           "일일 출석",
+    //           "스터디 출석",
+    //           "개인 스터디 인증",
+    //           "당일 스터디 참여",
+    //           "소모임 가입",
+    //           "번개 모임 참여",
+    //         ],
+    //       }, // 지정된 message 값만 필터링
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: {
+    //         message: "$message", // message 필드를 기준으로 그룹화
+    //         uid: "$metaUidString", // 각 사용자(uid)별로 고유하게 그룹화
+    //         location: "$userInfo.location", // 사용자의 location별로 세분화
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: {
+    //         message: "$_id.message", // message 필드를 기준으로 그룹화
+    //         location: "$_id.location", // location 필드를 기준으로 세분화
+    //       },
+    //       count: { $sum: 1 }, // 각 location 내에서 uid가 매칭된 문서의 수를 셈
+    //     },
+    //   },
+    //   {
+    //     $sort: { "_id.message": 1, "_id.location": 1 }, // 결과를 message와 location으로 정렬
+    //   },
+    // ]);
 
-    users.forEach((user) => {
-      const score = user.score;
-      const divScore = Math.round(score / 4);
-      user.score = divScore;
-      user.save();
-    });
-
-    return;
+    // console.log(result);
   }
 }

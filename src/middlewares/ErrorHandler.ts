@@ -6,16 +6,19 @@ const ErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log("Middleware Error Handling");
-  console.log(err);
-  const errStatus = err.statusCode || 500;
-  const errMsg = err.message || "Something went wrong";
-  res.status(errStatus).json({
-    success: false,
-    status: errStatus,
-    message: errMsg,
-    stack: process.env.NODE_ENV === "development" ? err.stack : {},
-  });
+  if (err.isOperational) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      ...(err.errors && { errors: err.errors }),
+    });
+  } else {
+    console.log("Unexpected Error: ", err);
+    res.status(500).json({
+      success: false,
+      message: "An unexpected error occured",
+    });
+  }
 };
 
 export default ErrorHandler;
