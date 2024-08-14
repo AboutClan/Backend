@@ -87,7 +87,6 @@ export default class WebPushService {
         push.send(subscription, this.basePayload, (err: any, result: any) => {
           if (err) {
             console.log(err);
-          } else {
           }
         });
       });
@@ -111,7 +110,6 @@ export default class WebPushService {
         const push = new PushNotifications(this.settings);
 
         push.send(subscription, payload, (err: any, result: any) => {
-          console.log(result);
           if (err) throw new Error(err);
         });
       });

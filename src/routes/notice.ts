@@ -70,7 +70,6 @@ class NoticeController {
 
   private async getLike(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log(this.decodedToken);
       const result = await this.noticeServiceInstance?.getLike();
       return res.status(200).json(result);
     } catch (err: any) {

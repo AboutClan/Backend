@@ -220,7 +220,6 @@ export default class SquareService {
         user: this.token.id,
         comment: content,
       };
-      console.log(squareId, commentId);
       await SecretSquare.updateOne(
         {
           _id: squareId,
@@ -278,7 +277,6 @@ export default class SquareService {
   }
 
   async createCommentLike(squareId: string, commentId: string) {
-    console.log(3, squareId, commentId);
     try {
       const feed = await SecretSquare.findOneAndUpdate(
         {
@@ -291,9 +289,7 @@ export default class SquareService {
         { new: true }, // 업데이트된 도큐먼트를 반환
       );
 
-      if (feed) {
-        console.log("좋아요를 추가했습니다:", feed);
-      } else {
+      if (!feed) {
         throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
       }
     } catch (err: any) {
@@ -307,7 +303,6 @@ export default class SquareService {
     subCommentId: string,
   ) {
     try {
-      console.log(squareId, commentId, subCommentId);
       const square = await SecretSquare.findOneAndUpdate(
         {
           _id: squareId,
