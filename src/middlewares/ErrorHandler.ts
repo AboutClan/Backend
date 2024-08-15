@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { AppError } from "../errors/AppError";
+import { ValidationError } from "../errors/ValidationError";
 
 const ErrorHandler = (
-  err: any,
+  err: AppError,
   req: Request,
   res: Response,
   next: NextFunction,
@@ -10,10 +12,10 @@ const ErrorHandler = (
     res.status(err.statusCode).json({
       success: false,
       message: err.message,
-      ...(err.errors && { errors: err.errors }),
+      ...(err instanceof ValidationError && { errors: err.errors }),
     });
   } else {
-    console.log("Unexpected Error: ", err);
+    console.log("Unexpected Error Occured!: ", err);
     res.status(500).json({
       success: false,
       message: "An unexpected error occured",

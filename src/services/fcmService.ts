@@ -4,6 +4,8 @@ import { FcmToken } from "../db/models/fcmToken";
 import dayjs from "dayjs";
 import { findOneVote } from "../utils/voteUtils";
 import { IUser } from "../db/models/user";
+import { DatabaseError } from "../errors/DatabaseError";
+import { AppError } from "../errors/AppError";
 
 export default class FcmService {
   private token?: JWT;
@@ -48,17 +50,13 @@ export default class FcmService {
       },
     };
 
-    try {
-      const response = await admin.messaging().send(newPayload);
+    const response = await admin.messaging().send(newPayload);
 
-      return response;
-    } catch (error: any) {
-      throw new Error(error);
-    }
+    return response;
   }
 
   async deleteToken(uid: string, platform: string) {
-    await FcmToken.updateOne(
+    const deleted = await FcmToken.updateOne(
       {
         uid,
       },
@@ -68,37 +66,39 @@ export default class FcmService {
         },
       },
     );
+
+    if (!deleted.modifiedCount)
+      throw new DatabaseError("fcm token delete failed");
+    return;
   }
 
   async registerToken(uid: string, fcmToken: string, platform: string) {
-    try {
-      const fcmTokenOne = await FcmToken.findOne({ uid });
+    const fcmTokenOne = await FcmToken.findOne({ uid });
 
-      if (fcmTokenOne) {
-        const tokenExists = fcmTokenOne.devices.some(
-          (device) => device.token === fcmToken,
-        );
+    if (fcmTokenOne) {
+      const tokenExists = fcmTokenOne.devices.some(
+        (device) => device.token === fcmToken,
+      );
 
-        if (!tokenExists) {
-          fcmTokenOne.devices.push({ token: fcmToken, platform });
-          await fcmTokenOne.save();
-        }
-      } else {
-        FcmToken.create({
-          uid,
-          devices: [{ token: fcmToken, platform }],
-        });
+      if (!tokenExists) {
+        fcmTokenOne.devices.push({ token: fcmToken, platform });
+        await fcmTokenOne.save();
       }
-    } catch (err: any) {
-      throw new Error(err);
+    } else {
+      FcmToken.create({
+        uid,
+        devices: [{ token: fcmToken, platform }],
+      });
     }
   }
 
   async sendNotificationToX(uid: string, title: string, body: string) {
     const user = await FcmToken.findOne({ uid });
 
+    if (!user) throw new DatabaseError("can't find toUser");
+
     try {
-      user?.devices.forEach(async (device) => {
+      user.devices.forEach(async (device) => {
         const newPayload = {
           ...this.payload,
           token: device.token,
@@ -109,11 +109,11 @@ export default class FcmService {
         };
         await admin.messaging().send(newPayload);
       });
-
-      return;
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (err: any) {
+      throw new AppError("send notifacation failed", 1001);
     }
+
+    return;
   }
 
   async sendNotificationAllUser(title: string, body: string) {
@@ -136,7 +136,7 @@ export default class FcmService {
 
       return;
     } catch (err) {
-      return;
+      throw new AppError("send notifacation failed", 1001);
     }
   }
   async sendNotificationVoteResult() {
@@ -194,7 +194,7 @@ export default class FcmService {
       });
       return;
     } catch (err) {
-      return;
+      throw new AppError("send notifacation failed", 1001);
     }
   }
 }

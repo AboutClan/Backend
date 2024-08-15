@@ -823,8 +823,12 @@ class UserController {
   };
 
   private test = async (req: Request, res: Response, next: NextFunction) => {
-    await this.userServiceInstance?.test();
-    return res.status(200).end();
+    try {
+      await this.userServiceInstance?.test();
+      return res.status(200).end();
+    } catch (err: any) {
+      next(err);
+    }
   };
 }
 

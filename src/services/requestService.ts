@@ -1,23 +1,18 @@
 import { Request } from "../db/models/request";
+import { DatabaseError } from "../errors/DatabaseError";
 
 export default class RequestService {
   constructor() {}
 
   async getRequest() {
-    try {
-      const gatherData = await Request.find({}, "-_id");
-      return gatherData;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const gatherData = await Request.find({}, "-_id");
+    return gatherData;
   }
 
   async createRequest(data: any) {
-    try {
-      await Request.create(data);
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const created = await Request.create(data);
+
+    if (!created) throw new DatabaseError("create request failed");
+    return;
   }
 }

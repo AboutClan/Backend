@@ -5,6 +5,8 @@ import { IUser, User } from "../db/models/user";
 import { convertUsersToSummary } from "../utils/convertUtils";
 import ImageService from "./imageService";
 import { C_simpleUser } from "../utils/constants";
+import { DatabaseError } from "../errors/DatabaseError";
+import { ValidationError } from "../errors/ValidationError";
 
 export default class FeedService {
   private token: JWT;
@@ -21,67 +23,29 @@ export default class FeedService {
     cursor?: number | null,
     isRecent?: boolean,
   ) {
-    try {
-      const gap = 12;
-      let start = gap * (cursor || 0);
+    const gap = 12;
+    let start = gap * (cursor || 0);
 
-      const query: any = { type };
-      if (typeId && typeId.trim() !== "") {
-        query.typeId = typeId;
-      }
-
-      const feeds = await Feed.find(query)
-        .populate(["writer", "like", "comments.user"])
-        .populate({
-          path: "comments.subComments.user",
-          select: C_simpleUser,
-        })
-        .sort({ createdAt: isRecent ? -1 : 1 })
-        .skip(start)
-        .limit(gap);
-
-      if (isRecent === false) {
-        feeds.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
-      }
-
-      return feeds?.map((feed) => {
-        const myLike = (feed?.like as IUser[])?.find(
-          (who) => who.uid === this.token.uid,
-        );
-        let modifiedLike;
-        if (myLike) {
-          modifiedLike = [
-            myLike,
-            ...(feed.like as IUser[])
-              .filter((who) => who.uid !== myLike.uid)
-              .slice(0, 7),
-          ];
-        } else {
-          modifiedLike = feed.like.slice(0, 8);
-        }
-        return {
-          ...feed.toObject(),
-          like: modifiedLike,
-          likeCnt: feed?.like?.length,
-        };
-      });
-    } catch (err: any) {
-      throw new Error(err);
+    const query: any = { type };
+    if (typeId && typeId.trim() !== "") {
+      query.typeId = typeId;
     }
-  }
 
-  async findFeedById(id: string) {
-    try {
-      if (!Types.ObjectId.isValid(id)) {
-        console.log("objectId type error");
-      }
+    const feeds = await Feed.find(query)
+      .populate(["writer", "like", "comments.user"])
+      .populate({
+        path: "comments.subComments.user",
+        select: C_simpleUser,
+      })
+      .sort({ createdAt: isRecent ? -1 : 1 })
+      .skip(start)
+      .limit(gap);
 
-      const feed = await Feed.findById(id)
-        .populate(["writer", "like", "comments.user"])
-        .populate({
-          path: "comments.subComments.user",
-          select: C_simpleUser,
-        });
+    if (isRecent === false) {
+      feeds.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
+    }
+
+    return feeds?.map((feed) => {
       const myLike = (feed?.like as IUser[])?.find(
         (who) => who.uid === this.token.uid,
       );
@@ -89,74 +53,96 @@ export default class FeedService {
       if (myLike) {
         modifiedLike = [
           myLike,
-          ...(feed?.like as IUser[])
+          ...(feed.like as IUser[])
             .filter((who) => who.uid !== myLike.uid)
             .slice(0, 7),
         ];
       } else {
-        modifiedLike = feed?.like.slice(0, 8);
+        modifiedLike = feed.like.slice(0, 8);
       }
       return {
-        ...feed?.toObject(),
+        ...feed.toObject(),
         like: modifiedLike,
         likeCnt: feed?.like?.length,
       };
-    } catch (err: any) {
-      throw new Error(err);
+    });
+  }
+
+  async findFeedById(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new ValidationError("invalid mongoDB Id type");
     }
+
+    const feed = await Feed.findById(id)
+      .populate(["writer", "like", "comments.user"])
+      .populate({
+        path: "comments.subComments.user",
+        select: C_simpleUser,
+      });
+    const myLike = (feed?.like as IUser[])?.find(
+      (who) => who.uid === this.token.uid,
+    );
+    let modifiedLike;
+    if (myLike) {
+      modifiedLike = [
+        myLike,
+        ...(feed?.like as IUser[])
+          .filter((who) => who.uid !== myLike.uid)
+          .slice(0, 7),
+      ];
+    } else {
+      modifiedLike = feed?.like.slice(0, 8);
+    }
+    return {
+      ...feed?.toObject(),
+      like: modifiedLike,
+      likeCnt: feed?.like?.length,
+    };
   }
 
   async findFeedLikeById(id: string) {
-    try {
-      if (!Types.ObjectId.isValid(id)) {
-        console.log("ObjectId type error");
-      }
-      const feed = await Feed.findById(id).populate(["like"]);
-      return convertUsersToSummary(feed?.like as IUser[]);
-    } catch (err: any) {
-      throw new Error(err);
+    if (!Types.ObjectId.isValid(id)) {
+      throw new ValidationError("invalid mongoDB Id type");
     }
+    const feed = await Feed.findById(id).populate(["like"]);
+    return convertUsersToSummary(feed?.like as IUser[]);
   }
 
   async findAllFeeds(cursor: number | null, isRecent?: boolean) {
-    try {
-      const gap = 12;
-      let start = gap * (cursor || 0);
+    const gap = 12;
+    let start = gap * (cursor || 0);
 
-      const feeds = await Feed.find()
-        .populate(["writer", "like", "comments.user"])
-        .populate({
-          path: "comments.subComments.user",
-          select: C_simpleUser,
-        })
-        .sort({ createdAt: isRecent ? -1 : 1 })
-        .skip(start)
-        .limit(gap);
+    const feeds = await Feed.find()
+      .populate(["writer", "like", "comments.user"])
+      .populate({
+        path: "comments.subComments.user",
+        select: C_simpleUser,
+      })
+      .sort({ createdAt: isRecent ? -1 : 1 })
+      .skip(start)
+      .limit(gap);
 
-      return feeds?.map((feed) => {
-        const myLike = (feed?.like as IUser[])?.find(
-          (who) => who.uid === this.token.uid,
-        );
-        let modifiedLike;
-        if (myLike) {
-          modifiedLike = [
-            myLike,
-            ...(feed.like as IUser[])
-              .filter((who) => who.uid !== myLike.uid)
-              .slice(0, 7),
-          ];
-        } else {
-          modifiedLike = feed.like.slice(0, 8);
-        }
-        return {
-          ...feed.toObject(),
-          like: modifiedLike,
-          likeCnt: feed?.like?.length,
-        };
-      });
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return feeds?.map((feed) => {
+      const myLike = (feed?.like as IUser[])?.find(
+        (who) => who.uid === this.token.uid,
+      );
+      let modifiedLike;
+      if (myLike) {
+        modifiedLike = [
+          myLike,
+          ...(feed.like as IUser[])
+            .filter((who) => who.uid !== myLike.uid)
+            .slice(0, 7),
+        ];
+      } else {
+        modifiedLike = feed.like.slice(0, 8);
+      }
+      return {
+        ...feed.toObject(),
+        like: modifiedLike,
+        likeCnt: feed?.like?.length,
+      };
+    });
   }
 
   async createFeed({
@@ -168,95 +154,90 @@ export default class FeedService {
     isAnonymous,
     subCategory,
   }: any) {
-    try {
-      const images = await this.imageServiceInstance.uploadImgCom(
-        "feed",
-        buffers,
-      );
-      await Feed.create({
-        title,
-        text,
-        writer: this.token.id,
-        type,
-        typeId,
-        images,
-        isAnonymous,
-        subCategory,
-      });
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const images = await this.imageServiceInstance.uploadImgCom(
+      "feed",
+      buffers,
+    );
+    await Feed.create({
+      title,
+      text,
+      writer: this.token.id,
+      type,
+      typeId,
+      images,
+      isAnonymous,
+      subCategory,
+    });
+    return;
   }
   async createComment(feedId: string, content: string) {
-    try {
-      const feed = await Feed.findById(feedId);
+    const message: commentType = {
+      user: this.token.id,
+      comment: content,
+    };
 
-      const message: commentType = {
-        user: this.token.id,
-        comment: content,
-      };
-      await feed?.updateOne({ $push: { comments: message } });
-      await feed?.save();
+    //transaction
+    const feed = await Feed.findByIdAndUpdate(
+      feedId,
+      { $push: { comments: message } },
+      { new: true, useFindAndModify: false },
+    );
 
-      const user = await User.findOne({ uid: this.token.uid });
-      if (user) user.point += 2;
-      await user?.save();
+    if (!feed) throw new DatabaseError("reate comment failed");
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const user = await User.findOneAndUpdate(
+      { uid: this.token.uid },
+      { $inc: { point: 2 } },
+      { new: true, useFindAndModify: false },
+    );
+    if (!user) throw new DatabaseError("update score failed");
+
+    return;
   }
 
   async deleteComment(feedId: string, commentId: string) {
-    try {
-      const feed = await Feed.findById(feedId);
+    const feed = await Feed.findByIdAndUpdate(
+      feedId,
+      { $pull: { comments: { _id: commentId } } },
+      { new: true, useFindAndModify: false },
+    );
 
-      await feed?.updateOne({ $pull: { comments: { _id: commentId } } });
-      await feed?.save();
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!feed) throw new DatabaseError("delete comment failed");
+
+    return;
   }
 
   async updateComment(feedId: string, commentId: string, comment: string) {
-    try {
-      const result = await Feed.findOneAndUpdate(
-        { _id: feedId, "comments._id": commentId },
-        {
-          $set: {
-            "comments.$.comment": comment,
-          },
+    const result = await Feed.findOneAndUpdate(
+      { _id: feedId, "comments._id": commentId },
+      {
+        $set: {
+          "comments.$.comment": comment,
         },
-      );
+      },
+    );
 
-      return result;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!result) throw new DatabaseError("update comment failed");
+
+    return result;
   }
 
   async createCommentLike(feedId: string, commentId: string) {
-    try {
-      const feed = await Feed.findOneAndUpdate(
-        {
-          _id: feedId,
-          "comments._id": commentId,
-        },
-        {
-          $addToSet: { "comments.$.likeList": this.token.id },
-        },
-        { new: true }, // 업데이트된 도큐먼트를 반환
-      );
+    const feed = await Feed.findOneAndUpdate(
+      {
+        _id: feedId,
+        "comments._id": commentId,
+      },
+      {
+        $addToSet: { "comments.$.likeList": this.token.id },
+      },
+      { new: true }, // 업데이트된 도큐먼트를 반환
+    );
 
-      if (!feed) {
-        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!feed) {
+      throw new DatabaseError("create comment like failed");
     }
+    return;
   }
 
   async createSubCommentLike(
@@ -264,55 +245,49 @@ export default class FeedService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      const feed = await Feed.findOneAndUpdate(
-        {
-          _id: feedId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
+    const feed = await Feed.findOneAndUpdate(
+      {
+        _id: feedId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      {
+        $addToSet: {
+          "comments.$[comment].subComments.$[subComment].likeList":
+            this.token.id,
         },
-        {
-          $addToSet: {
-            "comments.$[comment].subComments.$[subComment].likeList":
-              this.token.id,
-          },
-        },
-        {
-          arrayFilters: [
-            { "comment._id": commentId },
-            { "subComment._id": subCommentId },
-          ],
-          new: true, // 업데이트된 도큐먼트를 반환
-        },
-      );
+      },
+      {
+        arrayFilters: [
+          { "comment._id": commentId },
+          { "subComment._id": subCommentId },
+        ],
+        new: true, // 업데이트된 도큐먼트를 반환
+      },
+    );
 
-      if (!feed) {
-        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!feed) {
+      throw new DatabaseError("create subcomment like failed");
     }
   }
 
   async createSubComment(feedId: string, commentId: string, content: string) {
-    try {
-      const message: subCommentType = {
-        user: this.token.id,
-        comment: content,
-      };
+    const message: subCommentType = {
+      user: this.token.id,
+      comment: content,
+    };
 
-      await Feed.updateOne(
-        {
-          _id: feedId,
-          "comments._id": commentId,
-        },
-        { $push: { "comments.$.subComments": message } },
-      );
+    const updated = await Feed.updateOne(
+      {
+        _id: feedId,
+        "comments._id": commentId,
+      },
+      { $push: { "comments.$.subComments": message } },
+    );
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updated.modifiedCount) throw new DatabaseError("nothing updated");
+
+    return;
   }
 
   async deleteSubComment(
@@ -320,17 +295,15 @@ export default class FeedService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      await Feed.updateOne(
-        {
-          _id: feedId,
-          "comments._id": commentId,
-        },
-        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
-      );
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await Feed.updateOne(
+      {
+        _id: feedId,
+        "comments._id": commentId,
+      },
+      { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+    );
+
+    if (!updated.modifiedCount) throw new DatabaseError("nothing updated");
   }
 
   async updateSubComment(
@@ -339,40 +312,32 @@ export default class FeedService {
     subCommentId: string,
     comment: string,
   ) {
-    try {
-      await Feed.updateOne(
-        {
-          _id: feedId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
-        },
-        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
-        {
-          arrayFilters: [{ "sub._id": subCommentId }],
-        },
-      );
+    const updated = await Feed.updateOne(
+      {
+        _id: feedId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+      {
+        arrayFilters: [{ "sub._id": subCommentId }],
+      },
+    );
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updated.modifiedCount) throw new DatabaseError("nothing updated");
+    return;
   }
 
   async toggleLike(feedId: string) {
-    try {
-      const feed = await Feed.findById(feedId);
-      const isLikePush = await feed?.addLike(
-        this.token.id as unknown as string,
-      );
+    const feed = await Feed.findById(feedId);
 
-      const user = await User.findOne({ uid: this.token.uid });
-      if (!user) return;
-      if (isLikePush) user.point += 2;
-      else user.point -= 1;
-      await user.save();
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const isLikePush = await feed?.addLike(this.token.id);
+
+    const user = await User.findOne({ uid: this.token.uid });
+    if (!user) return;
+    if (isLikePush) user.point += 2;
+    else user.point -= 1;
+    await user.save();
+    return;
   }
 }

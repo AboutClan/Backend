@@ -4,6 +4,7 @@ import { IUser } from "../db/models/user";
 import dayjs from "dayjs";
 import { findOneVote } from "../utils/voteUtils";
 import { GroupStudy } from "../db/models/groupStudy";
+import { AppError } from "../errors/AppError";
 const webPush = require("web-push");
 const PushNotifications = require("node-pushnotifications");
 
@@ -55,25 +56,21 @@ export default class WebPushService {
   }
 
   async subscribe(subscription: any) {
-    try {
-      const data = await NotificationSub.findOne({
-        uid: this.token.uid,
-        endpoint: subscription.endpoint,
+    const data = await NotificationSub.findOne({
+      uid: this.token.uid,
+      endpoint: subscription.endpoint,
+    });
+
+    if (!data) {
+      const newSubscription = new NotificationSub({
+        ...subscription,
+        uid: this.token?.uid,
       });
 
-      if (!data) {
-        const newSubscription = new NotificationSub({
-          ...subscription,
-          uid: this.token?.uid,
-        });
-
-        await newSubscription.save();
-      }
-
-      return;
-    } catch (err: any) {
-      throw new Error(err);
+      await newSubscription.save();
     }
+
+    return;
   }
 
   async sendNotificationAllUser() {
@@ -103,21 +100,18 @@ export default class WebPushService {
       body: description || "테스트 알림이에요",
     });
 
-    try {
-      const subscriptions = await NotificationSub.find({ uid });
+    const subscriptions = await NotificationSub.find({ uid });
 
-      subscriptions.forEach((subscription) => {
-        const push = new PushNotifications(this.settings);
+    subscriptions.forEach((subscription) => {
+      const push = new PushNotifications(this.settings);
 
-        push.send(subscription, payload, (err: any, result: any) => {
-          if (err) throw new Error(err);
-        });
+      push.send(subscription, payload, (err: any, result: any) => {
+        if (err) throw new AppError(`error at ${subscription}`, 500);
       });
-      return;
-    } catch (err) {
-      return;
-    }
+    });
+    return;
   }
+
   async sendNotificationGroupStudy(id: string) {
     const payload = JSON.stringify({
       ...this.basePayload,
@@ -187,11 +181,11 @@ export default class WebPushService {
 
         if (failure.has(subscription.uid)) {
           push.send(subscription, failPayload, (err: any, result: any) => {
-            if (err) throw new Error(err);
+            if (err) throw new AppError(err, 500);
           });
         } else if (success.has(subscription.uid)) {
           push.send(subscription, successPayload, (err: any, result: any) => {
-            if (err) throw new Error(err);
+            if (err) throw new AppError(err, 500);
           });
         }
       });
