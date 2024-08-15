@@ -8,6 +8,7 @@ import {
 } from "../db/models/gather";
 import { User } from "../db/models/user";
 import { C_simpleUser } from "../utils/constants";
+import { DatabaseError } from "../errors/DatabaseError";
 
 const logger = require("../../logger");
 
@@ -52,30 +53,26 @@ export default class GatherService {
   }
 
   async getGather(cursor: number | null) {
-    try {
-      const gap = 12;
-      let start = gap * (cursor || 0);
+    const gap = 12;
+    let start = gap * (cursor || 0);
 
-      let gatherData = await Gather.find()
-        .sort({ id: -1 })
-        .skip(start)
-        .limit(gap)
-        .select("-_id");
+    let gatherData = await Gather.find()
+      .sort({ id: -1 })
+      .skip(start)
+      .limit(gap)
+      .select("-_id");
 
-      gatherData = await Gather.populate(gatherData, [
-        { path: "user" },
-        { path: "participants.user" },
-        { path: "comments.user" },
-        {
-          path: "comments.subComments.user",
-          select: C_simpleUser,
-        },
-      ]);
+    gatherData = await Gather.populate(gatherData, [
+      { path: "user" },
+      { path: "participants.user" },
+      { path: "comments.user" },
+      {
+        path: "comments.subComments.user",
+        select: C_simpleUser,
+      },
+    ]);
 
-      return gatherData;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return gatherData;
   }
 
   //place 프론트에서 데이터 전송으로 인해 생성 삭제
@@ -88,110 +85,113 @@ export default class GatherService {
       id: nextId,
     };
 
-    try {
-      const gatherData = gatherInfo;
-      await Gather.create(gatherData);
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const gatherData = gatherInfo;
+    const created = await Gather.create(gatherData);
+
+    if (!created) throw new DatabaseError("create gather failed");
+    return;
   }
 
   async updateGather(gather: IGatherData) {
-    try {
-      await Gather.updateOne({ id: gather.id }, gather);
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await Gather.updateOne({ id: gather.id }, gather);
+    if (!updated.modifiedCount) throw new DatabaseError("update gather failed");
+    return;
   }
 
   async participateGather(gatherId: string, phase: string, userId: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) throw new Error();
 
-    try {
-      const id = userId ?? this.token.id;
-      if (!gather.participants.some((participant) => participant.user == id)) {
-        gather.participants.push({
-          user: id,
-          phase,
-        });
-        await gather?.save();
-      }
-      const user = await User.findOne({ _id: id });
-      if (!user) throw new Error();
-      user.score += 5;
-      user.monthScore += 5;
-      await user.save();
-      logger.logger.info("번개 모임 참여", {
-        metadata: {
-          type: "score",
-          uid: user.uid,
-          value: 5,
-        },
+    const id = userId ?? this.token.id;
+    if (!gather.participants.some((participant) => participant.user == id)) {
+      gather.participants.push({
+        user: id,
+        phase,
       });
-
-      return;
-    } catch (err) {
-      throw new Error();
+      await gather?.save();
     }
+
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { $inc: { score: 5, monthScore: 5 } },
+      { new: true, useFindAndModify: false },
+    );
+
+    if (!user) throw new DatabaseError("cant find user");
+
+    logger.logger.info("번개 모임 참여", {
+      metadata: {
+        type: "score",
+        uid: user.uid,
+        value: 5,
+      },
+    });
+
+    return;
   }
 
   async deleteParticipate(gatherId: string) {
-    const gather = await Gather.findOne({ id: gatherId });
-    if (!gather) throw new Error();
+    // const gather = await Gather.findOne({ id: gatherId });
+    // if (!gather) throw new Error();
 
-    try {
-      gather.participants = gather.participants.filter(
-        (participant) => participant.user != this.token.id,
-      );
-      await gather.save();
-      const user = await User.findOne({ _id: this.token.id });
-      if (!user) throw new Error();
-      user.score -= 5;
-      await user.save();
-      logger.logger.info("번개 모임 참여 취소", {
-        metadata: {
-          type: "score",
-          uid: user.uid,
-          value: -5,
-        },
-      });
-    } catch (err) {
-      throw new Error();
-    }
+    // gather.participants = gather.participants.filter(
+    //   (participant) => participant.user != this.token.id,
+    // );
+    // await gather.save();
+
+    const gather = await Gather.findOneAndUpdate(
+      { id: gatherId },
+      {
+        $pull: { participants: { user: this.token.id } },
+      },
+      { new: true, useFindAndModify: false },
+    );
+
+    if (!gather) throw new Error("Gather not found");
+
+    const user = await User.findOneAndUpdate(
+      { _id: this.token.id },
+      { $inc: { score: -5 } },
+      { new: true, useFindAndModify: false },
+    );
+
+    if (!user) throw new Error("User not found");
+
+    logger.logger.info("번개 모임 참여 취소", {
+      metadata: {
+        type: "score",
+        uid: user.uid,
+        value: -5,
+      },
+    });
     return;
   }
 
   async setStatus(gatherId: string, status: gatherStatus) {
-    try {
-      await Gather.updateOne({ id: gatherId }, { status });
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await Gather.updateOne({ id: gatherId }, { status });
+    if (!updated.modifiedCount) throw new DatabaseError("update failed");
+
+    return;
   }
 
   async createSubComment(gatherId: string, commentId: string, content: string) {
-    try {
-      const message: subCommentType = {
-        user: this.token.id,
-        comment: content,
-      };
+    const message: subCommentType = {
+      user: this.token.id,
+      comment: content,
+    };
 
-      await Gather.updateOne(
-        {
-          id: gatherId,
-          "comments._id": commentId,
-        },
-        { $push: { "comments.$.subComments": message } },
-      );
+    const updated = await Gather.updateOne(
+      {
+        id: gatherId,
+        "comments._id": commentId,
+      },
+      { $push: { "comments.$.subComments": message } },
+    );
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updated.modifiedCount)
+      throw new DatabaseError("create subcomment failed");
+
+    return;
   }
 
   async deleteSubComment(
@@ -199,18 +199,15 @@ export default class GatherService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      ``;
-      await Gather.updateOne(
-        {
-          id: gatherId,
-          "comments._id": commentId,
-        },
-        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
-      );
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await Gather.updateOne(
+      {
+        id: gatherId,
+        "comments._id": commentId,
+      },
+      { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+    );
+    if (!updated.modifiedCount)
+      throw new DatabaseError("delete subcomment failed");
   }
 
   async updateSubComment(
@@ -219,91 +216,81 @@ export default class GatherService {
     subCommentId: string,
     comment: string,
   ) {
-    try {
-      await Gather.updateOne(
-        {
-          id: gatherId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
-        },
-        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
-        {
-          arrayFilters: [{ "sub._id": subCommentId }],
-        },
-      );
+    const updated = await Gather.updateOne(
+      {
+        id: gatherId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+      {
+        arrayFilters: [{ "sub._id": subCommentId }],
+      },
+    );
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updated.modifiedCount)
+      throw new DatabaseError("update subcomment failed");
+
+    return;
   }
 
+  //수정필요
   async createComment(gatherId: string, comment: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) throw new Error();
 
-    try {
-      gather.comments.push({
-        user: this.token.id,
-        comment,
-      });
+    gather.comments.push({
+      user: this.token.id,
+      comment,
+    });
 
-      await gather.save();
-    } catch (err) {
-      throw new Error();
-    }
+    await gather.save();
+
+    return;
   }
 
+  //수정필요
   async deleteComment(gatherId: string, commentId: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) throw new Error();
 
-    try {
-      gather.comments = gather.comments.filter(
-        (com: any) => (com._id as string) != commentId,
-      );
+    gather.comments = gather.comments.filter(
+      (com: any) => (com._id as string) != commentId,
+    );
 
-      await gather.save();
-    } catch (err) {
-      throw new Error();
-    }
+    await gather.save();
+
+    return;
   }
 
+  //수정필요
   async patchComment(gatherId: string, commentId: string, comment: string) {
     const gather = await Gather.findOne({ id: gatherId });
     if (!gather) throw new Error();
 
-    try {
-      gather.comments.forEach(async (com: any) => {
-        if ((com._id as string) == commentId) {
-          com.comment = comment;
-          await gather.save();
-        }
-      });
-      return;
-    } catch (err) {
-      throw new Error();
-    }
+    gather.comments.forEach(async (com: any) => {
+      if ((com._id as string) == commentId) {
+        com.comment = comment;
+        await gather.save();
+      }
+    });
+    return;
   }
 
   async createCommentLike(gatherId: number, commentId: string) {
-    try {
-      const feed = await Gather.findOneAndUpdate(
-        {
-          id: gatherId,
-          "comments._id": commentId,
-        },
-        {
-          $addToSet: { "comments.$.likeList": this.token.id },
-        },
-        { new: true }, // 업데이트된 도큐먼트를 반환
-      );
+    const gather = await Gather.findOneAndUpdate(
+      {
+        id: gatherId,
+        "comments._id": commentId,
+      },
+      {
+        $addToSet: { "comments.$.likeList": this.token.id },
+      },
+      { new: true }, // 업데이트된 도큐먼트를 반환
+    );
 
-      if (!feed) {
-        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!gather) {
+      throw new DatabaseError("cant find gather");
     }
   }
 
@@ -312,43 +299,35 @@ export default class GatherService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      const gather = await Gather.findOneAndUpdate(
-        {
-          id: gatherId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
+    const gather = await Gather.findOneAndUpdate(
+      {
+        id: gatherId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      {
+        $addToSet: {
+          "comments.$[comment].subComments.$[subComment].likeList":
+            this.token.id,
         },
-        {
-          $addToSet: {
-            "comments.$[comment].subComments.$[subComment].likeList":
-              this.token.id,
-          },
-        },
-        {
-          arrayFilters: [
-            { "comment._id": commentId },
-            { "subComment._id": subCommentId },
-          ],
-          new: true, // 업데이트된 도큐먼트를 반환
-        },
-      );
+      },
+      {
+        arrayFilters: [
+          { "comment._id": commentId },
+          { "subComment._id": subCommentId },
+        ],
+        new: true, // 업데이트된 도큐먼트를 반환
+      },
+    );
 
-      if (!gather) {
-        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!gather) {
+      throw new DatabaseError("cant find gather");
     }
   }
 
   async deleteGather(gatherId: string) {
-    try {
-      await Gather.deleteOne({ id: gatherId });
-    } catch (err) {
-      throw new Error();
-    }
-
+    const deleted = await Gather.deleteOne({ id: gatherId });
+    if (!deleted.deletedCount) throw new DatabaseError("delete failed");
     return;
   }
 }

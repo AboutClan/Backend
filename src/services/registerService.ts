@@ -3,6 +3,8 @@ import { JWT } from "next-auth/jwt";
 import dbConnect from "../db/conn";
 import { IRegistered, Registered } from "../db/models/registered";
 import { User } from "../db/models/user";
+import { DatabaseError } from "../errors/DatabaseError";
+import { ValidationError } from "../errors/ValidationError";
 
 const logger = require("../../logger");
 
@@ -20,16 +22,12 @@ export default class RegisterService {
   }
 
   async decodeByAES256(encodedTel: string) {
-    try {
-      const key = process.env.cryptoKey;
-      if (!key) return encodedTel;
+    const key = process.env.cryptoKey;
+    if (!key) return encodedTel;
 
-      const bytes = CryptoJS.AES.decrypt(encodedTel, key);
-      const originalText = bytes.toString(CryptoJS.enc.Utf8);
-      return originalText;
-    } catch (err) {
-      throw new Error();
-    }
+    const bytes = CryptoJS.AES.decrypt(encodedTel, key);
+    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+    return originalText;
   }
 
   async register(subRegisterForm: Omit<IRegistered, "uid" | "profileImage">) {
@@ -55,35 +53,33 @@ export default class RegisterService {
       telephone: encodedTel,
     };
 
-    try {
-      await Registered.findOneAndUpdate({ uid: this.token.uid }, registerForm, {
+    const updated = await Registered.findOneAndUpdate(
+      { uid: this.token.uid },
+      registerForm,
+      {
         upsert: true,
         new: true,
-      });
+      },
+    );
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updated) throw new DatabaseError("register failed");
+
+    return;
   }
 
   async approve(uid: string) {
     let userForm;
 
-    try {
-      const user = await Registered.findOne({ uid }, "-_id -__v");
-      if (!user) return;
+    const user = await Registered.findOne({ uid }, "-_id -__v");
+    if (!user) throw new ValidationError("wrong uid");
 
-      userForm = {
-        ...user.toObject(),
-        role: "human",
-        registerDate: new Date(),
-        isActive: true,
-        deposit: 3000,
-      };
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    userForm = {
+      ...user.toObject(),
+      role: "human",
+      registerDate: new Date(),
+      isActive: true,
+      deposit: 3000,
+    };
 
     const db = await dbConnect();
     const session = await db.startSession();
@@ -113,28 +109,20 @@ export default class RegisterService {
   }
 
   async deleteRegisterUser(uid: string, session: any) {
-    try {
-      if (session) {
-        await Registered.deleteOne({ uid }).session(session);
-      } else {
-        await Registered.deleteOne({ uid });
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (session) {
+      await Registered.deleteOne({ uid }).session(session);
+    } else {
+      await Registered.deleteOne({ uid });
     }
   }
 
   async getRegister() {
-    try {
-      const users = await Registered.find({});
+    const users = await Registered.find({});
 
-      users.forEach(async (user) => {
-        user.telephone = await this.decodeByAES256(user.telephone);
-      });
+    users.forEach(async (user) => {
+      user.telephone = await this.decodeByAES256(user.telephone);
+    });
 
-      return users;
-    } catch (err) {
-      throw new Error();
-    }
+    return users;
   }
 }

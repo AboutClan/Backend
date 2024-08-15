@@ -9,6 +9,7 @@ import {
 import { User } from "../db/models/user";
 import WebPushService from "./webPushService";
 import { C_simpleUser } from "../utils/constants";
+import { DatabaseError } from "../errors/DatabaseError";
 
 export default class GroupStudyService {
   private token: JWT;
@@ -100,69 +101,61 @@ export default class GroupStudyService {
   }
 
   async getGroupStudyByCategory(category: string) {
-    try {
-      const groupStudyData = await GroupStudy.find({
-        "category.main": category,
+    const groupStudyData = await GroupStudy.find({
+      "category.main": category,
+    })
+      .populate({
+        path: "organizer",
+        select: "name profileImage uid score avatar comment",
       })
-        .populate({
-          path: "organizer",
-          select: "name profileImage uid score avatar comment",
-        })
-        .populate({
-          path: "participants.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "waiting.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "comments.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "comments.subComments.user",
-          select: C_simpleUser,
-        })
-        .select("-_id");
+      .populate({
+        path: "participants.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "waiting.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "comments.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "comments.subComments.user",
+        select: C_simpleUser,
+      })
+      .select("-_id");
 
-      return groupStudyData;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return groupStudyData;
   }
 
   async getGroupStudyById(groupStudyId: string) {
-    try {
-      const groupStudyIdNum = parseInt(groupStudyId);
+    const groupStudyIdNum = parseInt(groupStudyId);
 
-      const groupStudyData = await GroupStudy.findOne({ id: groupStudyIdNum })
-        .populate({
-          path: "organizer",
-          select: "name profileImage uid score avatar comment",
-        })
-        .populate({
-          path: "participants.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "waiting.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "comments.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "comments.subComments.user",
-          select: "name profileImage uid score avatar comment location",
-        })
-        .select("-_id");
+    const groupStudyData = await GroupStudy.findOne({ id: groupStudyIdNum })
+      .populate({
+        path: "organizer",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "participants.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "waiting.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "comments.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "comments.subComments.user",
+        select: "name profileImage uid score avatar comment location",
+      })
+      .select("-_id");
 
-      return groupStudyData;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return groupStudyData;
   }
 
   async getUserParticipatingGroupStudy() {
@@ -195,45 +188,35 @@ export default class GroupStudyService {
   }
 
   async getGroupStudy(cursor: number | null) {
-    try {
-      const gap = 7;
-      let start = gap * (cursor || 0);
+    const gap = 7;
+    let start = gap * (cursor || 0);
 
-      const groupStudyData = await GroupStudy.find()
-        .skip(start)
-        .limit(gap + 1)
-        // .populate([
-        //   "organizer",
-        //   "participants.user",
-        //   "waiting.user",
-        //   "comments.user",
-        // ])
-        .populate({
-          path: "organizer",
-          select: "name profileImage uid score avatar comment",
-        })
-        .populate({
-          path: "participants.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "waiting.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "comments.user",
-          select: C_simpleUser,
-        })
-        .populate({
-          path: "comments.subComments.user",
-          select: C_simpleUser,
-        })
-        .select("-_id");
+    const groupStudyData = await GroupStudy.find()
+      .skip(start)
+      .limit(gap + 1)
+      .populate({
+        path: "organizer",
+        select: "name profileImage uid score avatar comment",
+      })
+      .populate({
+        path: "participants.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "waiting.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "comments.user",
+        select: C_simpleUser,
+      })
+      .populate({
+        path: "comments.subComments.user",
+        select: C_simpleUser,
+      })
+      .select("-_id");
 
-      return groupStudyData;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return groupStudyData;
   }
 
   async createSubComment(
@@ -241,25 +224,22 @@ export default class GroupStudyService {
     commentId: string,
     content: string,
   ) {
-    try {
-      const message: subCommentType = {
-        user: this.token.id,
-        comment: content,
-      };
+    const message: subCommentType = {
+      user: this.token.id,
+      comment: content,
+    };
 
-      await GroupStudy.updateMany({}, { $rename: { comment: "comments" } });
-      await GroupStudy.updateOne(
-        {
-          id: groupStudyId,
-          "comments._id": commentId,
-        },
-        { $push: { "comments.$.subComments": message } },
-      );
+    const updated = await GroupStudy.updateOne(
+      {
+        id: groupStudyId,
+        "comments._id": commentId,
+      },
+      { $push: { "comments.$.subComments": message } },
+    );
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updated.modifiedCount)
+      throw new DatabaseError("create subComment failed");
+    return;
   }
 
   async deleteSubComment(
@@ -267,17 +247,16 @@ export default class GroupStudyService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      await GroupStudy.updateOne(
-        {
-          id: groupStudyId,
-          "comments._id": commentId,
-        },
-        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
-      );
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await GroupStudy.updateOne(
+      {
+        id: groupStudyId,
+        "comments._id": commentId,
+      },
+      { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+    );
+
+    if (!updated.modifiedCount)
+      throw new DatabaseError("delete subComment failed");
   }
 
   async updateSubComment(
@@ -286,23 +265,20 @@ export default class GroupStudyService {
     subCommentId: string,
     comment: string,
   ) {
-    try {
-      await GroupStudy.updateOne(
-        {
-          id: groupStudyId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
-        },
-        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
-        {
-          arrayFilters: [{ "sub._id": subCommentId }],
-        },
-      );
-
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await GroupStudy.updateOne(
+      {
+        id: groupStudyId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+      {
+        arrayFilters: [{ "sub._id": subCommentId }],
+      },
+    );
+    if (!updated.modifiedCount)
+      throw new DatabaseError("update subComment failed");
+    return;
   }
 
   async createGroupStudy(data: IGroupStudyData) {
@@ -324,13 +300,16 @@ export default class GroupStudyService {
       },
       id: nextId as number,
     };
+
+    const groupStudyData = groupStudyInfo;
+
     try {
-      const groupStudyData = groupStudyInfo;
       await GroupStudy.create(groupStudyData);
-      return;
     } catch (err: any) {
-      throw new Error(err);
+      throw new DatabaseError("create groupstury failed");
     }
+
+    return;
   }
   async updateGroupStudy(data: IGroupStudyData) {
     const groupStudy = await GroupStudy.findOne({ id: data.id });
@@ -347,37 +326,33 @@ export default class GroupStudyService {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
 
-    try {
-      if (
-        !groupStudy.participants.some(
-          (participant) => participant.user == this.token.id,
-        )
-      ) {
-        groupStudy.participants.push({
-          user: this.token.id,
-          role: "member",
-          attendCnt: 0,
-        });
-        groupStudy.attendance.thisWeek.push({
-          uid: this.token.uid as string,
-          name: this.token.name as string,
-          attendRecord: [],
-        });
-        groupStudy.attendance.lastWeek.push({
-          uid: this.token.uid as string,
-          name: this.token.name as string,
-          attendRecord: [],
-        });
-        await groupStudy?.save();
-      }
-
-      const webPushService = new WebPushService(this.token);
-      webPushService.sendNotificationGroupStudy(id);
-
-      return;
-    } catch (err) {
-      throw new Error();
+    if (
+      !groupStudy.participants.some(
+        (participant) => participant.user == this.token.id,
+      )
+    ) {
+      groupStudy.participants.push({
+        user: this.token.id,
+        role: "member",
+        attendCnt: 0,
+      });
+      groupStudy.attendance.thisWeek.push({
+        uid: this.token.uid as string,
+        name: this.token.name as string,
+        attendRecord: [],
+      });
+      groupStudy.attendance.lastWeek.push({
+        uid: this.token.uid as string,
+        name: this.token.name as string,
+        attendRecord: [],
+      });
+      await groupStudy?.save();
     }
+
+    const webPushService = new WebPushService(this.token);
+    webPushService.sendNotificationGroupStudy(id);
+
+    return;
   }
   async deleteParticipate(id: string) {
     const groupStudy = await GroupStudy.findOne({ id });
@@ -430,15 +405,11 @@ export default class GroupStudyService {
   }
 
   async getWaitingPerson(id: string) {
-    try {
-      const data = await GroupStudy.findOne({ id })
-        .populate(["waiting.user"])
-        .select("-_id");
+    const data = await GroupStudy.findOne({ id })
+      .populate(["waiting.user"])
+      .select("-_id");
 
-      return data;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return data;
   }
 
   async setWaitingPerson(id: string, pointType: string, answer?: string) {
@@ -460,6 +431,8 @@ export default class GroupStudyService {
       throw new Error();
     }
   }
+
+  //randomId 중복가능성
   async agreeWaitingPerson(id: string, userId: string, status: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
@@ -485,34 +458,26 @@ export default class GroupStudyService {
 
   async getAttendanceGroupStudy(id: string) {
     const groupStudy = await GroupStudy.findOne({ id });
-    if (!groupStudy) throw new Error();
+    if (!groupStudy) throw new DatabaseError();
 
-    try {
-      return groupStudy.attendance;
-    } catch (err) {
-      throw new Error();
-    }
+    return groupStudy.attendance;
   }
 
   async patchAttendanceWeek(id: string) {
     const groupStudy = await GroupStudy.findOne({ id });
     if (!groupStudy) throw new Error();
 
-    try {
-      const firstDate = dayjs()
-        .subtract(1, "day")
-        .startOf("week")
-        .add(1, "day")
-        .format("YYYY-MM-DD");
+    const firstDate = dayjs()
+      .subtract(1, "day")
+      .startOf("week")
+      .add(1, "day")
+      .format("YYYY-MM-DD");
 
-      groupStudy.attendance.firstDate = firstDate;
-      groupStudy.attendance.lastWeek = groupStudy.attendance.thisWeek;
-      groupStudy.attendance.thisWeek = [];
+    groupStudy.attendance.firstDate = firstDate;
+    groupStudy.attendance.lastWeek = groupStudy.attendance.thisWeek;
+    groupStudy.attendance.thisWeek = [];
 
-      await groupStudy.save();
-    } catch (err) {
-      throw new Error();
-    }
+    await groupStudy.save();
   }
   async attendGroupStudy(
     id: string,
@@ -575,79 +540,64 @@ export default class GroupStudyService {
 
   async createComment(groupStudyId: string, comment: string) {
     const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
-    if (!groupStudy) throw new Error();
+    if (!groupStudy) throw new DatabaseError("wrong groupStudyId");
 
-    try {
-      if (groupStudy?.comments) {
-        groupStudy.comments.push({
+    if (groupStudy?.comments) {
+      groupStudy.comments.push({
+        user: this.token.id,
+        comment,
+      });
+    } else {
+      groupStudy.comments = [
+        {
           user: this.token.id,
           comment,
-        });
-      } else {
-        groupStudy.comments = [
-          {
-            user: this.token.id,
-            comment,
-          },
-        ];
-      }
-
-      await groupStudy.save();
-    } catch (err) {
-      throw new Error();
+        },
+      ];
     }
+
+    await groupStudy.save();
   }
 
+  //comment방식 바꾸기
   async deleteComment(groupStudyId: string, commentId: string) {
     const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
-    if (!groupStudy) throw new Error();
+    if (!groupStudy) throw new DatabaseError("wrong groupStudyId");
 
-    try {
-      groupStudy.comments = groupStudy.comments.filter(
-        (com: any) => (com._id as string) != commentId,
-      );
+    groupStudy.comments = groupStudy.comments.filter(
+      (com: any) => (com._id as string) != commentId,
+    );
 
-      await groupStudy.save();
-    } catch (err) {
-      throw new Error();
-    }
+    await groupStudy.save();
   }
 
   async patchComment(groupStudyId: string, commentId: string, comment: string) {
     const groupStudy = await GroupStudy.findOne({ id: groupStudyId });
-    if (!groupStudy) throw new Error();
+    if (!groupStudy) throw new DatabaseError("wrong groupStudyId");
 
-    try {
-      groupStudy.comments.forEach(async (com: any) => {
-        if ((com._id as string) == commentId) {
-          com.comment = comment;
-          await groupStudy.save();
-        }
-      });
-      return;
-    } catch (err) {
-      throw new Error();
-    }
+    groupStudy.comments.forEach(async (com: any) => {
+      if ((com._id as string) == commentId) {
+        com.comment = comment;
+        await groupStudy.save();
+      }
+    });
+    return;
   }
 
   async createCommentLike(groupStudyId: number, commentId: string) {
-    try {
-      const feed = await GroupStudy.findOneAndUpdate(
-        {
-          id: groupStudyId,
-          "comments._id": commentId,
-        },
-        {
-          $addToSet: { "comments.$.likeList": this.token.id },
-        },
-        { new: true }, // 업데이트된 도큐먼트를 반환
-      );
+    const feed = await GroupStudy.findOneAndUpdate(
+      {
+        id: groupStudyId,
+        "comments._id": commentId,
+      },
+      {
+        $addToSet: { "comments.$.likeList": this.token.id },
+      },
+      { new: true }, // 업데이트된 도큐먼트를 반환
+    );
 
-      if (!feed) {
-        throw new Error("해당 Id 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!feed) {
+      throw new DatabaseError("해당 Id 또는 commentId를 찾을 수 없습니다.");
     }
   }
 
@@ -656,33 +606,29 @@ export default class GroupStudyService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      const groupStudy = await GroupStudy.findOneAndUpdate(
-        {
-          id: groupStudyId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
+    const groupStudy = await GroupStudy.findOneAndUpdate(
+      {
+        id: groupStudyId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      {
+        $addToSet: {
+          "comments.$[comment].subComments.$[subComment].likeList":
+            this.token.id,
         },
-        {
-          $addToSet: {
-            "comments.$[comment].subComments.$[subComment].likeList":
-              this.token.id,
-          },
-        },
-        {
-          arrayFilters: [
-            { "comment._id": commentId },
-            { "subComment._id": subCommentId },
-          ],
-          new: true, // 업데이트된 도큐먼트를 반환
-        },
-      );
+      },
+      {
+        arrayFilters: [
+          { "comment._id": commentId },
+          { "subComment._id": subCommentId },
+        ],
+        new: true, // 업데이트된 도큐먼트를 반환
+      },
+    );
 
-      if (!groupStudy) {
-        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!groupStudy) {
+      throw new DatabaseError("해당 feedId 또는 commentId를 찾을 수 없습니다.");
     }
   }
 
