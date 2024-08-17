@@ -138,6 +138,7 @@ export default class SquareService {
       title: 1,
       content: 1,
       type: 1,
+      author: 1,
       poll: {
         $cond: {
           if: { $eq: ["$type", "general"] },
