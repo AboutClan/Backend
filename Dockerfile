@@ -4,9 +4,6 @@ FROM node:20.9-alpine
 # 애플리케이션 디렉터리 설정
 WORKDIR /app
 
-ENV NODE_ENV=production
-
-RUN npm install -g npm@10.8.1
 # package.json과 package-lock.json을 복사
 COPY package*.json ./
 
