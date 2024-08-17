@@ -2,6 +2,7 @@ import { JWT } from "next-auth/jwt";
 import { IUser, User } from "../db/models/user";
 import { UserFilterType } from "../routes/admin/user";
 import { convertUserToSummary2 } from "../utils/convertUtils";
+import { DatabaseError } from "../errors/DatabaseError";
 
 const logger = require("../../logger");
 
@@ -22,37 +23,30 @@ export default class AdminUserService {
     isSummary?: boolean,
     filterType?: UserFilterType,
   ) {
-    try {
-      const query: UserQueryProps = { isActive: true };
-      if (location) query.location = location;
+    const query: UserQueryProps = { isActive: true };
+    if (location) query.location = location;
 
-      switch (filterType) {
-        case "score":
-          query.score = { $gt: 0 };
-          break;
-        case "monthScore":
-          query.monthScore = { $gt: 0 };
-          break;
-        default:
-          break;
-      }
-
-      const users = await User.find(query);
-
-      if (isSummary) return users.map((user) => convertUserToSummary2(user));
-      else return users;
-    } catch (err) {
-      throw new Error();
+    switch (filterType) {
+      case "score":
+        query.score = { $gt: 0 };
+        break;
+      case "monthScore":
+        query.monthScore = { $gt: 0 };
+        break;
+      default:
+        break;
     }
+
+    const users = await User.find(query);
+
+    if (isSummary) return users.map((user) => convertUserToSummary2(user));
+    else return users;
   }
 
   async updateProfile(profile: Partial<IUser>) {
-    try {
-      await User.updateOne({ uid: profile.uid }, profile);
-      return;
-    } catch (err) {
-      throw new Error();
-    }
+    const result = await User.updateOne({ uid: profile.uid }, profile);
+    if (!result.modifiedCount) throw new DatabaseError("update failed");
+    return;
   }
 
   async updateValue(
@@ -89,54 +83,35 @@ export default class AdminUserService {
   }
 
   async deleteScore() {
-    try {
-      await User.updateMany({}, { $set: { score: 0 } });
-      return;
-    } catch (err) {
-      throw new Error();
-    }
-  }
-
-  async deletePoint() {
-    try {
-      await User.updateMany({}, { $set: { point: 0 } });
-      return;
-    } catch (err) {
-      throw new Error();
-    }
-  }
-
-  async getCertainUser(uid: string) {
-    try {
-      const user = await User.findOne({ uid: uid });
-      return user;
-    } catch (err) {
-      throw new Error();
-    }
+    await User.updateMany({}, { $set: { score: 0 } });
     return;
   }
 
+  async deletePoint() {
+    await User.updateMany({}, { $set: { point: 0 } });
+    return;
+  }
+
+  async getCertainUser(uid: string) {
+    const user = await User.findOne({ uid: uid });
+    return user;
+  }
+
   async setRole(role: string, uid: string) {
-    try {
-      await User.updateOne(
-        { status: "active", uid: uid },
-        {
-          $set: {
-            role: role,
-          },
+    const result = await User.updateOne(
+      { status: "active", uid: uid },
+      {
+        $set: {
+          role: role,
         },
-      );
-    } catch (err) {
-      throw new Error();
-    }
+      },
+    );
+    if (!result.modifiedCount) throw new DatabaseError("update failed");
     return;
   }
 
   async updateBelong(uid: string, belong: string) {
-    try {
-      await User.updateMany({ uid }, { $set: { belong } });
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    await User.updateMany({ uid }, { $set: { belong } });
+    return;
   }
 }

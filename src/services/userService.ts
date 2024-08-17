@@ -10,6 +10,7 @@ import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { getProfile } from "../utils/oAuthUtils";
+import { DatabaseError } from "../errors/DatabaseError";
 
 const logger = require("../../logger");
 
@@ -38,30 +39,22 @@ export default class UserService {
   }
 
   async getUserWithUid(uid: string) {
-    try {
-      const result = await User.findOne({ uid });
+    const result = await User.findOne({ uid });
 
-      if (result && result.telephone)
-        result.telephone = await this.decodeByAES256(result.telephone);
+    if (result && result.telephone)
+      result.telephone = await this.decodeByAES256(result.telephone);
 
-      return result;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return result;
   }
   async getUsersWithUids(uids: string[]) {
-    try {
-      const results = await User.find({ uid: { $in: uids } });
+    const results = await User.find({ uid: { $in: uids } });
 
-      for (const result of results) {
-        if (result.telephone)
-          result.telephone = await this.decodeByAES256(result.telephone);
-      }
-
-      return results;
-    } catch (err: any) {
-      throw new Error(err);
+    for (const result of results) {
+      if (result.telephone)
+        result.telephone = await this.decodeByAES256(result.telephone);
     }
+
+    return results;
   }
 
   //유저의 _id도 같이 전송. 유저 로그인 정보 불일치 문제를 클라이언트에서 접속중인 session의 _id와 DB에서 호출해서 가져오는 _id의 일치여부로 판단할 것임
@@ -69,105 +62,81 @@ export default class UserService {
     let queryString = this.createQueryString(strArr);
     if (strArr.length) queryString = "-_id" + queryString;
 
-    try {
-      const result = await User.findOne({ uid: this.token.uid }, queryString);
+    const result = await User.findOne({ uid: this.token.uid }, queryString);
 
-      //   .select(
-      //   "avatar birth comment isActive location name profileImage score uid"
-      // );
+    if (result && result.telephone)
+      result.telephone = await this.decodeByAES256(result.telephone);
 
-      if (result && result.telephone)
-        result.telephone = await this.decodeByAES256(result.telephone);
-
-      return result;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return result;
   }
 
   async getAllUserInfo(strArr: string[]) {
     const queryString = this.createQueryString(strArr);
-    try {
-      const users = await User.find({}, "-_id" + queryString);
+    const users = await User.find({}, "-_id" + queryString);
 
-      users.forEach(async (user) => {
-        if (user.telephone)
-          user.telephone = await this.decodeByAES256(user.telephone);
-      });
+    users.forEach(async (user) => {
+      if (user.telephone)
+        user.telephone = await this.decodeByAES256(user.telephone);
+    });
 
-      return users;
-    } catch (err: any) {
-      throw new Error();
-    }
+    return users;
   }
 
   async getSimpleUserInfo() {
-    try {
-      const result = await User.findOne({ uid: this.token.uid }).select(
-        "avatar birth comment isActive location name profileImage score uid",
-      );
+    const result = await User.findOne({ uid: this.token.uid }).select(
+      "avatar birth comment isActive location name profileImage score uid",
+    );
 
-      if (result && result.telephone)
-        result.telephone = await this.decodeByAES256(result.telephone);
+    if (result && result.telephone)
+      result.telephone = await this.decodeByAES256(result.telephone);
 
-      return result;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return result;
   }
 
   async getAllSimpleUserInfo() {
-    try {
-      const users = await User.find({}).select(
-        "avatar birth comment isActive location name profileImage score uid",
-      );
+    const users = await User.find({}).select(
+      "avatar birth comment isActive location name profileImage score uid",
+    );
 
-      return users;
-    } catch (err: any) {
-      throw new Error();
-    }
+    return users;
   }
 
   async updateUser(updateInfo: Partial<IUser>) {
-    try {
-      await User.updateOne({ uid: this.token.uid }, { $set: updateInfo });
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await User.updateOne(
+      { uid: this.token.uid },
+      { $set: updateInfo },
+    );
+    if (!updated) throw new DatabaseError("update user failed");
   }
 
   async setUserInactive() {
-    try {
-      const users = await User.find({ location: "수원" });
-      const temp1 = [
-        "윤경",
-        "최소영",
-        "최지원",
-        "권혜지",
-        "서윤호",
-        "조현정",
-        "윤주열",
-        "이민복",
-        "재유",
-        "이소정",
-        "김석훈",
-        "선준",
-        "시온",
-        "조민성",
-      ];
+    const users = await User.find({ location: "수원" });
+    if (!users) return;
 
-      if (!users) throw new Error();
+    const temp1 = [
+      "윤경",
+      "최소영",
+      "최지원",
+      "권혜지",
+      "서윤호",
+      "조현정",
+      "윤주열",
+      "이민복",
+      "재유",
+      "이소정",
+      "김석훈",
+      "선준",
+      "시온",
+      "조민성",
+    ];
 
-      users?.forEach((item) => {
-        if (temp1.includes(item?.name)) {
-          item.isActive = true;
-          item.belong = "수원/C";
-        }
-        item.save();
-      });
-    } catch (err: any) {
-      throw new Error();
-    }
+    users?.forEach((item) => {
+      if (temp1.includes(item?.name)) {
+        item.isActive = true;
+        item.belong = "수원/C";
+      }
+      item.save();
+    });
   }
 
   async getParticipationRate(
@@ -344,32 +313,33 @@ export default class UserService {
   }
 
   async patchProfile() {
-    try {
-      const profile = await getProfile(
-        this.token.accessToken as string,
-        this.token.uid as string,
-      );
-      if (!profile) {
-        return new Error();
-      }
-      await User.updateOne({ uid: this.token.uid }, { $set: profile });
-      const updatedUser = await User.findOne({ uid: this.token.uid });
-      return updatedUser;
-    } catch (err: any) {
-      throw new Error(err);
+    const profile = await getProfile(
+      this.token.accessToken as string,
+      this.token.uid as string,
+    );
+    if (!profile) {
+      return new Error();
     }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { uid: this.token.uid }, // 검색 조건
+      { $set: profile }, // 업데이트 내용
+      { new: true }, // 업데이트 후의 최신 문서를 반환
+    );
+
+    if (!updatedUser) throw new DatabaseError("update profile failed");
+
+    return updatedUser;
   }
 
   async updatePoint(point: number, message: string, sub?: string) {
-    try {
-      const user = await User.findOne({ uid: this.token.uid });
-      if (!user) throw new Error();
+    const updatedUser = await User.findOneAndUpdate(
+      { uid: this.token.uid }, // 검색 조건
+      { $inc: { point: point } }, // point 필드 값을 증가
+      { new: true, useFindAndModify: false }, // 업데이트 후의 최신 문서를 반환
+    );
 
-      user.point += point;
-      await user.save();
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updatedUser) throw new DatabaseError("User not found");
 
     logger.logger.info(message, {
       metadata: {
@@ -383,30 +353,25 @@ export default class UserService {
   }
 
   async initMonthScore() {
-    try {
-      const users = await User.find();
-      if (!users) throw new Error();
+    const users = await User.find();
+    if (!users) return;
 
-      users.forEach((user) => {
-        user.monthScore = 0;
-        user.save();
-      });
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    users.forEach((user) => {
+      user.monthScore = 0;
+      user.save();
+    });
+
     return;
   }
-  async updateScore(score: number, message: string, sub?: string) {
-    try {
-      const user = await User.findOne({ uid: this.token.uid });
-      if (!user) throw new Error();
 
-      user.score += score;
-      user.monthScore += score;
-      await user.save();
-    } catch (err: any) {
-      throw new Error(err);
-    }
+  async updateScore(score: number, message: string, sub?: string) {
+    const updatedUser = await User.findOneAndUpdate(
+      { uid: this.token.uid }, // 검색 조건
+      { $inc: { score: score, monthScore: score } }, // score와 monthScore 필드를 동시에 증가
+      { new: true, useFindAndModify: false }, // 업데이트 후의 최신 문서를 반환
+    );
+
+    if (!updatedUser) throw new DatabaseError("User not found");
 
     logger.logger.info(message, {
       metadata: { type: "score", sub, uid: this.token.uid, value: score },
@@ -439,15 +404,13 @@ export default class UserService {
   }
 
   async updateDeposit(deposit: number, message: string, sub?: string) {
-    try {
-      const user = await User.findOne({ uid: this.token.uid });
-      if (!user) throw new Error();
+    const updatedUser = await User.findOneAndUpdate(
+      { uid: this.token.uid }, // 검색 조건
+      { $inc: { deposit: deposit } }, // deposit 필드를 증가
+      { new: true, useFindAndModify: false }, // 업데이트 후의 최신 문서를 반환
+    );
 
-      user.deposit += deposit;
-      await user.save();
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    if (!updatedUser) throw new DatabaseError("User not found");
 
     logger.logger.info(message, {
       metadata: { type: "deposit", sub, uid: this.token.uid, value: deposit },
@@ -499,14 +462,10 @@ export default class UserService {
 
   // studyPreference도 id만 보내는 걸로 변경
   async getPreference() {
-    try {
-      const result = await User.findOne({ uid: this.token.uid }).select(
-        "studyPreference",
-      );
-      return result;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const result = await User.findOne({ uid: this.token.uid }).select(
+      "studyPreference",
+    );
+    return result;
   }
 
   async patchRole(role: string) {
@@ -544,14 +503,13 @@ export default class UserService {
     }
   }
   async patchIsPrivate(isPrivate: boolean) {
-    try {
-      const user = await User.findOne({ uid: this.token.uid });
-      if (!user) throw new Error();
-      user.isPrivate = isPrivate;
-      await user.save();
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updatedUser = await User.findOneAndUpdate(
+      { uid: this.token.uid }, // 검색 조건
+      { $set: { isPrivate: isPrivate } }, // isPrivate 필드를 업데이트
+      { new: true, useFindAndModify: false }, // 업데이트 후의 최신 문서를 반환
+    );
+
+    if (!updatedUser) throw new DatabaseError("User not found");
 
     return;
   }
@@ -591,51 +549,41 @@ export default class UserService {
   }
 
   async deleteFriend(toUid: string) {
-    try {
-      const filterMine = { uid: this.token.uid };
-      const updateMine = { $pull: { friend: toUid } };
-      const filterRequester = { uid: toUid };
-      const updateRequester = { $pull: { friend: this.token.uid } };
+    const filterMine = { uid: this.token.uid };
+    const updateMine = { $pull: { friend: toUid } };
+    const filterRequester = { uid: toUid };
+    const updateRequester = { $pull: { friend: this.token.uid } };
 
-      await User.findOneAndUpdate(filterMine, updateMine);
-      await User.findOneAndUpdate(filterRequester, updateRequester);
+    await User.findOneAndUpdate(filterMine, updateMine);
+    await User.findOneAndUpdate(filterRequester, updateRequester);
 
-      return null;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return null;
   }
 
   async setFriend(toUid: string) {
-    try {
-      const filterMine = { uid: this.token.uid };
-      const updateMine = { $addToSet: { friend: toUid } };
-      const filterRequester = { uid: toUid };
-      const updateRequester = { $addToSet: { friend: this.token.uid } };
-      const options = { upsert: true };
+    const filterMine = { uid: this.token.uid };
+    const updateMine = { $addToSet: { friend: toUid } };
+    const filterRequester = { uid: toUid };
+    const updateRequester = { $addToSet: { friend: this.token.uid } };
+    const options = { upsert: true };
 
-      await User.findOneAndUpdate(filterMine, updateMine, options);
-      await User.findOneAndUpdate(filterRequester, updateRequester, options);
+    await User.findOneAndUpdate(filterMine, updateMine, options);
+    await User.findOneAndUpdate(filterRequester, updateRequester, options);
 
-      await Notice.create({
-        from: this.token.uid,
-        to: toUid,
-        message: `${this.token.name}님과 친구가 되었습니다.`,
-        type: "friend",
-        status: "response",
-      });
+    await Notice.create({
+      from: this.token.uid,
+      to: toUid,
+      message: `${this.token.name}님과 친구가 되었습니다.`,
+      type: "friend",
+      status: "response",
+    });
 
-      return null;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return null;
   }
 
   async getPromotion() {
-    try {
-      const promotionData = await Promotion.find({}, "-_id -__v");
-      return promotionData;
-    } catch (err: any) {}
+    const promotionData = await Promotion.find({}, "-_id -__v");
+    return promotionData;
   }
 
   async setPromotion(name: string) {
@@ -663,11 +611,9 @@ export default class UserService {
   }
 
   async patchBelong(uid: number, belong: string) {
-    try {
-      await User.updateOne({ uid }, { belong });
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const updated = await User.updateOne({ uid }, { belong });
+    if (!updated) throw new DatabaseError("update belong failed");
+
     return;
   }
 
@@ -686,86 +632,126 @@ export default class UserService {
       currentDate.getMonth() + 1,
       0,
     );
-    try {
-      const logs = await Log.find(
-        {
-          "meta.type": "score",
-          "meta.uid": this.token.uid,
-          timestamp: {
-            $gte: startOfMonth,
-            $lte: endOfMonth,
-          },
+    const logs = await Log.find(
+      {
+        "meta.type": "score",
+        "meta.uid": this.token.uid,
+        timestamp: {
+          $gte: startOfMonth,
+          $lte: endOfMonth,
         },
-        "-_id timestamp message meta",
-      )
-        .sort({ timestamp: -1 })
-        .limit(30);
-      return logs;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+      },
+      "-_id timestamp message meta",
+    )
+      .sort({ timestamp: -1 })
+      .limit(30);
+    return logs;
   }
 
   async getLog(type: string) {
-    try {
-      const logs = await Log.find(
-        {
-          "meta.uid": this.token.uid,
-          "meta.type": type,
-        },
-        "-_id timestamp message meta",
-      )
-        .sort({ timestamp: -1 })
-        .limit(30);
-      return logs;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const logs = await Log.find(
+      {
+        "meta.uid": this.token.uid,
+        "meta.type": type,
+      },
+      "-_id timestamp message meta",
+    )
+      .sort({ timestamp: -1 })
+      .limit(30);
+    return logs;
   }
 
   async getAllLog(type: string) {
-    try {
-      const logs = await Log.find(
-        { "meta.type": type },
-        "-_id timestamp message meta",
-      );
+    const logs = await Log.find(
+      { "meta.type": type },
+      "-_id timestamp message meta",
+    );
 
-      return logs;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return logs;
   }
 
   async test() {
-    // await Place.updateMany({}, { prefCnt: 0 });
+    const invalidJSON = "{ name: 'John', age: 30 }"; // 잘못된 JSON 형식
+    JSON.parse(invalidJSON);
+    // const regionData = await User.aggregate([
+    //   {
+    //     $match: {
+    //       score: { $gte: 5 }, // score가 5 이상인 유저들만 선택
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$location", // 지역별로 그룹화
+    //       userCount: { $sum: 1 }, // 각 지역별 유저 수를 셈
+    //     },
+    //   },
+    //   {
+    //     $sort: { _id: 1 }, // 지역 이름(또는 ID)으로 정렬
+    //   },
+    // ]);
 
-    // const users = await User.find();
+    // console.log(regionData);
 
-    // users.forEach(async (user) => {
-    //   if (user?.studyPreference?.place) {
-    //     await Place.updateOne(
-    //       { _id: user.studyPreference.place },
-    //       { $inc: { prefCnt: 1 } },
-    //     );
-    //   }
+    // const oneMonthAgo = new Date();
+    // oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 2);
 
-    //   if (user?.studyPreference?.subPlace) {
-    //     user?.studyPreference?.subPlace.forEach(async (placeId) => {
-    //       await Place.updateOne({ _id: placeId }, { $inc: { prefCnt: 1 } });
-    //     });
-    //   }
-    // });
-    // return null;
+    // console.log(oneMonthAgo);
 
-    const users = await User.find({});
+    // const result = await Log.aggregate([
+    //   {
+    //     $addFields: {
+    //       metaUidString: { $toString: "$meta.uid" }, // meta.uid를 string으로 변환하여 새로운 필드에 저장
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "users", // User 컬렉션 이름
+    //       localField: "metaUidString", // 변환된 string 필드를 사용
+    //       foreignField: "uid", // User 컬렉션의 uid 필드 (string)
+    //       as: "userInfo", // 매칭된 User 데이터를 저장할 필드 이름
+    //     },
+    //   },
+    //   {
+    //     $unwind: "$userInfo", // userInfo 배열을 개별 문서로 펼침
+    //   },
+    //   {
+    //     $match: {
+    //       timestamp: { $gte: oneMonthAgo }, // 한 달 이내의 데이터만 필터링
+    //       message: {
+    //         $in: [
+    //           "일일 출석",
+    //           "스터디 출석",
+    //           "개인 스터디 인증",
+    //           "당일 스터디 참여",
+    //           "소모임 가입",
+    //           "번개 모임 참여",
+    //         ],
+    //       }, // 지정된 message 값만 필터링
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: {
+    //         message: "$message", // message 필드를 기준으로 그룹화
+    //         uid: "$metaUidString", // 각 사용자(uid)별로 고유하게 그룹화
+    //         location: "$userInfo.location", // 사용자의 location별로 세분화
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: {
+    //         message: "$_id.message", // message 필드를 기준으로 그룹화
+    //         location: "$_id.location", // location 필드를 기준으로 세분화
+    //       },
+    //       count: { $sum: 1 }, // 각 location 내에서 uid가 매칭된 문서의 수를 셈
+    //     },
+    //   },
+    //   {
+    //     $sort: { "_id.message": 1, "_id.location": 1 }, // 결과를 message와 location으로 정렬
+    //   },
+    // ]);
 
-    users.forEach((user) => {
-      const score = user.score;
-      const divScore = Math.round(score / 4);
-      user.score = divScore;
-      user.save();
-    });
-
-    return;
+    // console.log(result);
   }
 }

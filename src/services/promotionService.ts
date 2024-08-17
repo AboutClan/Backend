@@ -10,10 +10,8 @@ export default class PromotionService {
   }
 
   async getPromotion() {
-    try {
-      const promotionData = await Promotion.find({}, "-_id -__v");
-      return promotionData;
-    } catch (err: any) {}
+    const promotionData = await Promotion.find({}, "-_id -__v");
+    return promotionData;
   }
 
   async setPromotion(name: string) {

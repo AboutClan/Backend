@@ -7,6 +7,7 @@ import { strToDate } from "../utils/dateUtils";
 import { IUser, User, UserSchema } from "../db/models/user";
 import UserService from "./userService";
 import { JWT } from "next-auth/jwt";
+import { DatabaseError } from "../errors/DatabaseError";
 const logger = require("../../logger");
 export default class AdminManageService {
   private token: JWT;
@@ -19,37 +20,28 @@ export default class AdminManageService {
   }
 
   async absenceManage() {
-    try {
-      const date = strToDate(dayjs().format("YYYY-MM-DD").toString());
+    const date = strToDate(dayjs().format("YYYY-MM-DD").toString());
 
-      const vote = await this.voteServiceInstance.getVote(date);
-      const unUser: any[] = [];
+    const vote = await this.voteServiceInstance.getVote(date);
+    if (!vote) throw new DatabaseError("Vote date Error");
 
-      vote.participations.forEach((participation) => {
-        if (participation.status === "open") {
-          participation.attendences?.forEach((attendence) => {
-            if (
-              !attendence["arrived"] &&
-              !participation.absences?.some(
-                (user) =>
-                  (attendence.user as IUser).uid == (user.user as IUser).uid,
-              )
-            ) {
-              unUser.push((attendence.user as IUser).uid);
-            }
-          });
-        }
-      });
+    const unUser: any[] = [];
 
-      //   unUser.forEach(async (userId: any) => {
-      //     const user = await User.findOne({ uid: userId });
-      //     if (!user) throw new Error();
-      //     user.deposit -= 1000;
-      //     await user.save();
-      //   });
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    vote.participations.forEach((participation) => {
+      if (participation.status === "open") {
+        participation.attendences?.forEach((attendence) => {
+          if (
+            !attendence["arrived"] &&
+            !participation.absences?.some(
+              (user) =>
+                (attendence.user as IUser).uid == (user.user as IUser).uid,
+            )
+          ) {
+            unUser.push((attendence.user as IUser).uid);
+          }
+        });
+      }
+    });
   }
 
   //월별 정산은 매월 1일에 "human"과 "member" 인원에 대해서(가입일이 그 전 달인 인원 제외.

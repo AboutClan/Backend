@@ -22,53 +22,41 @@ export default class LogService {
       currentDate.getMonth() + 1,
       0,
     );
-    try {
-      const logs = await Log.find(
-        {
-          "meta.type": "score",
-          "meta.uid": this.token.uid,
-          timestamp: {
-            $gte: startOfMonth,
-            $lte: endOfMonth,
-          },
+    const logs = await Log.find(
+      {
+        "meta.type": "score",
+        "meta.uid": this.token.uid,
+        timestamp: {
+          $gte: startOfMonth,
+          $lte: endOfMonth,
         },
-        "-_id timestamp message meta",
-      )
-        .sort({ timestamp: -1 })
-        .limit(30);
-      return logs;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+      },
+      "-_id timestamp message meta",
+    )
+      .sort({ timestamp: -1 })
+      .limit(30);
+    return logs;
   }
 
   async getLog(type: string) {
-    try {
-      const logs = await Log.find(
-        {
-          "meta.uid": this.token.uid,
-          "meta.type": type,
-        },
-        "-_id timestamp message meta",
-      )
-        .sort({ timestamp: -1 })
-        .limit(30);
-      return logs;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    const logs = await Log.find(
+      {
+        "meta.uid": this.token.uid,
+        "meta.type": type,
+      },
+      "-_id timestamp message meta",
+    )
+      .sort({ timestamp: -1 })
+      .limit(30);
+    return logs;
   }
 
   async getAllLog(type: string) {
-    try {
-      const logs = await Log.find(
-        { "meta.type": type },
-        "-_id timestamp message meta",
-      );
+    const logs = await Log.find(
+      { "meta.type": type },
+      "-_id timestamp message meta",
+    );
 
-      return logs;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return logs;
   }
 }

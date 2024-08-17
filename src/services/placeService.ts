@@ -1,12 +1,14 @@
 import { JWT } from "next-auth/jwt";
 import { IPlace, Place } from "../db/models/place";
+import { ValidationError } from "../errors/ValidationError";
+import { DatabaseError } from "../errors/DatabaseError";
 
 export default class PlaceService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
   }
-  async getActivePlace(status:"active"|"inactive") {
+  async getActivePlace(status: "active" | "inactive") {
     try {
       const places = await Place.find({ status });
       return places;
@@ -51,7 +53,9 @@ export default class PlaceService {
         !locationDetail ||
         !mapURL
       )
-        throw new Error();
+        throw new ValidationError(
+          `fullname ||brand ||branch ||image ||latitude ||longitude ||location ||coverImage ||locationDetail ||mapURL not exist`,
+        );
 
       await Place.create(placeData);
       return;
@@ -61,16 +65,13 @@ export default class PlaceService {
   }
 
   async updateStatus(placeId: any, status: any) {
-    try {
-      const statusList = ["active", "inactive"];
+    const statusList = ["active", "inactive"];
 
-      if (!statusList.includes(status)) throw new Error();
+    if (!statusList.includes(status)) throw new ValidationError("wrong status");
 
-      await Place.updateOne({ _id: placeId }, { status });
+    const updated = await Place.updateOne({ _id: placeId }, { status });
+    if (!updated.modifiedCount) throw new DatabaseError("update failed");
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return;
   }
 }
