@@ -430,9 +430,7 @@ class UserController {
     res: Response,
     next: NextFunction,
   ) => {
-    console.log(22);
     const { uid } = req.params;
-
     try {
       const isActive = await this.userServiceInstance?.getUserWithUid(uid);
       return res.status(200).json(isActive);
