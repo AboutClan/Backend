@@ -9,6 +9,7 @@ const ErrorHandler = (
   next: NextFunction,
 ) => {
   if (err.isOperational) {
+    console.log("expected Error", err.message);
     res.status(err.statusCode).json({
       success: false,
       message: err.message,
