@@ -59,7 +59,6 @@ export default class UserService {
 
   //유저의 _id도 같이 전송. 유저 로그인 정보 불일치 문제를 클라이언트에서 접속중인 session의 _id와 DB에서 호출해서 가져오는 _id의 일치여부로 판단할 것임
   async getUserInfo(strArr: string[]) {
-    console.log(45);
     let queryString = this.createQueryString(strArr);
     if (strArr.length) queryString = "-_id" + queryString;
 

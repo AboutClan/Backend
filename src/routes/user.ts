@@ -64,12 +64,12 @@ class UserController {
     );
     this.router.get("/participationrate", this.getParticipationRate.bind(this));
     this.router.get("/voterate", this.getVoteRate.bind(this));
+    this.router.get("/profile/:uid", this.getUserByUid.bind(this));
     this.router
       .route("/profile")
       .get(this.getProfile.bind(this))
       .post(this.updateProfile.bind(this))
       .patch(this.patchProfile.bind(this));
-    this.router.get("/profile/user/:uid", this.getUserByUid.bind(this));
 
     this.router.route("/profiles").get(this.getUsersWithUids.bind(this));
     this.router.patch("/changeInactive", this.setUserInactive.bind(this));
@@ -389,6 +389,7 @@ class UserController {
     next: NextFunction,
   ) => {
     try {
+      console.log(34);
       const targetUser = await this.userServiceInstance?.getUserInfo([]);
       return res.status(200).json(targetUser);
     } catch (err) {
@@ -429,6 +430,7 @@ class UserController {
     res: Response,
     next: NextFunction,
   ) => {
+    console.log(22);
     const { uid } = req.params;
 
     try {
