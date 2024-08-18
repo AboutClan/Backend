@@ -69,7 +69,7 @@ class UserController {
       .get(this.getProfile.bind(this))
       .post(this.updateProfile.bind(this))
       .patch(this.patchProfile.bind(this));
-    this.router.get("/profile/:uid", this.getUserByUid.bind(this));
+    this.router.get("/profile/user/:uid", this.getUserByUid.bind(this));
 
     this.router.route("/profiles").get(this.getUsersWithUids.bind(this));
     this.router.patch("/changeInactive", this.setUserInactive.bind(this));
@@ -430,6 +430,7 @@ class UserController {
     next: NextFunction,
   ) => {
     const { uid } = req.params;
+
     try {
       const isActive = await this.userServiceInstance?.getUserWithUid(uid);
       return res.status(200).json(isActive);

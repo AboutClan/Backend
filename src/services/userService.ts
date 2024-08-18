@@ -8,9 +8,9 @@ import { Place } from "../db/models/place";
 import { Promotion } from "../db/models/promotion";
 import { IUser, restType, User } from "../db/models/user";
 import { Vote } from "../db/models/vote";
+import { DatabaseError } from "../errors/DatabaseError";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { getProfile } from "../utils/oAuthUtils";
-import { DatabaseError } from "../errors/DatabaseError";
 
 const logger = require("../../logger");
 
@@ -59,6 +59,7 @@ export default class UserService {
 
   //유저의 _id도 같이 전송. 유저 로그인 정보 불일치 문제를 클라이언트에서 접속중인 session의 _id와 DB에서 호출해서 가져오는 _id의 일치여부로 판단할 것임
   async getUserInfo(strArr: string[]) {
+    console.log(45);
     let queryString = this.createQueryString(strArr);
     if (strArr.length) queryString = "-_id" + queryString;
 

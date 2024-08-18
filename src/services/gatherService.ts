@@ -7,8 +7,8 @@ import {
   subCommentType,
 } from "../db/models/gather";
 import { User } from "../db/models/user";
-import { C_simpleUser } from "../utils/constants";
 import { DatabaseError } from "../errors/DatabaseError";
+import { C_simpleUser } from "../utils/constants";
 
 const logger = require("../../logger");
 
@@ -89,6 +89,23 @@ export default class GatherService {
     const created = await Gather.create(gatherData);
 
     if (!created) throw new DatabaseError("create gather failed");
+
+    const user = await User.findOneAndUpdate(
+      { _id: this.token.id },
+      { $inc: { score: 5, monthScore: 5 } },
+      { new: true, useFindAndModify: false },
+    );
+
+    if (!user) throw new DatabaseError("cant find user");
+
+    logger.logger.info("번개 모임 개설", {
+      metadata: {
+        type: "score",
+        uid: user.uid,
+        value: 5,
+      },
+    });
+
     return;
   }
 
@@ -328,6 +345,21 @@ export default class GatherService {
   async deleteGather(gatherId: string) {
     const deleted = await Gather.deleteOne({ id: gatherId });
     if (!deleted.deletedCount) throw new DatabaseError("delete failed");
+
+    const user = await User.findOneAndUpdate(
+      { _id: this.token.id },
+      { $inc: { score: -5, monthScore: -5 } },
+      { new: true, useFindAndModify: false },
+    );
+
+    if (!user) throw new DatabaseError("cant find user");
+    logger.logger.info("번개 모임 삭제", {
+      metadata: {
+        type: "score",
+        uid: user.uid,
+        value: -5,
+      },
+    });
     return;
   }
 }
