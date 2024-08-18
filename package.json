@@ -4,6 +4,7 @@
   "description": "This app is backend of About service",
   "main": "src/app.ts",
   "scripts": {
+    "postinstall": "tsc",
     "tsc": "tsc",
     "start": "node dist/src/app.js",
     "start2": "npx tsc && node dist/src/app.js",
