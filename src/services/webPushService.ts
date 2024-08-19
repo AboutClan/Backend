@@ -74,23 +74,25 @@ export default class WebPushService {
   }
 
   async sendNotificationAllUser() {
-    try {
-      const subscriptions = await NotificationSub.find();
+    const subscriptions = await NotificationSub.find();
 
-      subscriptions.forEach((subscription) => {
+    for (const subscription of subscriptions) {
+      try {
         const push = new PushNotifications(this.settings);
 
         // Create payload
-        push.send(subscription, this.basePayload, (err: any, result: any) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      });
-      return;
-    } catch (err) {
-      return;
+        await push.send(subscription, this.basePayload);
+      } catch (err) {
+        console.log(
+          `Failed to send notification to subscription: ${subscription}, error: ${err}`,
+        );
+        // Continue to the next subscription without breaking the loop
+        continue;
+      }
     }
+
+    console.log("sending notification success");
+    return;
   }
 
   async sendNotificationToX(uid: string, title?: string, description?: string) {
