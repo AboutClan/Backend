@@ -35,6 +35,8 @@ declare global {
       decodedToken: any;
       token?: JWT;
       date?: Date;
+      files?: Multer.File[];
+      file?: Multer.File;
       userServiceInstance?: UserService;
       voteServiceInstance?: VoteService;
       placeServiceInstance?: PlaceService;

@@ -11,6 +11,7 @@ import { Vote } from "../db/models/vote";
 import { DatabaseError } from "../errors/DatabaseError";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { getProfile } from "../utils/oAuthUtils";
+import WebPushService from "./webPushService";
 
 const logger = require("../../logger");
 
@@ -671,87 +672,89 @@ export default class UserService {
   }
 
   async test() {
-    const invalidJSON = "{ name: 'John', age: 30 }"; // 잘못된 JSON 형식
-    JSON.parse(invalidJSON);
-    // const regionData = await User.aggregate([
-    //   {
-    //     $match: {
-    //       score: { $gte: 5 }, // score가 5 이상인 유저들만 선택
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$location", // 지역별로 그룹화
-    //       userCount: { $sum: 1 }, // 각 지역별 유저 수를 셈
-    //     },
-    //   },
-    //   {
-    //     $sort: { _id: 1 }, // 지역 이름(또는 ID)으로 정렬
-    //   },
-    // ]);
+    const webPushServiceInstance = new WebPushService();
 
-    // console.log(regionData);
-
-    // const oneMonthAgo = new Date();
-    // oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 2);
-
-    // console.log(oneMonthAgo);
-
-    // const result = await Log.aggregate([
-    //   {
-    //     $addFields: {
-    //       metaUidString: { $toString: "$meta.uid" }, // meta.uid를 string으로 변환하여 새로운 필드에 저장
-    //     },
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "users", // User 컬렉션 이름
-    //       localField: "metaUidString", // 변환된 string 필드를 사용
-    //       foreignField: "uid", // User 컬렉션의 uid 필드 (string)
-    //       as: "userInfo", // 매칭된 User 데이터를 저장할 필드 이름
-    //     },
-    //   },
-    //   {
-    //     $unwind: "$userInfo", // userInfo 배열을 개별 문서로 펼침
-    //   },
-    //   {
-    //     $match: {
-    //       timestamp: { $gte: oneMonthAgo }, // 한 달 이내의 데이터만 필터링
-    //       message: {
-    //         $in: [
-    //           "일일 출석",
-    //           "스터디 출석",
-    //           "개인 스터디 인증",
-    //           "당일 스터디 참여",
-    //           "소모임 가입",
-    //           "번개 모임 참여",
-    //         ],
-    //       }, // 지정된 message 값만 필터링
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: {
-    //         message: "$message", // message 필드를 기준으로 그룹화
-    //         uid: "$metaUidString", // 각 사용자(uid)별로 고유하게 그룹화
-    //         location: "$userInfo.location", // 사용자의 location별로 세분화
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: {
-    //         message: "$_id.message", // message 필드를 기준으로 그룹화
-    //         location: "$_id.location", // location 필드를 기준으로 세분화
-    //       },
-    //       count: { $sum: 1 }, // 각 location 내에서 uid가 매칭된 문서의 수를 셈
-    //     },
-    //   },
-    //   {
-    //     $sort: { "_id.message": 1, "_id.location": 1 }, // 결과를 message와 location으로 정렬
-    //   },
-    // ]);
-
-    // console.log(result);
+    webPushServiceInstance.sendNotificationToX("2283035576", "hello", "hello");
   }
 }
+
+// const regionData = await User.aggregate([
+//   {
+//     $match: {
+//       score: { $gte: 5 }, // score가 5 이상인 유저들만 선택
+//     },
+//   },
+//   {
+//     $group: {
+//       _id: "$location", // 지역별로 그룹화
+//       userCount: { $sum: 1 }, // 각 지역별 유저 수를 셈
+//     },
+//   },
+//   {
+//     $sort: { _id: 1 }, // 지역 이름(또는 ID)으로 정렬
+//   },
+// ]);
+
+// console.log(regionData);
+
+// const oneMonthAgo = new Date();
+// oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 2);
+
+// console.log(oneMonthAgo);
+
+// const result = await Log.aggregate([
+//   {
+//     $addFields: {
+//       metaUidString: { $toString: "$meta.uid" }, // meta.uid를 string으로 변환하여 새로운 필드에 저장
+//     },
+//   },
+//   {
+//     $lookup: {
+//       from: "users", // User 컬렉션 이름
+//       localField: "metaUidString", // 변환된 string 필드를 사용
+//       foreignField: "uid", // User 컬렉션의 uid 필드 (string)
+//       as: "userInfo", // 매칭된 User 데이터를 저장할 필드 이름
+//     },
+//   },
+//   {
+//     $unwind: "$userInfo", // userInfo 배열을 개별 문서로 펼침
+//   },
+//   {
+//     $match: {
+//       timestamp: { $gte: oneMonthAgo }, // 한 달 이내의 데이터만 필터링
+//       message: {
+//         $in: [
+//           "일일 출석",
+//           "스터디 출석",
+//           "개인 스터디 인증",
+//           "당일 스터디 참여",
+//           "소모임 가입",
+//           "번개 모임 참여",
+//         ],
+//       }, // 지정된 message 값만 필터링
+//     },
+//   },
+//   {
+//     $group: {
+//       _id: {
+//         message: "$message", // message 필드를 기준으로 그룹화
+//         uid: "$metaUidString", // 각 사용자(uid)별로 고유하게 그룹화
+//         location: "$userInfo.location", // 사용자의 location별로 세분화
+//       },
+//     },
+//   },
+//   {
+//     $group: {
+//       _id: {
+//         message: "$_id.message", // message 필드를 기준으로 그룹화
+//         location: "$_id.location", // location 필드를 기준으로 세분화
+//       },
+//       count: { $sum: 1 }, // 각 location 내에서 uid가 매칭된 문서의 수를 셈
+//     },
+//   },
+//   {
+//     $sort: { "_id.message": 1, "_id.location": 1 }, // 결과를 message와 location으로 정렬
+//   },
+// ]);
+
+// console.log(result);
