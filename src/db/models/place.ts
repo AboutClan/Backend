@@ -24,7 +24,7 @@ export interface IPlace extends Document {
 export const PlaceSchema: Schema<IPlace> = new Schema({
   status: {
     type: String,
-    enum: ["active", "inactive"],
+    enum: ["active", "inactive","pending"],
     default: "active",
   },
   fullname: {
