@@ -1,6 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import { NotificationSub } from "../db/models/notificationSub";
-import { IUser } from "../db/models/user";
+import { IUser, User } from "../db/models/user";
 import dayjs from "dayjs";
 import { findOneVote } from "../utils/voteUtils";
 import { GroupStudy } from "../db/models/groupStudy";
@@ -142,6 +142,33 @@ export default class WebPushService {
       });
     });
     return;
+  }
+
+  async sendNotificationToManager(location: string) {
+    const managers = await User.find({ role: "manager" });
+    const managerUidList = new Array();
+
+    managers.forEach((manager) => {
+      if (manager.location == location) managerUidList.push(manager.uid);
+    });
+
+    const managerNotiInfo = await NotificationSub.find({
+      uid: { $in: managerUidList },
+    });
+
+    const payload = JSON.stringify({
+      ...this.basePayload,
+      title: "신규 가입 유저가 있어요!",
+      body: "앱을 확인해보세요.",
+    });
+
+    managerNotiInfo.forEach((subscription) => {
+      const push = new PushNotifications(this.settings);
+
+      push.send(subscription, payload, (err: any, result: any) => {
+        if (err) throw new AppError(`error at ${subscription}`, 500);
+      });
+    });
   }
 
   async sendNotificationVoteResult() {
