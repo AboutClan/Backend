@@ -73,6 +73,7 @@ export interface IGatherData {
   image?: string;
   kakaoUrl?: string;
   waiting: IWaiting[];
+  isApprovalRequired?: boolean;
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -293,6 +294,9 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     },
     kakaoUrl: {
       type: String,
+    },
+    isApprovalRequired: {
+      type:Boolean,
     },
   },
   { timestamps: true, strict: false }
