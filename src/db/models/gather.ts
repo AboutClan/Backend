@@ -8,7 +8,11 @@ export interface ITime {
   minutes?: number;
 }
 
-
+interface IWaiting {
+  user: string | IUser;
+  answer?: string;
+  pointType: string;
+}
 
 export interface TitleType {
   title: string;
@@ -68,6 +72,7 @@ export interface IGatherData {
   isAdminOpen?: boolean;
   image?: string;
   kakaoUrl?: string;
+  waiting: IWaiting[];
 }
 
 export const typeSchema: Schema<TitleType> = new Schema(
@@ -145,6 +150,22 @@ export const participantsSchema: Schema<participantsType> = new Schema(
     },
   },
   { _id: false , timestamps: false}
+);
+
+export const waitingSchema: Schema<IWaiting> = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    answer: {
+      type: String,
+    },
+    pointType: {
+      type: String,
+    },
+  },
+  { _id: false }
 );
 
 export const subCommentSchema: Schema<subCommentType> = new Schema(
@@ -244,6 +265,11 @@ export const GatherSchema: Schema<IGatherData> = new Schema(
     },
     date: {
       type: String,
+    },
+    waiting: {
+      type: [waitingSchema],
+      ref: "User",
+      default: []
     },
     place: {
       type: String,

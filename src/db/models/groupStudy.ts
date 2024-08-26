@@ -275,6 +275,7 @@ export const GroupStudySchema: Schema<IGroupStudyData> = new Schema(
     waiting: {
       type: [waitingSchema],
       ref: "User",
+      default: []
     },
     participants: {
       type: [participantsSchema],
