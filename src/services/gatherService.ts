@@ -1,4 +1,5 @@
 import { JWT } from "next-auth/jwt";
+import { Chat } from "../db/models/chat";
 import { Counter } from "../db/models/counter";
 import {
   Gather,
@@ -9,13 +10,20 @@ import {
 import { User } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError";
 import { C_simpleUser } from "../utils/constants";
+import FcmService from "./fcmService";
+import WebPushService from "./webPushService";
 
 const logger = require("../../logger");
 
 export default class GatherService {
   private token: JWT;
+  private fcmServiceInstance: FcmService;
+  private webPushServiceInstance: WebPushService;
+
   constructor(token?: JWT) {
     this.token = token as JWT;
+    this.fcmServiceInstance = new FcmService();
+    this.webPushServiceInstance = new WebPushService();
   }
 
   async getNextSequence(name: any) {
@@ -30,7 +38,7 @@ export default class GatherService {
 
   async getGatherById(gatherId: number) {
     const gatherData = await Gather.findOne({ id: gatherId })
-      .populate(["user", "participants.user", "comments.user"])
+      .populate(["user", "participants.user", "waiting.user", "comments.user"])
       .populate({
         path: "comments.subComments.user",
         select: C_simpleUser,
@@ -41,7 +49,7 @@ export default class GatherService {
 
   async getThreeGather() {
     const gatherData = await Gather.find()
-      .populate(["user", "participants.user", "comments.user"])
+      .populate(["user", "participants.user", "waiting.user", "comments.user"])
       .populate({
         path: "comments.subComments.user",
         select: C_simpleUser,
@@ -66,6 +74,7 @@ export default class GatherService {
       { path: "user" },
       { path: "participants.user" },
       { path: "comments.user" },
+      { path: "waiting.user" },
       {
         path: "comments.subComments.user",
         select: C_simpleUser,
@@ -190,12 +199,12 @@ export default class GatherService {
 
     return;
   }
-  async setWaitingPerson(id: string, pointType: string, answer?: string) {
+  async setWaitingPerson(id: string, phase: "first" | "second") {
     const gather = await Gather.findOne({ id });
     if (!gather) throw new Error();
 
     try {
-      const user = { user: this.token.id, answer, pointType };
+      const user = { user: this.token.id, phase };
       if (gather?.waiting) {
         if (gather.waiting.includes(user)) {
           return;
@@ -210,7 +219,12 @@ export default class GatherService {
     }
   }
 
-  async agreeWaitingPerson(id: string, userId: string, status: string) {
+  async handleWaitingPerson(
+    id: string,
+    userId: string,
+    status: string,
+    text?: string,
+  ) {
     const gather = await Gather.findOne({ id });
     if (!gather) throw new Error();
 
@@ -219,13 +233,58 @@ export default class GatherService {
         (who) => who.user.toString() !== userId,
       );
       if (status === "agree") {
+        console.log(13);
         gather.participants.push({
           user: userId,
           phase: "first",
         });
       }
 
+      gather.waiting = gather.waiting.filter(
+        (participant) => participant.user !== userId,
+      );
+
       await gather?.save();
+
+      const user1 = this.token.id > userId ? userId : this.token.id;
+      const user2 = this.token.id < userId ? userId : this.token.id;
+      const chat = await Chat.findOne({ user1, user2 });
+
+      const message =
+        status === "agree"
+          ? "모임 신청이 승인되었습니다."
+          : `모임 신청이 거절되었습니다. ${text}`;
+
+      const contentFill = {
+        content: message,
+        userId: this.token.id,
+      };
+
+      if (chat) {
+        await chat.updateOne({ $push: { contents: contentFill } });
+        await chat.save();
+      } else {
+        await Chat.create({
+          user1,
+          user2,
+          contents: [contentFill],
+        });
+      }
+
+      const toUser = await User.findById(userId);
+
+      if (toUser) {
+        await this.fcmServiceInstance.sendNotificationToX(
+          toUser.uid,
+          "모임 신청 결과 도착",
+          message,
+        );
+        await this.webPushServiceInstance.sendNotificationToX(
+          toUser.uid,
+          "모임 신청 결과 도착",
+          message,
+        );
+      } else throw new DatabaseError("toUserUid is incorrect");
     } catch (err) {
       throw new Error();
     }

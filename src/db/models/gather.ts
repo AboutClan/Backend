@@ -10,8 +10,7 @@ export interface ITime {
 
 interface IWaiting {
   user: string | IUser;
-  answer?: string;
-  pointType: string;
+  phase: string;
 }
 
 export interface TitleType {
@@ -159,12 +158,9 @@ export const waitingSchema: Schema<IWaiting> = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    answer: {
-      type: String,
-    },
-    pointType: {
-      type: String,
-    },
+    phase: {
+      type:String,
+  },
   },
   { _id: false }
 );

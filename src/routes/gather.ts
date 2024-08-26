@@ -50,7 +50,7 @@ class GatherController {
       .post(
         body("id").notEmpty().isNumeric().withMessage("id필요"),
         validateCheck,
-        this.agreeWaitingPerson.bind(this),
+        this.handleWaitingPerson.bind(this),
       );
 
     this.router
@@ -148,27 +148,32 @@ class GatherController {
     res: Response,
     next: NextFunction,
   ) {
-    const { id, answer, pointType } = req.body;
+    const { id, phase } = req.body;
 
     try {
-      await this.gatherServiceInstance.setWaitingPerson(id, pointType, answer);
+      await this.gatherServiceInstance.setWaitingPerson(id, phase);
       res.status(200).end();
     } catch (err) {
       next(err);
     }
   }
 
-  private async agreeWaitingPerson(
+  private async handleWaitingPerson(
     req: Request,
     res: Response,
     next: NextFunction,
   ) {
     const {
-      body: { id, status, userId },
+      body: { id, status, userId, text },
     } = req;
 
     try {
-      await this.gatherServiceInstance.agreeWaitingPerson(id, userId, status);
+      await this.gatherServiceInstance.handleWaitingPerson(
+        id,
+        userId,
+        status,
+        text,
+      );
       res.status(200).end();
     } catch (err) {
       next(err);
