@@ -5,13 +5,17 @@ import { IRegistered, Registered } from "../db/models/registered";
 import { User } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError";
 import { ValidationError } from "../errors/ValidationError";
+import WebPushService from "./webPushService";
 
 const logger = require("../../logger");
 
 export default class RegisterService {
   private token: JWT;
+  private webPushServiceInstance: WebPushService;
+
   constructor(token?: JWT) {
     this.token = token as JWT;
+    this.webPushServiceInstance = new WebPushService();
   }
 
   async encodeByAES56(tel: string) {
@@ -64,6 +68,9 @@ export default class RegisterService {
 
     if (!updated) throw new DatabaseError("register failed");
 
+    await this.webPushServiceInstance.sendNotificationToManager(
+      subRegisterForm.location,
+    );
     return;
   }
 

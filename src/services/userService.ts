@@ -12,6 +12,7 @@ import { DatabaseError } from "../errors/DatabaseError";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { getProfile } from "../utils/oAuthUtils";
 import WebPushService from "./webPushService";
+import { NotificationSub } from "../db/models/notificationSub";
 
 const logger = require("../../logger");
 
@@ -672,9 +673,20 @@ export default class UserService {
   }
 
   async test() {
-    const webPushServiceInstance = new WebPushService();
+    const managers = await User.find({ role: "manager" });
+    const managerUidList = new Array();
 
-    webPushServiceInstance.sendNotificationToX("2283035576", "hello", "hello");
+    const location = "수원";
+
+    managers.forEach((manager) => {
+      if (manager.location == location) managerUidList.push(manager.uid);
+    });
+
+    const managerNotiInfo = await NotificationSub.find({
+      uid: { $in: managerUidList },
+    });
+
+    console.log(managerNotiInfo);
   }
 }
 
