@@ -38,6 +38,22 @@ class GatherController {
       .patch(this.updateGather.bind(this));
 
     this.router
+      .route("/waiting")
+      .post(
+        body("id").notEmpty().isNumeric().withMessage("id필요"),
+        validateCheck,
+        this.setWaitingPerson.bind(this),
+      );
+
+    this.router
+      .route("/waiting/status")
+      .post(
+        body("id").notEmpty().isNumeric().withMessage("id필요"),
+        validateCheck,
+        this.agreeWaitingPerson.bind(this),
+      );
+
+    this.router
       .route("/participate")
       .post(
         body("gatherId").notEmpty().isNumeric().withMessage("gatherId필요"),
@@ -123,6 +139,38 @@ class GatherController {
       }
       res.status(200).json(gatherData);
     } catch (err: any) {
+      next(err);
+    }
+  }
+
+  private async setWaitingPerson(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { id, answer, pointType } = req.body;
+
+    try {
+      await this.gatherServiceInstance.setWaitingPerson(id, pointType, answer);
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  private async agreeWaitingPerson(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const {
+      body: { id, status, userId },
+    } = req;
+
+    try {
+      await this.gatherServiceInstance.agreeWaitingPerson(id, userId, status);
+      res.status(200).end();
+    } catch (err) {
       next(err);
     }
   }

@@ -190,6 +190,46 @@ export default class GatherService {
 
     return;
   }
+  async setWaitingPerson(id: string, pointType: string, answer?: string) {
+    const gather = await Gather.findOne({ id });
+    if (!gather) throw new Error();
+
+    try {
+      const user = { user: this.token.id, answer, pointType };
+      if (gather?.waiting) {
+        if (gather.waiting.includes(user)) {
+          return;
+        }
+        gather.waiting.push(user);
+      } else {
+        gather.waiting = [user];
+      }
+      await gather?.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
+  async agreeWaitingPerson(id: string, userId: string, status: string) {
+    const gather = await Gather.findOne({ id });
+    if (!gather) throw new Error();
+
+    try {
+      gather.waiting = gather.waiting.filter(
+        (who) => who.user.toString() !== userId,
+      );
+      if (status === "agree") {
+        gather.participants.push({
+          user: userId,
+          phase: "first",
+        });
+      }
+
+      await gather?.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
 
   async createSubComment(gatherId: string, commentId: string, content: string) {
     const message: subCommentType = {
