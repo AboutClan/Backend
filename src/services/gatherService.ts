@@ -12,6 +12,7 @@ import { DatabaseError } from "../errors/DatabaseError";
 import { C_simpleUser } from "../utils/constants";
 import FcmService from "./fcmService";
 import WebPushService from "./webPushService";
+import ChatService from "./chatService";
 
 const logger = require("../../logger");
 
@@ -19,11 +20,13 @@ export default class GatherService {
   private token: JWT;
   private fcmServiceInstance: FcmService;
   private webPushServiceInstance: WebPushService;
+  private chatServiceInstance: ChatService;
 
   constructor(token?: JWT) {
     this.token = token as JWT;
     this.fcmServiceInstance = new FcmService();
     this.webPushServiceInstance = new WebPushService();
+    this.chatServiceInstance = new ChatService();
   }
 
   async getNextSequence(name: any) {
@@ -246,45 +249,12 @@ export default class GatherService {
 
       await gather?.save();
 
-      const user1 = this.token.id > userId ? userId : this.token.id;
-      const user2 = this.token.id < userId ? userId : this.token.id;
-      const chat = await Chat.findOne({ user1, user2 });
-
       const message =
         status === "agree"
           ? "모임 신청이 승인되었습니다."
           : `모임 신청이 거절되었습니다. ${text}`;
 
-      const contentFill = {
-        content: message,
-        userId: this.token.id,
-      };
-
-      if (chat) {
-        await chat.updateOne({ $push: { contents: contentFill } });
-        await chat.save();
-      } else {
-        await Chat.create({
-          user1,
-          user2,
-          contents: [contentFill],
-        });
-      }
-
-      const toUser = await User.findById(userId);
-
-      if (toUser) {
-        await this.fcmServiceInstance.sendNotificationToX(
-          toUser.uid,
-          "모임 신청 결과 도착",
-          message,
-        );
-        await this.webPushServiceInstance.sendNotificationToX(
-          toUser.uid,
-          "모임 신청 결과 도착",
-          message,
-        );
-      } else throw new DatabaseError("toUserUid is incorrect");
+      await this.chatServiceInstance.createChat(userId, message);
     } catch (err) {
       throw new Error();
     }
