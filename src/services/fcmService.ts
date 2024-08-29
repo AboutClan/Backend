@@ -143,7 +143,7 @@ export default class FcmService {
     const failure = new Set();
     const success = new Set();
 
-    const date = dayjs().startOf("day").toDate();
+    const date = dayjs().startOf("day").subtract(1, "day").toDate();
     const vote = await findOneVote(date);
 
     vote?.participations.forEach((participation) => {
