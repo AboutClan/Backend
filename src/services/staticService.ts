@@ -112,6 +112,9 @@ export default class StaticService {
       const { _id, uid, ...rest } = obj;
       return rest;
     });
+
+    console.log(cleanedArr);
+    return cleanedArr;
   }
 
   async monthlyStatics() {}
