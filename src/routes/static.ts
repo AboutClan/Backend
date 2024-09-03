@@ -18,7 +18,7 @@ class StaticController {
   private initializeRoutes() {
     this.router.use("/", this.createStaticServiceInstance.bind(this));
     this.router.use("/", this.roleCheck.bind(this));
-    this.router.use("/sameLoc", this.getUserStaticSameLocation.bind(this));
+    this.router.get("/sameLoc", this.getUserStaticSameLocation.bind(this));
   }
 
   private async createStaticServiceInstance(
@@ -43,9 +43,16 @@ class StaticController {
     res: Response,
     next: NextFunction,
   ) {
-    await this.staticServiceInstance.getUserInSameLocation();
+    try {
+      const { month } = req.query;
+      const monthNum = Number(month);
 
-    return res.status(200).end();
+      await this.staticServiceInstance.getUserInSameLocation(monthNum);
+
+      return res.status(200).end();
+    } catch {
+      next();
+    }
   }
 }
 
