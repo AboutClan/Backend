@@ -236,7 +236,6 @@ export default class GatherService {
         (who) => who.user.toString() !== userId,
       );
       if (status === "agree") {
-        console.log(13);
         gather.participants.push({
           user: userId,
           phase: "first",

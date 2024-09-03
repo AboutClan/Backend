@@ -26,8 +26,6 @@ export function sendNoti() {
           "스터디 마감이 얼마 남지 않았어요. 지금 신청하세요!",
         ),
     );
-
-    console.log("Noti: Notification sent to all users");
   } catch (err: any) {
     throw new Error(err);
   }

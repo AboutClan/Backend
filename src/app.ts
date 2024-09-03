@@ -38,6 +38,7 @@ const webpush = require("./routes/webpush");
 const feed = require("./routes/feed");
 const fcm = require("./routes/fcm");
 const chat = require("./routes/chat");
+const statics = require("./routes/static");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
@@ -93,6 +94,7 @@ class App {
     this.app.use("/webpush", webpush);
     this.app.use("/feed", feed);
     this.app.use("/chat", chat);
+    this.app.use("/static", statics);
     this.app.use(ErrorHandler);
   }
 
