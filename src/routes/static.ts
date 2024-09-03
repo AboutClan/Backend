@@ -47,9 +47,10 @@ class StaticController {
       const { month } = req.query;
       const monthNum = Number(month);
 
-      await this.staticServiceInstance.getUserInSameLocation(monthNum);
+      const result =
+        await this.staticServiceInstance.getUserInSameLocation(monthNum);
 
-      return res.status(200).end();
+      return res.status(200).json(result);
     } catch {
       next();
     }
