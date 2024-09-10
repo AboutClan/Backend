@@ -1,8 +1,17 @@
 import mongoose, {
   Model,
   Schema,
-  StringExpressionOperatorReturningBoolean,
 } from "mongoose";
+import {z} from "zod";
+
+export const NoticeZodSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  type: z.string(),
+  message: z.string(),
+  status: z.string().nullable(),
+  sub: z.string().nullable()
+});
 
 export interface INotice {
   from: string;

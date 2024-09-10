@@ -2,6 +2,65 @@ import { Dayjs } from "dayjs";
 import mongoose, { model, Schema, Model, Document } from "mongoose";
 import { IPlace } from "./place";
 import { IUser } from "./user";
+import {z} from "zod"
+
+const TimeStartToEndHMZodSchema = z.object({
+  start: z.object({
+    hour: z.number().optional(),
+    minutes: z.number().optional(),
+  }).optional(),
+  end: z.object({
+    hour: z.number().optional(),
+    minutes: z.number().optional(),
+  }).optional(),
+});
+
+// PlaceStatus schema
+const PlaceStatusZodSchema = z.object({
+  status: z.enum(["pending", "waiting_confirm", "open", "dismissed", "free"]).optional(),
+});
+
+// TimeStartToEnd schema
+const TimeStartToEndZodSchema = z.object({
+  start: z.instanceof(Date).optional(),  // Or use dayjs instance check if needed
+  end: z.instanceof(Date).optional(),
+});
+
+// Attendance schema
+const AttendanceZodSchema = z.object({
+  user: z.union([z.string(), z.any()]),  // IUser type should be properly replaced if defined
+  time: TimeStartToEndZodSchema,
+  created: z.instanceof(Date),
+  arrived: z.instanceof(Date).optional(),
+  firstChoice: z.boolean(),
+  confirmed: z.boolean(),
+  memo: z.string().optional(),
+  imageUrl: z.string(),
+});
+
+// Absence schema
+const AbsenceZodSchema = z.object({
+  user: z.union([z.string(), z.any()]),  // IUser type should be properly replaced if defined
+  noShow: z.boolean(),
+  message: z.string(),
+});
+
+// Participation schema
+const ParticipationZodSchema = z.object({
+  place: z.any().optional(),  // IPlace type should be properly replaced if defined
+  attendences: z.array(AttendanceZodSchema).optional(),
+  absences: z.array(AbsenceZodSchema).optional(),
+  startTime: z.instanceof(Date).optional(),
+  endTime: z.instanceof(Date).optional(),
+  status: z.enum(["pending", "waiting_confirm", "open", "dismissed", "free"]).optional(),
+}).merge(TimeStartToEndHMZodSchema);
+
+// Vote schema
+const VoteZodSchema = z.object({
+  date: z.instanceof(Date),
+  participations: z.array(ParticipationZodSchema),
+});
+
 
 export interface ITimeStartToEndHM {
   start?: {

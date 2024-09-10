@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import ChatService from "../services/chatService";
+import { ChatZodSchema } from "../db/models/chat";
 
 class ChatController {
   public router: Router;
@@ -59,6 +60,7 @@ class ChatController {
       next(err);
     }
   }
+
   private async getRecentChat(req: Request, res: Response, next: NextFunction) {
     const { cursor } = req.query as { cursor: string };
 
@@ -72,9 +74,8 @@ class ChatController {
   }
 
   private async createChat(req: Request, res: Response, next: NextFunction) {
-    const { toUid, message } = req.body;
-
     try {
+      const { toUid, message } = req.body;
       await this.chatServiceInstance.createChat(toUid, message);
 
       return res.status(200).end();

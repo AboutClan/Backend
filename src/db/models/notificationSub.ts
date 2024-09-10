@@ -1,5 +1,18 @@
 import mongoose, { model, Schema, Document, Model } from "mongoose";
-import { IUser } from "./user";
+import { z } from 'zod';
+
+// KeyType Zod schema
+const keyZodSchema = z.object({
+  p256dh: z.string(),
+  auth: z.string(),
+});
+
+// NotificationSub Zod schema
+const notificationSubZodSchema = z.object({
+  endpoint: z.string(),
+  keys: keyZodSchema,
+  uid: z.string(),
+});
 
 export interface INotificationSub extends Document {
   endpoint: string,

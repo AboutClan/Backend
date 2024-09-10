@@ -1,5 +1,25 @@
-import { Dayjs } from "dayjs";
+import { Dayjs, isDayjs } from "dayjs";
 import mongoose, { model, Model, Schema } from "mongoose";
+import {z} from "zod"
+
+const dayjsSchema = z.custom<Dayjs>((value) => isDayjs(value), {
+  message: "Invalid Dayjs object",
+});
+
+export const RestZodSchema = z.object({
+  type: z.string(),
+  start: dayjsSchema,
+  end: dayjsSchema,
+});
+
+export const RequestZodSchema = z.object({
+  category: z.string(),
+  title: z.string().optional(),
+  location: z.string(),
+  writer: z.string(),
+  content: z.string(),
+  rest: RestZodSchema.optional()
+});
 
 export interface restType {
   type: string;

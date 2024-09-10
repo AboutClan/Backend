@@ -1,4 +1,11 @@
 import mongoose, { Model, Schema } from "mongoose";
+import {z} from "zod"
+
+export const PromotionZodSchema = z.object({
+  name: z.string(),
+  lastDate: z.date(),
+  uid: z.string()
+});
 
 export interface IPromotion {
   name: string;

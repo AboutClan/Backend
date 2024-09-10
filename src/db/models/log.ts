@@ -1,4 +1,19 @@
 import mongoose, { model, Schema, Model } from "mongoose";
+import {z} from "zod";
+
+const MetaZodSchema = z.object({
+  type: z.string(),
+  uid: z.number(),
+  value: z.number(), 
+  sub: z.string().nullable()
+});
+
+const LogZodSchema = z.object({
+  timeStamp: z.date(),
+  level: z.string(),
+  message: z.string(),
+  meta: MetaZodSchema
+});
 
 export interface ILog {
   timeStamp: Date;
