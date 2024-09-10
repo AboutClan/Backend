@@ -1,4 +1,10 @@
 import mongoose, { model, Schema, Model } from "mongoose";
+import {z} from "zod"
+
+export const SubscriptionZodSchema = z.object({
+  uid: z.string(),
+  token: z.string()
+});
 
 export interface ISubscription {
   uid: string,

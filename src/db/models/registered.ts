@@ -1,4 +1,27 @@
 import mongoose, { model, Schema, Model, Document } from "mongoose";
+import {z} from "zod"
+
+export const MajorZodSchema = z.object({
+  department: z.string(),
+  detail: z.string(),
+});
+export const InterestZodSchema = z.object({
+  first: z.string(),
+  second: z.string()
+});
+export const RegisteredZodSchema = z.object({
+  uid: z.string(),
+  name: z.string(),
+  location: z.string(),
+  mbti: z.string().optional(),
+  gender: z.string(),
+  profileImage: z.string(),
+  birth: z.string(),
+  comment: z.string(),
+  majors: z.array(MajorZodSchema),
+  interests: z.array(InterestZodSchema),
+  telephone: z.string(),
+});
 
 export interface IMajor {
   department: string;

@@ -1,6 +1,33 @@
 import mongoose, { model, Model, Schema } from "mongoose";
-
 import { IUser } from "./user";
+import {z} from "zod";
+
+export const SubCommentZodSchema = z.object({
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  comment: z.string(),
+  likeList: z.array(z.string()).nullable().optional()
+})
+
+export const CommentZodSchema = z.object({
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  comment: z.string(),
+  subComments: z.array(SubCommentZodSchema).optional(),
+  likeList: z.array(z.string()).nullable(),
+})
+
+export const FeedZodSchema = z.object({
+  title: z.string(),
+  text: z.string(),
+  images: z.array(z.string()),
+  writer: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  type: z.string(),
+  typeId: z.string(),
+  isAnonymous:z.boolean().nullable(),
+  like: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId")),
+  comments: z.array(CommentZodSchema),
+  createdAt:z.string(),
+  subCategory: z.string(),
+})
 
 export interface commentType {
   user: string | IUser;
@@ -28,11 +55,6 @@ export interface IFeed {
   createdAt:string,
   addLike(userId: string): Promise<void>;
   subCategory: string,
-}
-
-export interface likeType {
-  like: string | IUser;
- 
 }
 
 export const subCommentSchema: Schema<subCommentType> = new Schema(
@@ -75,16 +97,6 @@ export const commentSchema: Schema<commentType> = new Schema(
   {
     timestamps: true,
   }
-);
-
-export const likeSchema: Schema<likeType> = new Schema(
-  {
-    like: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  },
-  { _id: false }
 );
 
 export const FeedSchema: Schema<IFeed> = new Schema({

@@ -1,16 +1,13 @@
 import mongoose, { Model, Schema, model } from "mongoose";
 import { Dayjs } from "dayjs";
+import {z} from "zod";
 
-export interface IStoreGift {
-  image: string;
-  name: string;
-  brand: string;
-  point: number;
-  winner: number;
-  date: { startDay: Dayjs; endDay: Dayjs };
-  giftId?: number;
-  max?: number;
-}
+export const StoreZodSchema = z.object({
+  uid: z.string(),
+  name: z.string(),
+  cnt: z.number(),
+  giftId: z.number().optional()
+})
 
 export interface IStoreApplicant {
   uid: string;
