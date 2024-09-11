@@ -1,7 +1,5 @@
 import { JWT } from "next-auth/jwt";
-import { Collection } from "../db/models/collection";
-import { DailyCheck } from "../db/models/dailyCheck";
-import { Notice } from "../db/models/notice";
+import { Collection, CollectionZodSchema } from "../db/models/collection";
 import { User } from "../db/models/user";
 import { Request } from "../db/models/request";
 const ALPHABET_COLLECTION = ["A", "B", "O", "U", "T"];
@@ -12,21 +10,26 @@ export default class CollectionService {
   }
 
   async setCollection(alphabet: string) {
-    const previousData = await Collection.findOne({ user: this.token.id });
-    if (previousData) {
-      await Collection.updateOne(
-        { user: this.token.id },
-        { $push: { collects: alphabet } },
-      );
-    } else {
-      await Collection.create({
-        user: this.token.id,
-        collects: [alphabet],
-        collectCnt: 0,
-      });
-    }
+    const validatedCollection = CollectionZodSchema.parse({
+      user: this.token.id,
+      collects: [alphabet],
+      collectCnt: 0,
+    });
+
+    await Collection.findOneAndUpdate(
+      { user: this.token.id },
+      {
+        $push: { collects: alphabet },
+        $setOnInsert: {
+          user: validatedCollection.user,
+          collectCnt: validatedCollection.collectCnt,
+        },
+      },
+      { upsert: true, new: true },
+    );
     return null;
   }
+
   async changeCollection(
     mine: string,
     opponent: string,

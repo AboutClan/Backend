@@ -89,7 +89,6 @@ export default class ChatService {
     };
 
     const validatedContent = ContentZodSchema.parse(contentFill);
-
     const validatedChat = ChatZodSchema.parse({
       user1,
       user2,
