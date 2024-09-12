@@ -12,7 +12,7 @@ export const CommentZodSchema = z.object({
   user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
   comment: z.string(),
   subComments: z.array(SubCommentZodSchema).optional(),
-  likeList: z.array(z.string()).nullable(),
+  likeList: z.array(z.string()).nullable().optional(),
 })
 
 export const FeedZodSchema = z.object({
@@ -22,11 +22,11 @@ export const FeedZodSchema = z.object({
   writer: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
   type: z.string(),
   typeId: z.string(),
-  isAnonymous:z.boolean().nullable(),
-  like: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId")),
-  comments: z.array(CommentZodSchema),
-  createdAt:z.string(),
-  subCategory: z.string(),
+  isAnonymous:z.boolean().default(false),
+  like: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId")).optional(),
+  comments: z.array(CommentZodSchema).optional(),
+  createdAt:z.string().optional(),
+  subCategory: z.string().optional(),
 })
 
 export interface commentType {

@@ -3,7 +3,7 @@ import {z} from "zod"
 
 export const PromotionZodSchema = z.object({
   name: z.string(),
-  lastDate: z.date(),
+  lastDate: z.string(),
   uid: z.string()
 });
 

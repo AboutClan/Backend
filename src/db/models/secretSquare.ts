@@ -29,12 +29,12 @@ export const SecretSquareZodSchema = z.object({
   poll: z.object({
     pollItems: z.array(PollItemZodSchema),
     canMultiple: z.boolean(),
-  }),
-  images: z.string(),
+  }).optional(),
+  images: z.array(z.string()).optional(),
   author: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
-  viewers: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId")),
-  like: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId")),
-  comments: z.array(CommentZodSchema)
+  viewers: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId")).optional(),
+  like: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId")).optional(),
+  comments: z.array(CommentZodSchema).optional()
 });
 
 export type SecretSquareCategory = "일상" | "고민" | "정보" | "같이해요";

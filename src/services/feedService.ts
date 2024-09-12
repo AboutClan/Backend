@@ -1,6 +1,11 @@
 import { Types } from "mongoose";
 import { JWT } from "next-auth/jwt";
-import { commentType, Feed, subCommentType } from "../db/models/feed";
+import {
+  commentType,
+  Feed,
+  FeedZodSchema,
+  subCommentType,
+} from "../db/models/feed";
 import { IUser, User } from "../db/models/user";
 import { convertUsersToSummary } from "../utils/convertUtils";
 import ImageService from "./imageService";
@@ -158,7 +163,7 @@ export default class FeedService {
       "feed",
       buffers,
     );
-    await Feed.create({
+    const validatedFeed = FeedZodSchema.parse({
       title,
       text,
       writer: this.token.id,
@@ -168,6 +173,8 @@ export default class FeedService {
       isAnonymous,
       subCategory,
     });
+
+    await Feed.create(validatedFeed);
     return;
   }
   async createComment(feedId: string, content: string) {

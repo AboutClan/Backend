@@ -7,7 +7,7 @@ export const MajorZodSchema = z.object({
 });
 export const InterestZodSchema = z.object({
   first: z.string(),
-  second: z.string()
+  second: z.string().nullable()
 });
 export const RegisteredZodSchema = z.object({
   uid: z.string(),
@@ -15,11 +15,11 @@ export const RegisteredZodSchema = z.object({
   location: z.string(),
   mbti: z.string().optional(),
   gender: z.string(),
-  profileImage: z.string(),
+  profileImage: z.string().optional(),
   birth: z.string(),
   comment: z.string(),
-  majors: z.array(MajorZodSchema),
-  interests: z.array(InterestZodSchema),
+  majors: z.array(MajorZodSchema).default([]),
+  interests: z.array(InterestZodSchema).default([]),
   telephone: z.string(),
 });
 

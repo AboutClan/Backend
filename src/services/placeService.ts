@@ -1,5 +1,5 @@
 import { JWT } from "next-auth/jwt";
-import { IPlace, Place } from "../db/models/place";
+import { IPlace, Place, PlaceZodSchema } from "../db/models/place";
 import { ValidationError } from "../errors/ValidationError";
 import { DatabaseError } from "../errors/DatabaseError";
 
@@ -57,7 +57,8 @@ export default class PlaceService {
           `fullname ||brand ||branch ||image ||latitude ||longitude ||location ||coverImage ||locationDetail ||mapURL not exist`,
         );
 
-      await Place.create(placeData);
+      const validatedPlace = PlaceZodSchema.parse(placeData);
+      await Place.create(validatedPlace);
       return;
     } catch (err: any) {
       throw new Error(err);

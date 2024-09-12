@@ -1,5 +1,5 @@
 import { JWT } from "next-auth/jwt";
-import { Promotion } from "../db/models/promotion";
+import { Promotion, PromotionZodSchema } from "../db/models/promotion";
 import dayjs from "dayjs";
 import UserService from "./userService";
 
@@ -21,18 +21,21 @@ export default class PromotionService {
       const previousData = await Promotion.findOne({ name });
       const now = dayjs().format("YYYY-MM-DD");
 
+      const validatedPromotion = PromotionZodSchema.parse({
+        name,
+        uid: this.token.uid,
+        lastDate: now,
+      });
+
       if (previousData) {
         const dayDiff = dayjs(now).diff(dayjs(previousData?.lastDate), "day");
         if (dayDiff > 2) {
-          await Promotion.updateOne(
-            { name },
-            { name, uid: this.token.uid, lastDate: now },
-          );
+          await Promotion.updateOne({ name }, validatedPromotion);
 
           await userService.updatePoint(100, "홍보 이벤트 참여");
         }
       } else {
-        await Promotion.create({ name, uid: this.token.uid, lastDate: now });
+        await Promotion.create(validatedPromotion);
         await userService.updatePoint(300, "홍보 이벤트 참여");
       }
     } catch (err: any) {

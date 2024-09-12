@@ -12,14 +12,14 @@ export const PlaceZodSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   priority: z.number().optional(),
-  _id: z.string(),
+  _id: z.string().optional(),
   location: z.string(),
   locationDetail: z.string().optional(),
   time: z.string().optional(),
   registerDate: z.string(),
   registrant: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
   mapURL: z.string(),
-  prefCnt: z.number(),
+  prefCnt: z.number().optional(),
 })
 
 export interface IPlace extends Document {

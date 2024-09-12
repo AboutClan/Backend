@@ -7,10 +7,10 @@ import {z} from "zod";
 export const NoticeZodSchema = z.object({
   from: z.string(),
   to: z.string(),
-  type: z.string(),
+  type: z.string().nullable().optional(),
   message: z.string(),
-  status: z.string().nullable(),
-  sub: z.string().nullable()
+  status: z.string().nullable().optional(),
+  sub: z.string().nullable().optional()
 });
 
 export interface INotice {
@@ -29,6 +29,7 @@ const noticeSchema: Schema<INotice> = new Schema(
     type: {
       type: String,
       enum: ["like", "friend", "alphabet"],
+      default: "like"
     },
     message: String,
     sub: String,
