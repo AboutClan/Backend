@@ -1,5 +1,109 @@
 import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
+import { z } from 'zod';
+
+// UserRole enum
+const userRoleZodSchema = z.enum(["admin", "manager", "member", "outsider"]);
+
+// ICategory Zod schema
+const categoryZodSchema = z.object({
+  main: z.string(),
+  sub: z.string(),
+});
+
+// subCommentType Zod schema
+const subCommentZodSchema = z.object({
+  user: z.union([z.string(), z.any()]), // IUser type should be handled appropriately
+  comment: z.string(),
+  likeList: z.array(z.string()).optional().default([]),
+});
+
+// memberCntType Zod schema
+const memberCntZodSchema = z.object({
+  min: z.number(),
+  max: z.number(),
+});
+
+// participantsType Zod schema
+const participantsZodSchema = z.object({
+  user: z.union([z.string(), z.any()]), // IUser type should be handled appropriately
+  randomId: z.number().optional(),
+  role: userRoleZodSchema,
+  attendCnt: z.number(),
+});
+
+// IWaiting Zod schema
+const waitingZodSchema = z.object({
+  user: z.union([z.string(), z.any()]), // IUser type should be handled appropriately
+  answer: z.string().optional(),
+  pointType: z.string(),
+});
+
+// commentType Zod schema
+const commentZodSchema = z.object({
+  user: z.union([z.string(), z.any()]), // IUser type should be handled appropriately
+  comment: z.string(),
+  subComments: z.array(subCommentZodSchema).optional().default([]),
+  likeList: z.array(z.string()).optional().default([]),
+});
+
+// IWeekRecord Zod schema
+const weekRecordZodSchema = z.object({
+  uid: z.string(),
+  name: z.string(),
+  attendRecord: z.array(z.string()),
+  attendRecordSub: z.array(z.string()).optional(),
+});
+
+// IAttendance Zod schema
+const attendanceZodSchema = z.object({
+  firstDate: z.string().optional(),
+  lastWeek: z.array(weekRecordZodSchema),
+  thisWeek: z.array(weekRecordZodSchema),
+});
+
+// IGroupStudyData Zod schema
+const groupStudyZodSchema = z.object({
+  title: z.string(),
+  category: categoryZodSchema,
+  challenge: z.string().optional(),
+  rules: z.array(z.string()),
+  content: z.string(),
+  period: z.string(),
+  guide: z.string(),
+  gender: z.boolean(),
+  age: z.array(z.number()),
+  organizer: z.any(), // IUser type should be handled appropriately
+  memberCnt: memberCntZodSchema,
+  password: z.string().optional(),
+  status: z.enum(["end", "pending"]),
+  participants: z.array(participantsZodSchema),
+  user: z.union([z.string(), z.any()]), // IUser type should be handled appropriately
+  comments: z.array(commentZodSchema),
+  id: z.number(),
+  location: z.enum([
+    "수원",
+    "양천",
+    "안양",
+    "강남",
+    "동대문",
+    "전체",
+    "수원/안양",
+    "양천/강남",
+    "인천",
+  ]),
+  image: z.string().optional(),
+  isFree: z.boolean(),
+  feeText: z.string().optional(),
+  fee: z.number().optional(),
+  questionText: z.string().optional(),
+  hashTag: z.string(),
+  attendance: attendanceZodSchema,
+  link: z.string().optional(),
+  isSecret: z.boolean().optional(),
+  waiting: z.array(waitingZodSchema).optional().default([]),
+});
+
 
 export type GroupStudyStatus ="end"| "pending"
 

@@ -1,6 +1,6 @@
 import { JWT } from "next-auth/jwt";
 import admin from "firebase-admin";
-import { FcmToken } from "../db/models/fcmToken";
+import { FcmToken, FcmTokenZodSchema } from "../db/models/fcmToken";
 import dayjs from "dayjs";
 import { findOneVote } from "../utils/voteUtils";
 import { IUser } from "../db/models/user";
@@ -75,6 +75,11 @@ export default class FcmService {
   async registerToken(uid: string, fcmToken: string, platform: string) {
     const fcmTokenOne = await FcmToken.findOne({ uid });
 
+    const validatedFcm = FcmTokenZodSchema.parse({
+      uid,
+      devices: [{ token: fcmToken, platform }],
+    });
+
     if (fcmTokenOne) {
       const tokenExists = fcmTokenOne.devices.some(
         (device) => device.token === fcmToken,
@@ -85,10 +90,7 @@ export default class FcmService {
         await fcmTokenOne.save();
       }
     } else {
-      FcmToken.create({
-        uid,
-        devices: [{ token: fcmToken, platform }],
-      });
+      FcmToken.create(validatedFcm);
     }
   }
 

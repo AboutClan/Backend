@@ -1,4 +1,4 @@
-import { Request } from "../db/models/request";
+import { Request, RequestZodSchema } from "../db/models/request";
 import { DatabaseError } from "../errors/DatabaseError";
 
 export default class RequestService {
@@ -10,7 +10,8 @@ export default class RequestService {
   }
 
   async createRequest(data: any) {
-    const created = await Request.create(data);
+    const validatedRequest = RequestZodSchema.parse(data);
+    const created = await Request.create(validatedRequest);
 
     if (!created) throw new DatabaseError("create request failed");
     return;

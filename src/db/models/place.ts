@@ -1,5 +1,26 @@
 import mongoose, { Document, model, Model, Schema } from "mongoose";
 import { IUser } from './user';
+import {z} from "zod"
+
+export const PlaceZodSchema = z.object({
+  status: z.string(),
+  fullname: z.string(),
+  brand: z.string().optional(),
+  branch: z.string().optional(),
+  image: z.string().optional(),
+  coverImage: z.string().optional(),
+  latitude: z.number(),
+  longitude: z.number(),
+  priority: z.number().optional(),
+  _id: z.string().optional(),
+  location: z.string(),
+  locationDetail: z.string().optional(),
+  time: z.string().optional(),
+  registerDate: z.string(),
+  registrant: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  mapURL: z.string(),
+  prefCnt: z.number().optional(),
+})
 
 export interface IPlace extends Document {
   status: string;

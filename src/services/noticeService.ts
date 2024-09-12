@@ -1,5 +1,5 @@
 import { JWT } from "next-auth/jwt";
-import { Notice } from "../db/models/notice";
+import { Notice, NoticeZodSchema } from "../db/models/notice";
 import { User } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError";
 const logger = require("../../logger");
@@ -29,12 +29,13 @@ export default class NoticeService {
 
   async setLike(to: string, message: string) {
     try {
-      await Notice.create({
+      const validatedNotice = NoticeZodSchema.parse({
         from: this.token.uid,
         to,
         message,
-        type: "like",
       });
+
+      await Notice.create(validatedNotice);
       await User.findOneAndUpdate({ uid: to }, { $inc: { like: 1, point: 2 } });
 
       logger.logger.info(message, {

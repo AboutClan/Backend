@@ -4,6 +4,7 @@ import {
   SecretSquare,
   SecretSquareCategory,
   SecretSquareType,
+  SecretSquareZodSchema,
   subCommentType,
 } from "../db/models/secretSquare";
 import ImageService from "./imageService";
@@ -100,27 +101,32 @@ export default class SquareService {
 
     const author = this.token.id;
 
+    const validatedSquare =
+      squareType === "poll"
+        ? SecretSquareZodSchema.parse({
+            category,
+            title,
+            content,
+            author,
+            type: squareType,
+            poll,
+            images,
+          })
+        : SecretSquareZodSchema.parse({
+            category,
+            title,
+            content,
+            author,
+            type: squareType,
+            images,
+          });
+
     if (squareType === "poll") {
-      const { _id: squareId } = await SecretSquare.create({
-        category,
-        title,
-        content,
-        author,
-        type: squareType,
-        poll,
-        images,
-      });
+      const { _id: squareId } = await SecretSquare.create(validatedSquare);
       return { squareId };
     }
 
-    const { _id: squareId } = await SecretSquare.create({
-      category,
-      title,
-      content,
-      author,
-      type: squareType,
-      images,
-    });
+    const { _id: squareId } = await SecretSquare.create(validatedSquare);
     return { squareId };
   }
 

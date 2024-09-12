@@ -1,6 +1,75 @@
 import mongoose, { Document, model, Model, Schema } from "mongoose";
 import { IPlace } from "./place";
 import { InterestSchema, IRegistered, MajorSchema } from "./registered";
+import { z } from 'zod';
+
+// restType Zod schema
+const restZodSchema = z.object({
+  type: z.string(),
+  startDate: z.instanceof(Date),
+  endDate: z.instanceof(Date),
+  content: z.string(),
+  restCnt: z.number().default(0),
+  cumulativeSum: z.number().default(0),
+});
+
+// avatarType Zod schema
+const avatarZodSchema = z.object({
+  type: z.number().default(1),
+  bg: z.number().default(1),
+});
+
+// preferenceType Zod schema
+const preferenceZodSchema = z.object({
+  place: z.union([z.string(), z.any()]), // Assuming IPlace type should be replaced or handled properly
+  subPlace: z.union([z.array(z.string()), z.array(z.any())]), // Replace z.any() with IPlace if necessary
+});
+
+// IUser Zod schema
+const userZodSchema = z.object({
+  uid: z.string(),
+  name: z.string(),
+  location: z.enum(["수원", "양천", "안양", "강남", "동대문", "인천"]).default("수원"),
+  mbti: z.string().default(""),
+  gender: z.string().default(""),
+  belong: z.string().optional(),
+  profileImage: z.string().default(
+    "https://user-images.githubusercontent.com/48513798/173180642-8fc5948e-a437-45f3-91d0-3f0098a38195.png"
+  ),
+  registerDate: z.string().default(""),
+  isActive: z.boolean().default(false),
+  birth: z.string().default(""),
+  isPrivate: z.boolean().default(false),
+  role: z
+    .enum([
+      "noMember",
+      "waiting",
+      "human",
+      "member",
+      "manager",
+      "previliged",
+      "resting",
+      "enthusiastic",
+    ])
+    .default("member"),
+  score: z.number().default(0),
+  monthScore: z.number().default(0),
+  point: z.number().default(0),
+  comment: z.string().default("안녕하세요! 잘 부탁드립니다~!"),
+  rest: restZodSchema,
+  avatar: avatarZodSchema,
+  majors: z.array(z.any()).default([]), // Replace z.any() with appropriate MajorSchema if necessary
+  interests: z.object({
+    first: z.string().optional(),
+    second: z.string().optional(),
+  }).default({ first: "", second: "" }), // Assuming InterestSchema
+  telephone: z.string().default(""),
+  deposit: z.number().default(3000),
+  friend: z.array(z.string()).default([]),
+  like: z.number().default(0),
+  instagram: z.string().default(""),
+  studyPreference: preferenceZodSchema.optional(),
+});
 
 export interface restType {
   type: string;

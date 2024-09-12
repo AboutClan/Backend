@@ -1,4 +1,12 @@
 import mongoose, { Model, Schema } from "mongoose";
+import {z} from "zod"
+
+export const DailyCheckZodSchema = z.object({
+  uid: z.string(),
+  name: z.string(),
+  createdAt: z.instanceof(Date).optional(),
+  updatedAt: z.instanceof(Date).optional(),
+})
 
 export interface IDailyCheck {
   uid: string;

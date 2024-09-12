@@ -1,7 +1,11 @@
 import * as CryptoJS from "crypto-js";
 import { JWT } from "next-auth/jwt";
 import dbConnect from "../db/conn";
-import { IRegistered, Registered } from "../db/models/registered";
+import {
+  IRegistered,
+  Registered,
+  RegisteredZodSchema,
+} from "../db/models/registered";
 import { User } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError";
 import { ValidationError } from "../errors/ValidationError";
@@ -50,16 +54,16 @@ export default class RegisterService {
     const a = await this.decodeByAES256(
       "U2FsdGVkX1+Wz6uV+ErLREqYytNiVKsMU95smfwpGoo=",
     );
-    const registerForm = {
+    const validatedResgisterForm = RegisteredZodSchema.parse({
       uid: this.token.uid,
       profileImage: this.token.picture,
       ...subRegisterForm,
       telephone: encodedTel,
-    };
+    });
 
     const updated = await Registered.findOneAndUpdate(
       { uid: this.token.uid },
-      registerForm,
+      validatedResgisterForm,
       {
         upsert: true,
         new: true,

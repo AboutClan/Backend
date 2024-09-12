@@ -1,5 +1,5 @@
 import { JWT } from "next-auth/jwt";
-import { GiftModel } from "../db/models/gift";
+import { GiftModel, StoreZodSchema } from "../db/models/gift";
 
 export default class GiftService {
   private token: JWT;
@@ -30,33 +30,26 @@ export default class GiftService {
       giftId,
     });
     if (existingUser) {
+      const validatedGift = StoreZodSchema.parse({
+        name,
+        uid,
+        cnt: existingUser.cnt + cnt,
+        giftId,
+      });
+
       const user = await GiftModel.findOneAndUpdate(
         { uid: this.token.uid },
-        { name, uid, cnt: existingUser.cnt + cnt, giftId },
+        validatedGift,
         { new: true, runValidators: true },
       );
       if (!user) {
         throw new Error("no user");
       }
 
-      const resUser = {
-        name: user.name,
-        uid: user.uid,
-        cnt: user.cnt,
-        giftId: user.giftId,
-      };
-
-      return resUser;
+      return user;
     }
 
     const newUser = await GiftModel.create({ name, uid, cnt, giftId });
-    const user = {
-      name: newUser.name,
-      uid: newUser.uid,
-      cnt: newUser.cnt,
-      giftId: newUser.giftId,
-    };
-
-    return user;
+    return newUser;
   }
 }

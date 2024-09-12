@@ -1,7 +1,76 @@
 import mongoose, { model, Model, Schema } from "mongoose";
 import { IUser } from "./user";
+import {z} from "zod";
 
 export type gatherStatus = "pending" | "open" | "close" | "end";
+
+export const TimeZodSchema = z.object({
+  hours: z.number().nullable(),
+  minutes: z.number().nullable()
+})
+export const WaitingZodSchema = z.object({
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  phase: z.string()
+})
+export const TitleZodSchema = z.object({
+  title: z.string(),
+  subtitle: z.string().nullable().optional()
+})
+export const LocationZodSchema = z.object({
+  main: z.string(),
+  sub: z.string().nullable()
+})
+export const MemberCntZodSchema = z.object({
+  min: z.number(),
+  max: z.number(),
+})
+export const GathersZodSchema = z.object({
+  text: z.string(),
+  time: TimeZodSchema
+})
+
+export const ParticipantsZodSchema = z.object({
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  phase: z.string()
+})
+
+export const SubCommentZodSchema = z.object({
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  comment: z.string(),
+  likeList: z.array(z.string()).nullable().optional()
+})
+
+export const CommentZodSchema = z.object({
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  comment: z.string(),
+  subComments: z.array(SubCommentZodSchema).optional(),
+  likeList: z.array(z.string()).nullable(),
+})
+
+export const GatherZodSchema = z.object({
+  title: z.string(),
+  type: TitleZodSchema,
+  gatherList: z.array(GathersZodSchema),
+  content: z.string(),
+  location: LocationZodSchema,
+  memberCnt: MemberCntZodSchema,
+  age: z.array(z.number()).nullable(),
+  preCnt: z.number().nullable(),
+  genderCondition: z.boolean(),
+  password: z.string().nullable(),
+  status: z.enum(["pending", "open", "close", "end"]).default("pending"),
+  participants: z.array(ParticipantsZodSchema),
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  comments: z.array(CommentZodSchema),
+  id: z.number(),
+  date: z.string(),
+  place: z.string().nullable(),
+  isAdminOpen: z.boolean().nullable(),
+  image: z.string().nullable(),
+  kakaoUrl: z.string().nullable(),
+  waiting: z.array(WaitingZodSchema),
+  isApprovalRequired: z.boolean().nullable(),
+})
 
 export interface ITime {
   hours?: number;

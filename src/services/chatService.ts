@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
-import { Chat } from "../db/models/chat";
+import { Chat, ChatZodSchema, ContentZodSchema } from "../db/models/chat";
 import { IUser, User } from "../db/models/user";
 import FcmService from "./fcmService";
 import WebPushService from "./webPushService";
 import { DatabaseError } from "../errors/DatabaseError";
+import { z } from "zod";
 
 export default class ChatService {
   private token: JWT;
@@ -87,15 +88,18 @@ export default class ChatService {
       userId: this.token.id,
     };
 
+    const validatedContent = ContentZodSchema.parse(contentFill);
+    const validatedChat = ChatZodSchema.parse({
+      user1,
+      user2,
+      contents: [contentFill],
+    });
+
     if (chat) {
-      await chat.updateOne({ $push: { contents: contentFill } });
+      await chat.updateOne({ $push: { contents: validatedContent } });
       await chat.save();
     } else {
-      await Chat.create({
-        user1,
-        user2,
-        contents: [contentFill],
-      });
+      await Chat.create(validatedChat);
     }
 
     const toUser = await User.findById(toUserId);

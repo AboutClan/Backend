@@ -1,4 +1,14 @@
 import mongoose, { model, Schema, Model } from "mongoose";
+import {z} from "zod";
+
+export const DeviceSchema = z.object({
+    platform: z.string(),
+    token: z.string(),
+})
+export const FcmTokenZodSchema = z.object({
+  uid: z.string(),
+  devices: z.array(DeviceSchema)
+})
 
 export interface IFcmToken {
   uid: string,

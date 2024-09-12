@@ -4,6 +4,15 @@ import mongoose, {
   StringExpressionOperatorReturningBoolean,
 } from "mongoose";
 import { IUser } from "./user";
+import {z} from "zod";
+
+export const CollectionZodSchema = z.object({
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  type: z.enum(["alphabet"]).default("alphabet"),
+  collects:  z.array(z.string()),
+  collectCnt: z.number()
+  
+})
 
 export interface ICollection {
   user: string | IUser;
