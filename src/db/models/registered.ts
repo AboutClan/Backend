@@ -19,7 +19,7 @@ export const RegisteredZodSchema = z.object({
   birth: z.string(),
   comment: z.string(),
   majors: z.array(MajorZodSchema).default([]),
-  interests: z.array(InterestZodSchema).default([]),
+  interests: InterestZodSchema.optional(),
   telephone: z.string(),
 });
 

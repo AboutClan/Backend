@@ -18,7 +18,7 @@ export const CommentZodSchema = z.object({
 export const FeedZodSchema = z.object({
   title: z.string(),
   text: z.string(),
-  images: z.array(z.string()),
+  images: z.array(z.string()).optional(),
   writer: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
   type: z.string(),
   typeId: z.string(),
