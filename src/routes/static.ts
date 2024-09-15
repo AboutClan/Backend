@@ -44,11 +44,11 @@ class StaticController {
     next: NextFunction,
   ) {
     try {
-      const { month } = req.query;
-      const monthNum = Number(month);
+      const { date } = req.query;
 
-      const result =
-        await this.staticServiceInstance.getUserInSameLocation(monthNum);
+      const result = await this.staticServiceInstance.getUserInSameLocation(
+        date as string,
+      );
 
       return res.status(200).json(result);
     } catch {
