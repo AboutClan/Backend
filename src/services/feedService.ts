@@ -170,7 +170,7 @@ export default class FeedService {
       type,
       typeId,
       images,
-      isAnonymous,
+      isAnonymous: Boolean(isAnonymous),
       subCategory,
     });
 

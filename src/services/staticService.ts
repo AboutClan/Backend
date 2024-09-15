@@ -98,7 +98,6 @@ export default class StaticService {
       return rest;
     });
 
-    console.log(cleanedArr);
     return cleanedArr;
   }
 

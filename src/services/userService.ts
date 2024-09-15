@@ -685,8 +685,6 @@ export default class UserService {
     const managerNotiInfo = await NotificationSub.find({
       uid: { $in: managerUidList },
     });
-
-    console.log(managerNotiInfo);
   }
 }
 
