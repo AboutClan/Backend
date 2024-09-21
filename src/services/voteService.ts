@@ -10,6 +10,7 @@ import {
   Vote,
 } from "../db/models/vote";
 import { IVoteStudyInfo } from "../types/vote";
+import { convertUserToSummary2 } from "../utils/convertUtils";
 import { now, strToDate } from "../utils/dateUtils";
 import { findOneVote } from "../utils/voteUtils";
 
@@ -191,7 +192,7 @@ export default class VoteService {
         : null;
       const user = await User.findOne({ uid: this.token.uid });
       const studyPreference = user?.studyPreference;
-      console.log("sp", studyPreference);
+
       const filterStudy = (filteredVote: IVote) => {
         const voteDate = filteredVote?.date;
 
@@ -201,10 +202,6 @@ export default class VoteService {
             const placeLocation = participation.place?.location;
             return placeLocation === location || placeLocation === "전체";
           },
-        );
-
-        const freeStudy = filteredVote?.participations.find(
-          (par) => par.place?.brand === "자유 신청",
         );
 
         // 유저 정보 없는 참석자 제거
@@ -294,7 +291,20 @@ export default class VoteService {
           filteredVote.participations = filteredVote.participations.slice(0, 3);
         }
 
-        return filteredVote;
+        return {
+          date: filteredVote.date,
+          participations: filteredVote.participations.map((par) => ({
+            place: par.place,
+            absences: par.absences,
+            status: par.status,
+            attendences:
+              par.attendences?.map((who) => ({
+                time: who.time,
+                firstChoice: who.firstChoice,
+                user: convertUserToSummary2(who.user as IUser),
+              })) || [], // attendences가 없을 경우 빈 배열로 처리
+          })),
+        };
       };
 
       const result = [filterStudy(filteredVoteOne)];
