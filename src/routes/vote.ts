@@ -218,13 +218,14 @@ class VoteController {
     };
 
     try {
+      console.log("start", performance.now() / 1000);
       const filteredVote = await this.voteServiceInstance?.getFilteredVote(
         date,
         location,
         isBasic === "true",
         isTwoDay === "true",
       );
-
+      console.log("end", performance.now() / 1000);
       return res.status(200).json(filteredVote);
     } catch (err) {
       next(err);

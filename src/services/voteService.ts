@@ -185,13 +185,17 @@ export default class VoteService {
   ) {
     try {
       const STUDY_RESULT_HOUR = 23;
+      console.log("첫번째", performance.now() / 1000);
       const filteredVoteOne = await this.getVote(date);
+      console.log("두번째", performance.now() / 1000);
       const filteredVoteTwo = isTwoDay
         ? await this.getVote(dayjs(date).add(1, "day"))
         : null;
+      console.log("세번째", performance.now() / 1000);
       const user = await User.findOne({ uid: this.token.uid });
+      console.log("네번째", performance.now() / 1000);
       const studyPreference = user?.studyPreference;
-      console.log("sp", studyPreference);
+
       const filterStudy = (filteredVote: IVote) => {
         const voteDate = filteredVote?.date;
 
@@ -201,10 +205,6 @@ export default class VoteService {
             const placeLocation = participation.place?.location;
             return placeLocation === location || placeLocation === "전체";
           },
-        );
-
-        const freeStudy = filteredVote?.participations.find(
-          (par) => par.place?.brand === "자유 신청",
         );
 
         // 유저 정보 없는 참석자 제거
