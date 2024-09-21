@@ -106,6 +106,13 @@ class UserController {
         body("place").notEmpty().withMessage("place 입력 필요."),
         this.setPreference.bind(this),
       )
+      .patch(
+        body("id").notEmpty().withMessage("id 입력 필요."),
+        body("type").notEmpty().withMessage("type 입력 필요."),
+
+        this.patchPreference.bind(this),
+      )
+
       .get(this.getPreference.bind(this));
 
     this.router
@@ -389,7 +396,6 @@ class UserController {
     next: NextFunction,
   ) => {
     try {
-      console.log(34);
       const targetUser = await this.userServiceInstance?.getUserInfo([]);
       return res.status(200).json(targetUser);
     } catch (err) {
@@ -713,6 +719,23 @@ class UserController {
 
     try {
       await this.userServiceInstance?.setPreference(place, subPlace);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private patchPreference = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { id, type },
+    } = req;
+
+    try {
+      await this.userServiceInstance?.patchPreference(id, type);
       return res.status(200).end();
     } catch (err) {
       next(err);

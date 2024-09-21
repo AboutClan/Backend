@@ -177,24 +177,149 @@ export default class VoteService {
     }
   }
 
-  /** 인접한 지역들은 공통된 스터디 장소를 추가하고자 함. 해당 지역들 따로 저장해서 체크하면 좋을 거 같은데 일단은 하드코딩으로 해둘게요. */
-  async getFilteredVote(date: any, location: string) {
+  async getFilteredVote(
+    date: any,
+    location: string,
+    isBasic: boolean,
+    isTwoDay: boolean,
+  ) {
     try {
-      const filteredVote = await this.getVote(date);
+      const STUDY_RESULT_HOUR = 23;
+      const filteredVoteOne = await this.getVote(date);
+      const filteredVoteTwo = isTwoDay
+        ? await this.getVote(dayjs(date).add(1, "day"))
+        : null;
+      const user = await User.findOne({ uid: this.token.uid });
+      const studyPreference = user?.studyPreference;
+      console.log("sp", studyPreference);
+      const filterStudy = (filteredVote: IVote) => {
+        const voteDate = filteredVote?.date;
 
-      filteredVote.participations = filteredVote?.participations.filter(
-        (participation) => {
-          const placeLocation = participation.place?.location;
-          return placeLocation === location || placeLocation === "전체";
-        },
-      );
-      //유저 정보 없는 경우 제거
-      filteredVote?.participations?.forEach((par) => {
-        par.attendences = par?.attendences?.filter((who) => who?.user);
-      });
-      return filteredVote;
+        // 위치에 맞는 참여자 필터링 (location이나 '전체'에 해당하는 것만)
+        filteredVote.participations = filteredVote?.participations.filter(
+          (participation) => {
+            const placeLocation = participation.place?.location;
+            return placeLocation === location || placeLocation === "전체";
+          },
+        );
+
+        const freeStudy = filteredVote?.participations.find(
+          (par) => par.place?.brand === "자유 신청",
+        );
+
+        // 유저 정보 없는 참석자 제거
+        filteredVote.participations = filteredVote?.participations
+          .map((par) => ({
+            ...par,
+            attendences: par?.attendences?.filter((who) => who?.user),
+          }))
+          .filter((par) => par.place?.brand !== "자유 신청");
+
+        // isConfirmed 여부 확인
+        const currentDate = dayjs().add(9, "hour").startOf("day");
+        const currentHours = dayjs().add(9, "hour").hour();
+        const selectedDate = dayjs(voteDate).add(9, "hour").startOf("day");
+
+        const isConfirmed =
+          selectedDate.isBefore(currentDate) || // 선택한 날짜가 현재 날짜 이전인지
+          (selectedDate.isSame(currentDate) &&
+            currentHours >= STUDY_RESULT_HOUR); // 같은 날이고 특정 시간(STUDY_RESULT_HOUR)이 지났는지
+
+        // 정렬에 사용할 함수들
+        const getCount = (participation: IParticipation) => {
+          if (!isConfirmed) return participation?.attendences?.length;
+          return participation?.attendences?.filter((who) => who.firstChoice)
+            .length;
+        };
+
+        const getStatusPriority = (status?: string) => {
+          switch (status) {
+            case "open":
+              return 1;
+            case "free":
+              return 2;
+            default:
+              return 3;
+          }
+        };
+
+        const getPlacePriority = (placeId?: string) => {
+          if (!studyPreference?.place) return 3; // 선호 장소 없으면 기본 우선순위
+          if (placeId === studyPreference.place.toString()) return 1; // 메인 장소 우선순위
+          if (
+            (studyPreference.subPlace as string[])
+              .map((sub) => sub.toString())
+              .includes(placeId as string)
+          )
+            return 2; // 서브 장소 우선순위
+          return 3; // 그 외 우선순위
+        };
+
+        // 정렬 수행
+        filteredVote.participations = filteredVote.participations
+          .map((par) => {
+            const count = getCount(par); // getCount 호출을 한 번으로 줄임
+            const statusPriority = getStatusPriority(par.status);
+            const placePriority = getPlacePriority(par.place?._id.toString());
+            return {
+              ...par,
+              count,
+              statusPriority,
+              placePriority,
+            };
+          })
+          .sort((a, b) => {
+            // 상태 우선순위 비교
+            if (a.statusPriority !== b.statusPriority) {
+              return a.statusPriority - b.statusPriority;
+            }
+            // 참석자 수 비교
+            if (a.count !== b.count) {
+              return (b?.count as number) - (a?.count as number);
+            }
+            // 장소 우선순위 비교
+            return a.placePriority - b.placePriority;
+          })
+          .map(({ statusPriority, placePriority, count, ...rest }) => rest);
+
+        // 자유 신청 제거 (isConfirmed가 false인 경우)
+        if (!isConfirmed) {
+          filteredVote.participations = filteredVote.participations.filter(
+            (par) => par?.place?.brand !== "자유 신청",
+          );
+        }
+
+        // 기본 모드일 경우 상위 3개만 반환
+        if (isBasic) {
+          filteredVote.participations = filteredVote.participations.slice(0, 3);
+        }
+
+        return filteredVote;
+      };
+
+      const result = [filterStudy(filteredVoteOne)];
+      if (isTwoDay) {
+        result.push(filterStudy(filteredVoteTwo as IVote));
+      }
+
+      return result;
     } catch (err) {
-      throw new Error();
+      // 에러 메시지를 구체적으로 기록
+      throw new Error(`Error fetching filtered vote data`);
+    }
+  }
+  async getFilteredVoteOne(date: any, id: string) {
+    try {
+      const filteredVoteOne = await this.getVote(date);
+
+      const result = filteredVoteOne?.participations.find(
+        (par) => par.place?._id.toString() === id,
+      );
+
+      return result;
+    } catch (err) {
+      // 에러 메시지를 구체적으로 기록
+      throw new Error(`Error fetching filtered vote data`);
     }
   }
 

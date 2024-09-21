@@ -4,6 +4,7 @@ import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { Log } from "../db/models/log";
 import { Notice } from "../db/models/notice";
+import { NotificationSub } from "../db/models/notificationSub";
 import { Place } from "../db/models/place";
 import { Promotion } from "../db/models/promotion";
 import { IUser, restType, User } from "../db/models/user";
@@ -11,8 +12,6 @@ import { Vote } from "../db/models/vote";
 import { DatabaseError } from "../errors/DatabaseError";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { getProfile } from "../utils/oAuthUtils";
-import WebPushService from "./webPushService";
-import { NotificationSub } from "../db/models/notificationSub";
 
 const logger = require("../../logger");
 
@@ -455,6 +454,78 @@ export default class UserService {
         await Place.updateOne({ _id: placeId }, { $inc: { prefCnt: 1 } });
       });
       await Place.updateOne({ _id: place }, { $inc: { prefCnt: 1 } });
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    return;
+  }
+  async patchPreference(id: string, type: "main" | "sub") {
+    try {
+      const user = await User.findOne(
+        { uid: this.token.uid },
+        "studyPreference",
+      );
+
+      const isSameId = id === user?.studyPreference?.place?.toString();
+      const subPlaceIndex =
+        user?.studyPreference?.subPlace
+          ?.map((sub) => sub?.toString())
+          ?.indexOf(id) ?? -1;
+
+      if (
+        type === "main" ||
+        (!user?.studyPreference?.place && subPlaceIndex === -1)
+      ) {
+        if (user?.studyPreference?.place) {
+          const placeId = user.studyPreference.place;
+          await Place.updateOne(
+            { _id: placeId, prefCnt: { $gt: 0 } },
+            { $inc: { prefCnt: -1 } },
+          );
+        }
+
+        await User.updateOne(
+          { uid: this.token.uid },
+          {
+            $set: {
+              "studyPreference.place": isSameId ? null : id, // 명시적으로 place를 null로 설정
+            },
+          },
+        );
+
+        if (!isSameId) {
+          // 새로운 main place로 업데이트
+
+          // 새로운 main place의 prefCnt 증가
+          await Place.updateOne({ _id: id }, { $inc: { prefCnt: 1 } });
+        }
+      }
+
+      // type이 "sub"인 경우
+      else if (type === "sub") {
+        let subPlace = user?.studyPreference?.subPlace || [];
+
+        // subPlace에 이미 있는 경우 제거
+        if (subPlaceIndex > -1) {
+          subPlace.splice(subPlaceIndex, 1);
+          await Place.updateOne(
+            { _id: id, prefCnt: { $gt: 0 } },
+            { $inc: { prefCnt: -1 } },
+          );
+        }
+        // subPlace에 없는 경우 추가
+        else {
+          (subPlace as string[]).push(id);
+          await Place.updateOne({ _id: id }, { $inc: { prefCnt: 1 } });
+        }
+
+        // 유저의 studyPreference.subPlace 업데이트
+        await User.updateOne(
+          { uid: this.token.uid },
+          { studyPreference: { ...user?.studyPreference, subPlace } },
+        );
+      }
     } catch (err: any) {
       throw new Error(err);
     }

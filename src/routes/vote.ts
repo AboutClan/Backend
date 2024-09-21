@@ -69,6 +69,7 @@ class VoteController {
 
     this.router.route("/:date/week").get(this.getFilteredVoteByDate.bind(this));
 
+    this.router.route("/:date/one").get(this.getFilteredVoteOne.bind(this));
     this.router
       .route("/:date/absence")
       .get(this.getAbsence.bind(this))
@@ -206,13 +207,46 @@ class VoteController {
     next: NextFunction,
   ) => {
     const { date } = req;
-    let { location = "수원" } = req.query as { location: string };
+    let {
+      location = "수원",
+      isBasic,
+      isTwoDay,
+    } = req.query as {
+      location: string;
+      isBasic: string;
+      isTwoDay: string;
+    };
 
     try {
       const filteredVote = await this.voteServiceInstance?.getFilteredVote(
         date,
         location,
+        isBasic === "true",
+        isTwoDay === "true",
       );
+
+      return res.status(200).json(filteredVote);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private getFilteredVoteOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { date } = req;
+    let { id } = req.query as {
+      id: string;
+    };
+
+    try {
+      const filteredVote = await this.voteServiceInstance?.getFilteredVoteOne(
+        date,
+        id,
+      );
+
       return res.status(200).json(filteredVote);
     } catch (err) {
       next(err);
