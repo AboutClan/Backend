@@ -152,6 +152,11 @@ export default class AdminVoteService {
             );
           }
         });
+        participations?.forEach((participation) => {
+          participation.attendences = participation.attendences?.filter(
+            (attendance) => attendance.firstChoice === true,
+          );
+        });
 
         await vote?.save();
       }

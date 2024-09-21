@@ -13,16 +13,16 @@ export default class DailyCheckService {
       uid: this.token.uid,
     }).sort({ updatedAt: -1 });
 
-    if (dayjs().isSame(dayjs(findDailyCheck?.updatedAt), "date")) {
-      return "이미 출석체크를 완료했습니다.";
-    }
-
-    const validatedDailyCheck = DailyCheckZodSchema.parse({
-      uid: this.token.uid,
-      name: this.token.name,
-    });
-
-    await DailyCheck.create(validatedDailyCheck);
+    if (findDailyCheck?.updatedAt) {
+      if (dayjs().isSame(dayjs(findDailyCheck?.updatedAt), "date")) {
+        return "이미 출석체크를 완료했습니다.";
+      }
+      const validatedDailyCheck = DailyCheckZodSchema.parse({
+        uid: this.token.uid,
+        name: this.token.name,
+      });
+      await DailyCheck.create(validatedDailyCheck);
+    } else return "오류. 관리자에게 문의하세요!";
   }
 
   async getLog() {
