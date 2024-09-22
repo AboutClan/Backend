@@ -10,8 +10,9 @@ import {
   Vote,
 } from "../db/models/vote";
 import { IVoteStudyInfo } from "../types/vote";
+import { convertUserToSummary2 } from "../utils/convertUtils";
 import { now, strToDate } from "../utils/dateUtils";
-import { findOneVote } from "../utils/voteUtils";
+import { findOneVote, findTwoVote } from "../utils/voteUtils";
 
 export default class VoteService {
   private token: JWT;
@@ -128,35 +129,47 @@ export default class VoteService {
     }
   }
 
+  async createVote(date: any) {
+    let vote = await Vote.findOne({ date });
+    if (!vote) {
+      const places = await Place.find({ status: "active" });
+      const participants = places.map((place) => {
+        const isPrivate = place.brand === "자유 신청";
+        return {
+          place: place._id,
+          attendences: [],
+          absences: [],
+          invitations: [],
+          status: !isPrivate ? "pending" : "free",
+        } as any;
+      });
+
+      await Vote.create({
+        date,
+        participations: participants,
+      });
+    }
+  }
+
   async getVote(date: any): Promise<IVote> {
     try {
+      this.createVote(date);
       let vote = await findOneVote(date);
-
-      if (!vote) {
-        const places = await Place.find({ status: "active" });
-        const participants = places.map((place) => {
-          const isPrivate = place.brand === "자유 신청";
-          return {
-            place: place._id,
-            attendences: [],
-            absences: [],
-            invitations: [],
-            status: !isPrivate ? "pending" : "free",
-          } as any;
-        });
-
-        await Vote.create({
-          date,
-          participations: participants,
-        });
-
-        vote = await findOneVote(date);
-      }
 
       return vote as IVote;
     } catch (err) {
       throw new Error();
     }
+  }
+
+  async getTwoVote(date: any) {
+    const nextDay = new Date(date);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    this.createVote(date);
+    this.createVote(nextDay);
+    let vote = await findTwoVote(date);
+    return vote as IVote[];
   }
 
   async isVoting(date: any) {
@@ -185,17 +198,13 @@ export default class VoteService {
   ) {
     try {
       const STUDY_RESULT_HOUR = 23;
-      console.log("첫번째", performance.now() / 1000);
-      const filteredVoteOne = await this.getVote(date);
-      console.log("두번째", performance.now() / 1000);
-      const filteredVoteTwo = isTwoDay
-        ? await this.getVote(dayjs(date).add(1, "day"))
-        : null;
-      console.log("세번째", performance.now() / 1000);
+      const votes: IVote[] = await this.getTwoVote(date);
+      const filteredVoteOne = votes[0];
+      const filteredVoteTwo = votes[1];
+
       const user = await User.findOne({ uid: this.token.uid });
       console.log("네번째", performance.now() / 1000);
       const studyPreference = user?.studyPreference;
-
       const filterStudy = (filteredVote: IVote) => {
         const voteDate = filteredVote?.date;
 
@@ -294,7 +303,23 @@ export default class VoteService {
           filteredVote.participations = filteredVote.participations.slice(0, 3);
         }
 
-        return filteredVote;
+        return {
+          date: filteredVote.date,
+          participations: filteredVote.participations.map((par) => ({
+            place: par.place,
+            absences: par.absences,
+            status: par.status,
+            attendences:
+              par.attendences?.map((who) => ({
+                time: who.time,
+                firstChoice: who.firstChoice,
+                memo: who?.memo,
+                arrived: who?.arrived,
+                imageUrl: who?.imageUrl,
+                user: convertUserToSummary2(who.user as IUser),
+              })) || [], // attendences가 없을 경우 빈 배열로 처리
+          })),
+        };
       };
 
       const result = [filterStudy(filteredVoteOne)];
