@@ -12,7 +12,7 @@ import {
 import { IVoteStudyInfo } from "../types/vote";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { now, strToDate } from "../utils/dateUtils";
-import { findOneVote } from "../utils/voteUtils";
+import { findOneVote, findTwoVote } from "../utils/voteUtils";
 
 export default class VoteService {
   private token: JWT;
@@ -129,35 +129,47 @@ export default class VoteService {
     }
   }
 
+  async createVote(date: any) {
+    let vote = await Vote.findOne({ date });
+    if (!vote) {
+      const places = await Place.find({ status: "active" });
+      const participants = places.map((place) => {
+        const isPrivate = place.brand === "자유 신청";
+        return {
+          place: place._id,
+          attendences: [],
+          absences: [],
+          invitations: [],
+          status: !isPrivate ? "pending" : "free",
+        } as any;
+      });
+
+      await Vote.create({
+        date,
+        participations: participants,
+      });
+    }
+  }
+
   async getVote(date: any): Promise<IVote> {
     try {
+      this.createVote(date);
       let vote = await findOneVote(date);
-
-      if (!vote) {
-        const places = await Place.find({ status: "active" });
-        const participants = places.map((place) => {
-          const isPrivate = place.brand === "자유 신청";
-          return {
-            place: place._id,
-            attendences: [],
-            absences: [],
-            invitations: [],
-            status: !isPrivate ? "pending" : "free",
-          } as any;
-        });
-
-        await Vote.create({
-          date,
-          participations: participants,
-        });
-
-        vote = await findOneVote(date);
-      }
 
       return vote as IVote;
     } catch (err) {
       throw new Error();
     }
+  }
+
+  async getTwoVote(date: any) {
+    const nextDay = new Date(date);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    this.createVote(date);
+    this.createVote(nextDay);
+    let vote = await findTwoVote(date);
+    return vote as IVote[];
   }
 
   async isVoting(date: any) {
@@ -186,13 +198,12 @@ export default class VoteService {
   ) {
     try {
       const STUDY_RESULT_HOUR = 23;
-      const filteredVoteOne = await this.getVote(date);
-      const filteredVoteTwo = isTwoDay
-        ? await this.getVote(dayjs(date).add(1, "day"))
-        : null;
+      const votes: IVote[] = await this.getTwoVote(date);
+      const filteredVoteOne = votes[0];
+      const filteredVoteTwo = votes[1];
+
       const user = await User.findOne({ uid: this.token.uid });
       const studyPreference = user?.studyPreference;
-
       const filterStudy = (filteredVote: IVote) => {
         const voteDate = filteredVote?.date;
 
