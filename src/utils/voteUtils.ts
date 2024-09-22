@@ -11,8 +11,6 @@ export const findTwoVote = async (date: Date) => {
   const nextDay = new Date(date);
   nextDay.setDate(nextDay.getDate() + 1);
 
-  console.log(date);
-  console.log(nextDay);
   const votes = await Vote.find({
     date: {
       $gte: date,
