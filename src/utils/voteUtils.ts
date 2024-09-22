@@ -6,3 +6,20 @@ export const findOneVote = async (date: Date) =>
     "participations.attendences.user",
     "participations.absences.user",
   ]);
+
+export const findTwoVote = async (date: Date) => {
+  const nextDay = new Date(date);
+  nextDay.setDate(nextDay.getDate() + 1);
+
+  const votes = await Vote.find({
+    date: {
+      $gte: date,
+      $lte: nextDay, // 다음날 전까지의 데이터를 가져옴
+    },
+  }).populate([
+    "participations.place",
+    "participations.attendences.user",
+    "participations.absences.user",
+  ]);
+  return votes;
+};
