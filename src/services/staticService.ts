@@ -2,7 +2,7 @@ import { JWT } from "next-auth/jwt";
 import { Log } from "../db/models/log";
 import { User } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError";
-import e from "express";
+import { convertUserToSummary2 } from "../utils/convertUtils";
 
 export default class StaticService {
   private token: JWT;
@@ -76,7 +76,8 @@ export default class StaticService {
 
     const usersInSameLocation = await User.find({
       location: managerLocation,
-    }).select("uid name");
+      isActive: true,
+    });
 
     const selfStudy = await this.aggregateLogs(
       "개인 스터디 인증",
@@ -107,6 +108,7 @@ export default class StaticService {
         const userObj =
           typeof user.toJSON === "function" ? user.toJSON() : user;
         if (matched) return { ...userObj, [logField]: matched.count };
+
         return { ...userObj, [logField]: 0 };
       });
     };
@@ -116,13 +118,26 @@ export default class StaticService {
       selfStudy,
       "selfStudyCnt",
     );
-    updatedArr = mapUserData(updatedArr, scoreOnlyAttend, "attendCnt");
+
+    updatedArr = mapUserData(updatedArr, scoreOnlyAttend, "studyCnt");
     updatedArr = mapUserData(updatedArr, gather, "gatherCnt");
     updatedArr = mapUserData(updatedArr, group, "groupCnt");
 
     const cleanedArr = updatedArr.map((obj) => {
-      const { uid, ...rest } = obj;
-      return rest;
+      const { studyCnt, gatherCnt, selfStudyCnt, groupCnt, ...rest } = obj;
+      return {
+        user: {
+          ...convertUserToSummary2(rest),
+          registerDate: rest?.registerDate,
+          role: rest?.role,
+        },
+        attendInfo: {
+          studyCnt,
+          gatherCnt,
+          selfStudyCnt,
+          groupCnt,
+        },
+      };
     });
 
     return cleanedArr;

@@ -1,7 +1,7 @@
 import mongoose, { Document, model, Model, Schema } from "mongoose";
+import { z } from 'zod';
 import { IPlace } from "./place";
 import { InterestSchema, IRegistered, MajorSchema } from "./registered";
-import { z } from 'zod';
 
 // restType Zod schema
 const restZodSchema = z.object({
@@ -210,6 +210,7 @@ export const UserSchema: Schema<IUser> = new Schema({
       "previliged",
       "resting",
       "enthusiastic",
+      "support"
     ],
     default: "member",
   },
