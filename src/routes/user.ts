@@ -133,6 +133,14 @@ class UserController {
       );
 
     this.router
+      .route("/locationDetail")
+      .patch(
+        body("text").notEmpty().withMessage("text 입력 필요."),
+        body("lat").notEmpty().withMessage("lat 입력 필요."),
+        body("lon").notEmpty().withMessage("lon 입력 필요."),
+        this.patchLocationDetail.bind(this),
+      );
+    this.router
       .route("/belong")
       .patch(
         body("uid").notEmpty().withMessage("uid 입력 필요."),
@@ -840,6 +848,21 @@ class UserController {
     } = req;
     try {
       await this.userServiceInstance?.patchBelong(uid, belong);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+  private patchLocationDetail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { text, lat, lon },
+    } = req;
+    try {
+      await this.userServiceInstance?.patchLocationDetail(text, lat, lon);
       return res.status(200).end();
     } catch (err) {
       next(err);

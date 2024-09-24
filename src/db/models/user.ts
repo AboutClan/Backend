@@ -90,6 +90,12 @@ export interface preferenceType {
   subPlace: string[] | IPlace[];
 }
 
+export interface locationDetailType{
+   text: string
+    lat: number;
+    lon: number;
+}
+
 export interface IUser extends Document, IRegistered {
   registerDate: string;
   isActive?: boolean;
@@ -106,7 +112,8 @@ export interface IUser extends Document, IRegistered {
   belong?: string;
   monthScore: number;
   isPrivate?: boolean;
-  instagram?:string
+  instagram?: string;
+  locationDetail: locationDetailType
 }
 
 export const restSchema: Schema<restType> = new Schema({
@@ -146,6 +153,24 @@ export const preferenceSchema: Schema<preferenceType> = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Place",
     },
+  },
+  {
+    _id: false,
+    timestamps: false
+  }
+);
+export const locationDetailSchema: Schema<locationDetailType> = new Schema(
+  {
+    text: {
+      type: String,
+    },
+    lat: {
+      type: Number,
+      
+    },
+    lon: {
+      type:Number
+    }
   },
   {
     _id: false,
@@ -255,6 +280,9 @@ export const UserSchema: Schema<IUser> = new Schema({
   like: {
     type: Number,
     default: 0,
+  },
+  locationDetail: {
+    type:locationDetailSchema
   },
   instagram: {
     type: String,

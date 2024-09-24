@@ -689,6 +689,14 @@ export default class UserService {
 
     return;
   }
+  async patchLocationDetail(text: string, lat: number, lon: number) {
+    const updated = await User.updateOne(
+      { uid: this.token.uid },
+      { locationDetail: { text, lat, lon } },
+    );
+    if (!updated) throw new DatabaseError("update belong failed");
+    return;
+  }
 
   async getMonthScoreLog() {
     // 현재 날짜를 구합니다.
