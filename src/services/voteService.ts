@@ -203,7 +203,7 @@ export default class VoteService {
       const filteredVoteTwo = votes[1];
 
       const user = await User.findOne({ uid: this.token.uid });
-      console.log("네번째", performance.now() / 1000);
+
       const studyPreference = user?.studyPreference;
       const filterStudy = (filteredVote: IVote) => {
         const voteDate = filteredVote?.date;

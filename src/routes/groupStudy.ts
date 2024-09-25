@@ -185,7 +185,6 @@ class GroupStudyController {
 
       const userParticipatingGroupStudy =
         await this.groupStudyServiceInstance.getUserParticipatingGroupStudy();
-
       if (cursorNum === 0) {
         const idArr = groupStudyData.map((item) => item.id);
         const myArr =

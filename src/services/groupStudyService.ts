@@ -7,9 +7,9 @@ import {
   subCommentType,
 } from "../db/models/groupStudy";
 import { User } from "../db/models/user";
-import WebPushService from "./webPushService";
-import { C_simpleUser } from "../utils/constants";
 import { DatabaseError } from "../errors/DatabaseError";
+import { C_simpleUser } from "../utils/constants";
+import WebPushService from "./webPushService";
 
 export default class GroupStudyService {
   private token: JWT;
