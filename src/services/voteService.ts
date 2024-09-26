@@ -232,7 +232,7 @@ export default class VoteService {
         const isConfirmed =
           selectedDate.isBefore(currentDate) || // 선택한 날짜가 현재 날짜 이전인지
           (selectedDate.isSame(currentDate) &&
-            currentHours < STUDY_RESULT_HOUR); // 같은 날이고 특정 시간(STUDY_RESULT_HOUR)이 지났는지
+            currentHours >= STUDY_RESULT_HOUR); // 같은 날이고 특정 시간(STUDY_RESULT_HOUR)이 지났는지
 
         // 정렬에 사용할 함수들
         const getCount = (participation: IParticipation) => {
