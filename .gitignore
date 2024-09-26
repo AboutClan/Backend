@@ -4,3 +4,4 @@ dist/*
 *.http
 logs/*
 /src/key
+newrelic_agent.log
