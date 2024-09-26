@@ -46,7 +46,9 @@ export const voteResult = schedule.scheduleJob("0 23 * * *", async () => {
     const webPushServiceInstance = new WebPushService();
     const fcmServiceInstance = new FcmService();
 
-    await adminVoteServiceInstance.confirm(dayjs().toDate().toString());
+    await adminVoteServiceInstance.confirm(
+      dayjs().subtract(1, "day").toDate().toString(),
+    );
     await webPushServiceInstance.sendNotificationVoteResult();
     await fcmServiceInstance.sendNotificationVoteResult();
 
@@ -56,6 +58,7 @@ export const voteResult = schedule.scheduleJob("0 23 * * *", async () => {
   }
 });
 
+console.log(dayjs().subtract(1, "day").toDate().toString());
 //매월 monthScore 초기화
 export const initMonthScore = schedule.scheduleJob("0 0 1 * *", async () => {
   try {
