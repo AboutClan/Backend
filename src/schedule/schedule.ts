@@ -58,7 +58,6 @@ export const voteResult = schedule.scheduleJob("0 23 * * *", async () => {
   }
 });
 
-console.log(dayjs().subtract(1, "day").toDate().toString());
 //매월 monthScore 초기화
 export const initMonthScore = schedule.scheduleJob("0 0 1 * *", async () => {
   try {
