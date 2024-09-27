@@ -59,6 +59,7 @@ export default class AdminVoteService {
   async confirm(dateStr: string) {
     const date = strToDate(dateStr).toDate();
     const vote = await Vote.findOne({ date });
+
     const failure = new Set();
 
     const participations = vote?.participations;
