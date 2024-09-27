@@ -51,7 +51,7 @@ export const voteResult = schedule.scheduleJob("0 23 * * *", async () => {
     await webPushServiceInstance.sendNotificationVoteResult();
     await fcmServiceInstance.sendNotificationVoteResult();
 
-    console.log("vote result succeess");
+    console.log("vote result succeess.");
   } catch (err: any) {
     throw new Error(err);
   }
