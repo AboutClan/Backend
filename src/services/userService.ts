@@ -12,13 +12,17 @@ import { Vote } from "../db/models/vote";
 import { DatabaseError } from "../errors/DatabaseError";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { getProfile } from "../utils/oAuthUtils";
+import AdminVoteService from "./adminVoteServices";
 
 const logger = require("../../logger");
 
 export default class UserService {
   private token: JWT;
+  private adminVoteServiceInstance;
+
   constructor(token?: JWT) {
     this.token = token as JWT;
+    this.adminVoteServiceInstance = new AdminVoteService();
   }
 
   async decodeByAES256(encodedTel: string) {
@@ -752,18 +756,8 @@ export default class UserService {
   }
 
   async test() {
-    const managers = await User.find({ role: "manager" });
-    const managerUidList = new Array();
-
-    const location = "수원";
-
-    managers.forEach((manager) => {
-      if (manager.location == location) managerUidList.push(manager.uid);
-    });
-
-    const managerNotiInfo = await NotificationSub.find({
-      uid: { $in: managerUidList },
-    });
+    const date = dayjs().format("YYYY-MM-DD");
+    await this.adminVoteServiceInstance.confirm(date);
   }
 }
 
