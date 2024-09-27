@@ -46,9 +46,8 @@ export const voteResult = schedule.scheduleJob("0 23 * * *", async () => {
     const webPushServiceInstance = new WebPushService();
     const fcmServiceInstance = new FcmService();
 
-    await adminVoteServiceInstance.confirm(
-      dayjs().subtract(1, "day").toDate().toString(),
-    );
+    const date = dayjs().format("YYYY-MM-DD");
+    await adminVoteServiceInstance.confirm(date);
     await webPushServiceInstance.sendNotificationVoteResult();
     await fcmServiceInstance.sendNotificationVoteResult();
 
