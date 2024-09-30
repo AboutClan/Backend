@@ -57,12 +57,30 @@ class App {
   }
 
   setupMiddlewares() {
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://about-aboutclub20s-projects.vercel.app",
+      "https://studyabout.herokuapp.com/",
+    ]; // 허용하고자 하는 URL 목록을 배열로 작성
+
+    const corsOptions = {
+      origin: function (origin: any, callback: any) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true, // 쿠키와 인증 정보를 허용하려면 설정
+    };
+
     // middleware 설정
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(bodyParser.json());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(cors());
+    this.app.use(cors(corsOptions));
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(dbSet);
