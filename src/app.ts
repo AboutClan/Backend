@@ -61,7 +61,7 @@ class App {
       "http://localhost:3000",
       "http://localhost:3001",
       "https://about-aboutclub20s-projects.vercel.app",
-      "https://studyabout.herokuapp.com/",
+      "https://studyabout.herokuapp.com",
     ]; // 허용하고자 하는 URL 목록을 배열로 작성
 
     const corsOptions = {
