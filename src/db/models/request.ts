@@ -15,7 +15,7 @@ export const RestZodSchema = z.object({
 export const RequestZodSchema = z.object({
   category: z.string(),
   title: z.string().optional(),
-  location: z.string(),
+  location: z.string().optional(),
   writer: z.string(),
   content: z.string(),
   rest: RestZodSchema.optional()
