@@ -97,6 +97,7 @@ export interface locationDetailType{
 }
 
 export interface IUser extends Document, IRegistered {
+  _id: string;
   registerDate: string;
   isActive?: boolean;
   point: number;
@@ -179,6 +180,9 @@ export const locationDetailSchema: Schema<locationDetailType> = new Schema(
 );
 
 export const UserSchema: Schema<IUser> = new Schema({
+  _id:{
+    type: String,
+  },
   uid: {
     type: String,
     required: true,
