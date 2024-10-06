@@ -39,6 +39,7 @@ const feed = require("./routes/feed");
 const fcm = require("./routes/fcm");
 const chat = require("./routes/chat");
 const statics = require("./routes/static");
+const realtime = require("./routes/realtime");
 
 //swagger
 const swaggerUi = require("swagger-ui-express");
@@ -113,6 +114,7 @@ class App {
     this.app.use("/feed", feed);
     this.app.use("/chat", chat);
     this.app.use("/static", statics);
+    this.app.use("/realtime", realtime);
     this.app.use(ErrorHandler);
   }
 

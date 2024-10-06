@@ -24,6 +24,7 @@ import UserService from "../services/userService";
 import VoteService from "../services/voteService";
 import WebPushService from "../services/webPushService";
 import MessageService from "../services/chatService";
+import RealtimeService from "../services/realtimeService";
 
 export interface tokenRequest extends Request {
   token: JWT | null;
@@ -62,6 +63,7 @@ declare global {
       feedServiceInstance?: FeedService;
       fcmServiceInstance?: FcmService;
       messageServiceInstance?: MessageService;
+      realtimeServiceInstance?: RealtimeService;
     }
   }
 }
