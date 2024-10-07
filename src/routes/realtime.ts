@@ -78,8 +78,7 @@ class StudyController {
     next: NextFunction,
   ) {
     try {
-      const { metadata } = req.body;
-      const studyData = JSON.parse(metadata);
+      const studyData = req.body;
 
       console.log("arrived", studyData);
       const updatedStudy =
@@ -96,8 +95,7 @@ class StudyController {
     next: NextFunction,
   ) {
     try {
-      const { metadata } = req.body;
-      const studyData = JSON.parse(metadata);
+      const studyData = req.body;
 
       const newStudy =
         await this.realtimeServiceInstance.directAttendance(studyData);
@@ -110,6 +108,7 @@ class StudyController {
   private async updateStudy(req: Request, res: Response, next: NextFunction) {
     try {
       const studyData = req.body;
+
       const updatedStudy =
         await this.realtimeServiceInstance.updateStudy(studyData);
       if (updatedStudy) {
