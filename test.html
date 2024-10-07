@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Form</title>
+  </head>
+  <body>
+    <h1>Test Attendance Form</h1>
+    <form
+      id="attendanceForm"
+      action="http://localhost:3001/realtime/attendance"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <label for="memo">Memo:</label>
+      <input type="text" id="memo" name="memo" value="dfsaf" /><br /><br />
+
+      <label for="status">Status:</label>
+      <input type="text" id="status" name="status" value="solo" /><br /><br />
+
+      <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <script>
+      function submitForm() {
+        const form = document.getElementById("attendanceForm");
+
+        const formData = new FormData();
+
+        formData.append("memo", "hello");
+        formData.append("status", "solo");
+
+        fetch(form.action, {
+          method: "POST",
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..ObMw8JUtk2ZEFWJH.7-zYklcO9RXBTubBRr-c8MV81u7hVL-opGpRj5yA3p7lRI1RY8MQcD8RG0DMsUQb-3nDkvMiV8tfwtPUMpAEV2C9iWBSH8ExHIiMB1mSIam-LVPrtdx0qUWXX1AiQVNwzsXE1lf07RtckJ57Hqu39BxuwqIAo-l-u2dwEKOOyu0URvQ_tfGd99zkojNO_dBhZbC7t4aCC-S2dj6fT-4PUAub4KEM_l-YkKJhOAAB-92X0DXjk-El0f18ZlEFTpRPXKgL2s8AQTMBlWUHfVzSXjTZDX937D_nc_xwiQLL_ZxIB5m0FnrDUeKnh7PB9GdSBXZA9Qg5UUgQoiD2shhS9W-oxn29Jq_mVoFJsI98rKsdcHBvO3rBJrp0d6e-D0MBtNvjTV3S_vlilpDovHUI1nCFgaqtU-wTtfIqTceEsF6OLpAeEGCncqsXUYMNrWJBAaPms1mK-eyJCvzCXCDbxQFH8S61OlG7UIs-bR_M4YYJVe-OgcHlKeX8pdczfncrYEmkp7s5FbvrtJ88Sok2_pFkyF3EiUvWUgJ7X4pxYP1K6k0ED-Djv9_7MmMb-oqsM3qnK9rmsyA2RAvGnJu6zq-MyTFGtkNt6R7mmeuJHVgNirZDmBzCPbHKsTYic_12mGC_Ek_BxjmcYJIdDMin7tzT-vTtLfvm2oM.i6nzZyrCr8U4SVIp6BkKTQ",
+          },
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => console.log("Success:", data))
+          .catch((error) => console.error("Error:", error));
+      }
+    </script>
+  </body>
+</html>
