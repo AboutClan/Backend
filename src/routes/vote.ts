@@ -82,11 +82,10 @@ class VoteController {
         this.setAbsence.bind(this),
       );
 
-    this.router.route("/:date/arrived").get(this.getArrived.bind(this)).patch(
-      body("memo"),
-
-      this.patchArrive.bind(this),
-    );
+    this.router
+      .route("/:date/arrived")
+      .get(this.getArrived.bind(this))
+      .patch(body("memo"), body("endHour"), this.patchArrive.bind(this));
 
     this.router.route("/:date/confirm").patch(this.patchConfirm.bind(this));
 
@@ -218,14 +217,13 @@ class VoteController {
     };
 
     try {
-    
       const filteredVote = await this.voteServiceInstance?.getFilteredVote(
         date,
         location,
         isBasic === "true",
         isTwoDay === "true",
       );
-     
+
       return res.status(200).json(filteredVote);
     } catch (err) {
       next(err);
@@ -375,11 +373,15 @@ class VoteController {
   ) => {
     const {
       date,
-      body: { memo = "" },
+      body: { memo = "", endHour },
     } = req;
-
+    console.log("arr", memo, endHour);
     try {
-      const result = await this.voteServiceInstance?.patchArrive(date, memo);
+      const result = await this.voteServiceInstance?.patchArrive(
+        date,
+        memo,
+        endHour,
+      );
       return res.status(200).json(result);
     } catch (err) {
       next(err);

@@ -1,23 +1,23 @@
 import mongoose, {
   Model,
-  Schema,
-  StringExpressionOperatorReturningBoolean,
+  Schema
 } from "mongoose";
+import { z } from "zod";
 import { IUser } from "./user";
-import {z} from "zod";
 
 export const CollectionZodSchema = z.object({
   user: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
   type: z.enum(["alphabet"]).default("alphabet"),
   collects:  z.array(z.string()),
-  collectCnt: z.number()
-  
+  collectCnt: z.number(),
+  stamps:z.number()
 })
 
 export interface ICollection {
   user: string | IUser;
   type: string;
   collects: string[];
+  stamps:number
   collectCnt: number;
 }
 
@@ -30,6 +30,10 @@ const colectionSchema: Schema<ICollection> = new Schema(
     type: {
       type: String,
       enum: ["alphabet"],
+    },
+    stamps:{
+      type: Number,
+      default:0,
     },
     collects: {
       type: [String],

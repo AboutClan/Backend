@@ -1,6 +1,4 @@
-import { DatabaseError } from "../errors/DatabaseError"; // 에러 처리 클래스 (커스텀 에러)
 import { JWT } from "next-auth/jwt";
-import dayjs from "dayjs";
 import {
   IRealtime,
   IRealtimeUser,
@@ -8,9 +6,8 @@ import {
   RealtimeModel,
   RealtimeUserZodSchema,
 } from "../db/models/realtime";
-import { ValidationError } from "../errors/ValidationError";
+import { DatabaseError } from "../errors/DatabaseError"; // 에러 처리 클래스 (커스텀 에러)
 import ImageService from "./imageService";
-import mongoose from "mongoose";
 
 export default class RealtimeService {
   private token: JWT;
@@ -64,6 +61,7 @@ export default class RealtimeService {
   // 출석 상태로 변경
   async markAttendance(studyData: Partial<IRealtimeUser>) {
     // 데이터 유효성 검사
+    console.log("study", studyData, studyData.memo);
 
     if (studyData.image) {
       const images = await this.imageServiceInstance.uploadImgCom(
@@ -73,7 +71,6 @@ export default class RealtimeService {
 
       studyData.image = images;
     }
-
     const validatedStudy = RealtimeAttZodSchema.parse(studyData);
 
     const todayData = await this.getTodayData();

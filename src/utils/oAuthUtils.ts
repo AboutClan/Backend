@@ -1,9 +1,9 @@
 import axios, { AxiosError } from "axios";
+import { Dayjs } from "dayjs";
 import { JWT } from "next-auth/jwt";
+import dbConnect from "../db/conn";
 import { Account } from "../db/models/account";
 import { User } from "../db/models/user";
-import dbConnect from "../db/conn";
-import { Dayjs } from "dayjs";
 
 export interface kakaoProfileInfo {
   name: string;

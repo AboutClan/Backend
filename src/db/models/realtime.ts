@@ -1,13 +1,12 @@
-import mongoose, { Schema, Document, Model, ObjectId, Mongoose } from "mongoose";
+import mongoose, { Document, Model, ObjectId, Schema } from "mongoose";
 import { z } from "zod";
-import { IUser } from './user';
 
 
 const PlaceSchema = z.object({
   lat: z.number(),
   lon: z.number(),
   text: z.string(),
-  location: z.string(),
+ 
 });
 
 const TimeSchema = z.object({
@@ -37,7 +36,7 @@ export interface IPlace{
   lat: number;
   lon: number;
   text: string;
-  location: string;
+ 
 }
 
 export interface ITime{
@@ -65,7 +64,7 @@ const placeSchema: Schema<IPlace> = new Schema({
   lat: { type: Number, required: true },
   lon: { type: Number, required: true },
   text: { type: String, required: true },
-  location: { type: String, required: true },
+
 });
 
 const timeSchema: Schema<ITime> = new Schema({

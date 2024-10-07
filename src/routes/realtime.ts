@@ -48,6 +48,7 @@ class StudyController {
   ) {
     try {
       const studyData = req.body;
+
       const newStudy =
         await this.realtimeServiceInstance.createBasicVote(studyData);
       return res.status(201).json(newStudy);
@@ -72,6 +73,7 @@ class StudyController {
   ) {
     try {
       const studyData = req.body;
+      console.log("arrived", studyData);
       const updatedStudy =
         await this.realtimeServiceInstance.markAttendance(studyData);
       return res.status(200).json(updatedStudy);

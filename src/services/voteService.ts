@@ -1,6 +1,8 @@
 import dayjs, { Dayjs } from "dayjs";
 import { JWT } from "next-auth/jwt";
+import { CollectionZodSchema } from "../db/models/collection";
 import { IPlace, Place } from "../db/models/place";
+import { RealtimeModel } from "../db/models/realtime";
 import { IUser, User } from "../db/models/user";
 import {
   IAbsence,
@@ -205,12 +207,14 @@ export default class VoteService {
       const user = await User.findOne({ uid: this.token.uid });
 
       const studyPreference = user?.studyPreference;
+
       const filterStudy = (filteredVote: IVote) => {
         const voteDate = filteredVote?.date;
 
         // 위치에 맞는 참여자 필터링 (location이나 '전체'에 해당하는 것만)
         filteredVote.participations = filteredVote?.participations.filter(
           (participation) => {
+            if (location === "전체") return true;
             const placeLocation = participation.place?.location;
             return placeLocation === location || placeLocation === "전체";
           },
@@ -254,13 +258,17 @@ export default class VoteService {
 
         const getPlacePriority = (placeId?: string) => {
           if (!studyPreference?.place) return 3; // 선호 장소 없으면 기본 우선순위
+
           if (placeId === studyPreference.place.toString()) return 1; // 메인 장소 우선순위
+
           if (
             (studyPreference.subPlace as string[])
               .map((sub) => sub.toString())
               .includes(placeId as string)
-          )
+          ) {
             return 2; // 서브 장소 우선순위
+          }
+
           return 3; // 그 외 우선순위
         };
 
@@ -268,8 +276,11 @@ export default class VoteService {
         filteredVote.participations = filteredVote.participations
           .map((par) => {
             const count = getCount(par); // getCount 호출을 한 번으로 줄임
+
             const statusPriority = getStatusPriority(par.status);
+
             const placePriority = getPlacePriority(par.place?._id.toString());
+
             return {
               ...par,
               count,
@@ -291,18 +302,14 @@ export default class VoteService {
           })
           .map(({ statusPriority, placePriority, count, ...rest }) => rest);
 
-        // 자유 신청 제거 (isConfirmed가 false인 경우)
-        if (!isConfirmed) {
-          filteredVote.participations = filteredVote.participations.filter(
-            (par) => par?.place?.brand !== "자유 신청",
-          );
-        }
+        filteredVote.participations = filteredVote.participations.filter(
+          (par) => par?.place?.brand !== "자유 신청",
+        );
 
         // 기본 모드일 경우 상위 3개만 반환
         if (isBasic) {
           filteredVote.participations = filteredVote.participations.slice(0, 3);
         }
-
         return {
           date: filteredVote.date,
           participations: filteredVote.participations.map((par) => ({
@@ -322,9 +329,27 @@ export default class VoteService {
         };
       };
 
-      const result = [filterStudy(filteredVoteOne)];
+      const data = await RealtimeModel.findOne({ date });
+
+      if (!data) {
+        await RealtimeModel.create({ date });
+      }
+
+      const realTime = data
+        ? !isBasic && !isTwoDay
+          ? data?.userList
+          : data?.userList?.filter(
+              (user) => user?.user.toString() === this.token.id.toString(),
+            )
+        : [];
+
+      const result = [{ ...filterStudy(filteredVoteOne), realTime }];
+
       if (isTwoDay) {
-        result.push(filterStudy(filteredVoteTwo as IVote));
+        result.push({
+          ...filterStudy(filteredVoteTwo as IVote),
+          realTime: undefined,
+        });
       }
 
       return result;
@@ -492,7 +517,11 @@ export default class VoteService {
         (participation: IParticipation) => {
           const placeId = (participation.place as IPlace)._id.toString();
           const subPlaceIdArr = subPlace;
+
           if (placeId === place) {
+            if (participation.status === "dismissed") {
+              participation.status = "free";
+            }
             return {
               ...participation,
               attendences: [
@@ -509,6 +538,7 @@ export default class VoteService {
               ],
             };
           }
+
           return participation;
         },
       );
@@ -674,19 +704,31 @@ export default class VoteService {
     return null;
   }
 
-  async patchArrive(date: any, memo: any) {
+  async patchArrive(date: any, memo: any, endHour: any) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
-
+    console.log(1444, date, memo, endHour);
+    const validatedCollection = CollectionZodSchema.parse({
+      user: this.token.id,
+      collects: [],
+      collectCnt: 0,
+      stamps: 0,
+    });
+    console.log(52, endHour);
     try {
+      console.log(5442, endHour);
       const currentTime = now().add(9, "hour");
 
       vote.participations.forEach((participation: any) => {
+        console.log(2444, participation);
         participation.attendences.forEach((att: any) => {
           if (
             (att.user as IUser)._id?.toString() === this.token.id?.toString() &&
             att?.firstChoice
           ) {
+            console.log("tttt");
+            console.log("aa", att.time.end);
+            att.time.end = endHour;
             att.arrived = currentTime.toDate();
             //memo가 빈문자열인 경우는 출석이 아닌 개인 스터디 신청에서 사용한 경우
             if (memo) att.memo = memo;

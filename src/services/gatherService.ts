@@ -1,5 +1,4 @@
 import { JWT } from "next-auth/jwt";
-import { Chat } from "../db/models/chat";
 import { Counter } from "../db/models/counter";
 import {
   Gather,
@@ -10,9 +9,9 @@ import {
 import { User } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError";
 import { C_simpleUser } from "../utils/constants";
+import ChatService from "./chatService";
 import FcmService from "./fcmService";
 import WebPushService from "./webPushService";
-import ChatService from "./chatService";
 
 const logger = require("../../logger");
 
@@ -59,7 +58,7 @@ export default class GatherService {
       })
       .sort({ id: -1 })
       .limit(3);
-
+    
     return gatherData;
   }
 

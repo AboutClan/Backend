@@ -1,7 +1,15 @@
+import { RealtimeModel } from "../db/models/realtime";
 import { Vote } from "../db/models/vote";
 
 export const findOneVote = async (date: Date) =>
   await Vote.findOne({ date }).populate([
+    "participations.place",
+    "participations.attendences.user",
+    "participations.absences.user",
+  ]);
+
+export const findOneRealTime = async (date: Date) =>
+  await RealtimeModel.findOne({ date }).populate([
     "participations.place",
     "participations.attendences.user",
     "participations.absences.user",

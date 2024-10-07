@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 
 import CollectionService from "../services/collectionService";
 
@@ -21,7 +21,7 @@ class CollectionController {
 
     // 라우트 핸들러
     this.router.get("/alphabet", this.getCollection.bind(this));
-    this.router.patch("/alphabet", this.setCollection.bind(this));
+    this.router.patch("/alphabet", this.setCollectionStamp.bind(this));
     this.router.patch("/alphabet/change", this.changeCollection.bind(this));
     this.router.post(
       "/alphabet/completed",
@@ -50,6 +50,21 @@ class CollectionController {
     }
   }
 
+  private async setCollectionStamp(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const {
+      body: {},
+    } = req;
+    try {
+      const result = await this.collectionServiceInstance?.setCollectionStamp();
+      res.status(200).json(result);
+    } catch (err: any) {
+      next(err);
+    }
+  }
   private async setCollection(req: Request, res: Response, next: NextFunction) {
     const {
       body: { alphabet },

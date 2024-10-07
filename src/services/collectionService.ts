@@ -1,12 +1,75 @@
 import { JWT } from "next-auth/jwt";
 import { Collection, CollectionZodSchema } from "../db/models/collection";
-import { User } from "../db/models/user";
 import { Request } from "../db/models/request";
+import { User } from "../db/models/user";
 const ALPHABET_COLLECTION = ["A", "B", "O", "U", "T"];
 export default class CollectionService {
   private token: JWT;
   constructor(token?: JWT) {
     this.token = token as JWT;
+  }
+
+  async setCollectionStamp() {
+    const validatedCollection = CollectionZodSchema.parse({
+      user: this.token.id,
+      collectCnt: 0,
+      stamps: 0,
+    });
+
+    const currentCollection = await Collection.findOne({
+      user: this.token.id,
+    });
+    const currentStamps = currentCollection?.stamps ?? 0;
+
+    let updatedStamps = currentStamps;
+    let updatedAlphabet = null;
+
+    if (currentStamps < 5) {
+      await Collection.findOneAndUpdate(
+        { user: this.token.id },
+        {
+          $inc: { stamps: 1 }, // stamps 값을 1 증가
+          $setOnInsert: {
+            user: validatedCollection.user,
+            collectCnt: validatedCollection.collectCnt,
+            stamps: validatedCollection.stamps,
+          },
+        },
+        { upsert: true, new: true },
+      );
+      updatedStamps++;
+    }
+
+    const getRandomAlphabet = (percent: number) => {
+      const randomValue = Math.random();
+
+      if (randomValue <= percent / 100) {
+        const randomIdx = Math.floor(Math.random() * 5);
+        const alphabet = ALPHABET_COLLECTION[randomIdx];
+        return alphabet;
+      }
+      return null;
+    };
+    // stamps가 5인 경우에만 alphabet을 추가합니다
+    if (currentCollection?.stamps === 4) {
+      const alphabet = getRandomAlphabet(20);
+      // stamps가 4인 경우 1 증가 후 5가 되므로 alphabet을 추가
+      await Collection.findOneAndUpdate(
+        { user: this.token.id },
+        {
+          $push: { collects: alphabet }, // alphabet을 collects 배열에 추가
+          $inc: { collectCnt: 1 }, // collectCnt 값을 1 증가
+        },
+        { new: true },
+      );
+      updatedAlphabet = alphabet;
+      updatedStamps = 0;
+    }
+
+    return {
+      alphabet: updatedAlphabet, // alphabet을 얻었으면 반환하고, 그렇지 않으면 null
+      stamps: updatedStamps, // 현재 stamps에서 1 증가한 값 반환
+    };
   }
 
   async setCollection(alphabet: string) {
