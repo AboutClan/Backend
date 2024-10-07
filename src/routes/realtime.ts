@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
 import RealtimeService from "../services/realtimeService";
+import multer from "multer";
+
+// multer 설정: 메모리에 파일 저장 (또는 `dest` 옵션을 사용하여 디스크에 저장)
+const upload = multer({ storage: multer.memoryStorage() });
 
 class StudyController {
   public router: Router;
@@ -23,11 +27,13 @@ class StudyController {
       .patch(this.updateStudy.bind(this));
     this.router.route("/basicVote").post(this.createBasicVote.bind(this));
 
-    this.router.route("/attendance").post(this.markAttendance.bind(this));
+    this.router
+      .route("/attendance")
+      .post(upload.none(), this.markAttendance.bind(this));
 
     this.router
       .route("/directAttendance")
-      .post(this.directAttendance.bind(this));
+      .post(upload.none(), this.directAttendance.bind(this));
   }
 
   private async createStudyServiceInstance(
@@ -48,6 +54,7 @@ class StudyController {
   ) {
     try {
       const studyData = req.body;
+
       const newStudy =
         await this.realtimeServiceInstance.createBasicVote(studyData);
       return res.status(201).json(newStudy);
@@ -71,7 +78,9 @@ class StudyController {
     next: NextFunction,
   ) {
     try {
-      const studyData = req.body;
+      const { metadata } = req.body;
+      const studyData = JSON.parse(metadata);
+
       const updatedStudy =
         await this.realtimeServiceInstance.markAttendance(studyData);
       return res.status(200).json(updatedStudy);
@@ -86,7 +95,9 @@ class StudyController {
     next: NextFunction,
   ) {
     try {
-      const studyData = req.body;
+      const { metadata } = req.body;
+      const studyData = JSON.parse(metadata);
+
       const newStudy =
         await this.realtimeServiceInstance.directAttendance(studyData);
       return res.status(201).json(newStudy);
