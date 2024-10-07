@@ -79,8 +79,7 @@ class StudyController {
   ) {
     try {
       const studyData = req.body;
-
-      console.log("arrived", studyData);
+      console.log(222, studyData);
       const updatedStudy =
         await this.realtimeServiceInstance.markAttendance(studyData);
       return res.status(200).json(updatedStudy);

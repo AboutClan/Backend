@@ -29,6 +29,16 @@ export const convertUsersToSummary = (users: IUser[]): IUserSummary[] => {
     };
   });
 };
+export const convertUserToSummary = (user: IUser): IUserSummary => {
+  const { avatar, name, profileImage, uid, _id } = user;
+  return {
+    avatar,
+    name,
+    profileImage,
+    _id,
+    uid,
+  };
+};
 
 export const convertUserToSummary2 = (user: IUser): IUserSummary2 => {
   const {

@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 import { JWT } from "next-auth/jwt";
-import { CollectionZodSchema } from "../db/models/collection";
+import { Collection, CollectionZodSchema } from "../db/models/collection";
 import { IPlace, Place } from "../db/models/place";
 import { RealtimeModel } from "../db/models/realtime";
 import { IUser, User } from "../db/models/user";
@@ -15,7 +15,7 @@ import { IVoteStudyInfo } from "../types/vote";
 import { convertUserToSummary2 } from "../utils/convertUtils";
 import { now, strToDate } from "../utils/dateUtils";
 import { findOneVote, findTwoVote } from "../utils/voteUtils";
-
+import { ALPHABET_COLLECTION } from "./collectionService";
 export default class VoteService {
   private token: JWT;
   constructor(token?: JWT) {
@@ -328,19 +328,30 @@ export default class VoteService {
           })),
         };
       };
-
-      const data = await RealtimeModel.findOne({ date });
+      console.log(25);
+      const data = await RealtimeModel.findOne({ date })
+        .populate(["userList.user"])
+        .lean();
 
       if (!data) {
         await RealtimeModel.create({ date });
       }
-
+      console.log("data", data);
       const realTime = data
         ? !isBasic && !isTwoDay
-          ? data?.userList
-          : data?.userList?.filter(
-              (user) => user?.user.toString() === this.token.id.toString(),
-            )
+          ? data?.userList?.map((props) => ({
+              ...props,
+              user: convertUserToSummary2(props.user as IUser),
+            }))
+          : data?.userList
+              ?.filter(
+                (user) =>
+                  (user?.user as IUser)._id === this.token.id.toString(),
+              )
+              ?.map((props) => ({
+                ...props,
+                user: convertUserToSummary2(props.user as IUser),
+              }))
         : [];
 
       const result = [{ ...filterStudy(filteredVoteOne), realTime }];
@@ -542,7 +553,7 @@ export default class VoteService {
           return participation;
         },
       );
-
+      console.log("SUC");
       await vote.save();
     } catch (err) {
       throw new Error();
@@ -707,27 +718,16 @@ export default class VoteService {
   async patchArrive(date: any, memo: any, endHour: any) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
-    console.log(1444, date, memo, endHour);
-    const validatedCollection = CollectionZodSchema.parse({
-      user: this.token.id,
-      collects: [],
-      collectCnt: 0,
-      stamps: 0,
-    });
-    console.log(52, endHour);
+
     try {
-      console.log(5442, endHour);
       const currentTime = now().add(9, "hour");
 
       vote.participations.forEach((participation: any) => {
-        console.log(2444, participation);
         participation.attendences.forEach((att: any) => {
           if (
             (att.user as IUser)._id?.toString() === this.token.id?.toString() &&
             att?.firstChoice
           ) {
-            console.log("tttt");
-            console.log("aa", att.time.end);
             att.time.end = endHour;
             att.arrived = currentTime.toDate();
             //memo가 빈문자열인 경우는 출석이 아닌 개인 스터디 신청에서 사용한 경우
@@ -737,7 +737,70 @@ export default class VoteService {
       });
 
       await vote.save();
-      return true;
+
+      const validatedCollection = CollectionZodSchema.parse({
+        user: this.token.id,
+        type: "alphabet",
+        collects: [],
+        collectCnt: 0,
+        stamps: 0,
+      });
+
+      const currentCollection = await Collection.findOne({
+        user: this.token.id,
+      });
+      const currentStamps = currentCollection?.stamps ?? 0;
+
+      let updatedStamps = currentStamps;
+      let updatedAlphabet = null;
+
+      if (currentStamps < 5) {
+        if (!currentCollection) {
+          // 문서가 없으면 새로 생성
+          await Collection.create(validatedCollection);
+        } else {
+          // 문서가 있으면 stamps 증가
+          const updatedDoc = await Collection.findOneAndUpdate(
+            { user: this.token.id },
+            { $inc: { stamps: 1 } },
+            { new: true },
+          );
+        }
+
+        updatedStamps++;
+      }
+
+      const getRandomAlphabet = (percent: number) => {
+        const randomValue = Math.random();
+
+        if (randomValue <= percent / 100) {
+          const randomIdx = Math.floor(Math.random() * 5);
+          const alphabet = ALPHABET_COLLECTION[randomIdx];
+          return alphabet;
+        }
+        return null;
+      };
+      // stamps가 5인 경우에만 alphabet을 추가합니다
+      if (currentCollection?.stamps === 4) {
+        const alphabet = getRandomAlphabet(20);
+        // stamps가 4인 경우 1 증가 후 5가 되므로 alphabet을 추가
+        await Collection.findOneAndUpdate(
+          { user: this.token.id },
+          {
+            $push: { collects: alphabet }, // alphabet을 collects 배열에 추가
+            $inc: { collectCnt: 1 }, // collectCnt 값을 1 증가
+            $set: { stamps: 0 },
+          },
+          { new: true },
+        );
+        updatedAlphabet = alphabet;
+        updatedStamps = 0;
+      }
+
+      return {
+        alphabet: updatedAlphabet, // alphabet을 얻었으면 반환하고, 그렇지 않으면 null
+        stamps: updatedStamps, // 현재 stamps에서 1 증가한 값 반환
+      };
     } catch (err) {
       throw new Error();
     }

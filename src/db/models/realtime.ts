@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, ObjectId, Schema } from "mongoose";
 import { z } from "zod";
+import { IUser } from "./user";
 
 
 const PlaceSchema = z.object({
@@ -45,7 +46,7 @@ export interface ITime{
 }
 
 export interface IRealtimeUser {
-  user: ObjectId;
+  user: ObjectId|IUser;
   place: IPlace;
   arrived?: Date;
   image?: string[] | Buffer[];
@@ -73,7 +74,7 @@ const timeSchema: Schema<ITime> = new Schema({
 });
 
 const realtimeUserSchema: Schema<IRealtimeUser> = new Schema({
-  user: { type: Schema.Types.ObjectId, required: true },
+  user: { type: Schema.Types.ObjectId,ref:"User", required: true },
   place: { type: placeSchema, required: true },
   arrived: { type: Date },
   image: { type: [String] },

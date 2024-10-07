@@ -65,7 +65,7 @@ export default class RealtimeService {
 
     if (studyData.image) {
       const images = await this.imageServiceInstance.uploadImgCom(
-        "feed",
+        "studyAttend",
         studyData.image as Buffer[],
       );
 
@@ -82,6 +82,7 @@ export default class RealtimeService {
       ) {
         user.arrived = new Date();
         user.status = studyData.status || "solo";
+        user.image = studyData.image;
       }
     });
     await todayData.save();
