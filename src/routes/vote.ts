@@ -95,6 +95,10 @@ class VoteController {
 
     this.router.route("/:date/quick").post(this.quickVote.bind(this));
 
+    this.router.route("/:date/comment").patch(this.patchComment.bind(this));
+
+    this.router.route("/:date/mine").delete(this.deleteMine.bind(this));
+
     this.router
       .route("/:date/free")
       .patch(
@@ -442,6 +446,39 @@ class VoteController {
 
     try {
       await this.voteServiceInstance?.quickVote(date, voteInfo);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private patchComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      date,
+      body: { comment = "" },
+    } = req;
+    try {
+      await this.voteServiceInstance?.patchComment(date, comment);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+  private deleteMine = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      date,
+      body: {  },
+    } = req;
+    try {
+      await this.voteServiceInstance?.deleteMine(date);
       return res.status(200).end();
     } catch (err) {
       next(err);

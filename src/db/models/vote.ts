@@ -103,6 +103,7 @@ export interface IAttendance {
   firstChoice: boolean;
   confirmed: boolean;
   memo?: string;
+  comment?: string;
   imageUrl: string;
 }
 
@@ -111,6 +112,9 @@ export interface IAbsence {
   noShow: boolean;
   message: string;
 }
+
+
+
 
 const ParticipantTimeSchema: Schema<ITimeStartToEnd> = new Schema(
   {
@@ -141,6 +145,7 @@ const AttendanceSchema: Schema<IAttendance> = new Schema(
       default: true,
     },
     memo: String,
+    comment: String,
     imageUrl: String,
   },
   { _id: false, timestamps: true, strict: false }

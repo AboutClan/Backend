@@ -30,6 +30,7 @@ export const RealtimeAttZodSchema = z.object({
   image: z.custom<Buffer[]>(),
   memo: z.string().optional(),
   status: z.enum(["pending", "solo", "open", "completed"]),
+
 });
 
 
@@ -44,6 +45,9 @@ export interface ITime{
   start: string;
   end: string;
 }
+export interface IComment{
+  text:string
+}
 
 export interface IRealtimeUser {
   user: ObjectId|IUser;
@@ -51,7 +55,7 @@ export interface IRealtimeUser {
   arrived?: Date;
   image?: string[] | Buffer[];
   memo?: string;
-  comment?: string;
+  comment?: IComment;
   status: "pending" | "solo" | "open" | "completed";
   time: ITime;
 }
@@ -73,13 +77,20 @@ const timeSchema: Schema<ITime> = new Schema({
   end: { type: String, required: true },
 });
 
+const commentSchema: Schema<IComment> = new Schema({
+ text:{type:String}
+}, {
+    timestamps: true,
+  });
+
+
 const realtimeUserSchema: Schema<IRealtimeUser> = new Schema({
   user: { type: Schema.Types.ObjectId,ref:"User", required: true },
   place: { type: placeSchema, required: true },
   arrived: { type: Date },
   image: { type: [String] },
   memo: { type: String },
-  comment: { type: String },
+  comment: { type: commentSchema },
   status: { type: String, enum: ["pending", "solo", "open", "completed"], required: true },
   time: { type: timeSchema, required: true },
 });

@@ -324,6 +324,7 @@ export default class VoteService {
                 arrived: who?.arrived,
                 imageUrl: who?.imageUrl,
                 user: convertUserToSummary2(who.user as IUser),
+                comment: who?.comment,
               })) || [], // attendences가 없을 경우 빈 배열로 처리
           })),
         };
@@ -351,7 +352,7 @@ export default class VoteService {
                 user: convertUserToSummary2(props.user as IUser),
               }))
         : [];
-
+      console.log(4123);
       const result = [{ ...filterStudy(filteredVoteOne), realTime }];
 
       if (isTwoDay) {
@@ -514,7 +515,7 @@ export default class VoteService {
 
         await vote.save();
       }
-
+      console.log(2, start, end);
       const attendance = {
         time: { start: start, end: end },
         user: this.token.id,
@@ -725,7 +726,8 @@ export default class VoteService {
             (att.user as IUser)._id?.toString() === this.token.id?.toString() &&
             att?.firstChoice
           ) {
-            att.time.end = endHour;
+            console.log(14, endHour);
+            if (endHour) att.time.end = endHour;
             att.arrived = currentTime.toDate();
             //memo가 빈문자열인 경우는 출석이 아닌 개인 스터디 신청에서 사용한 경우
             if (memo) att.memo = memo;
@@ -798,6 +800,53 @@ export default class VoteService {
         alphabet: updatedAlphabet, // alphabet을 얻었으면 반환하고, 그렇지 않으면 null
         stamps: updatedStamps, // 현재 stamps에서 1 증가한 값 반환
       };
+    } catch (err) {
+      throw new Error();
+    }
+  }
+
+  async patchComment(date: any, comment: string) {
+    const vote = await this.getVote(date);
+    if (!vote) throw new Error();
+    console.log(comment);
+    try {
+      vote.participations.forEach((participation: any) => {
+        participation.attendences.forEach((att: any) => {
+          console.log(
+            att.user._id?.toString() === this.token.id?.toString(),
+            att?.firstChoice,
+          );
+          if (
+            (att.user as IUser)._id?.toString() === this.token.id?.toString() &&
+            att?.firstChoice
+          ) {
+            att.comment = comment;
+          }
+        });
+      });
+
+      await vote.save();
+    } catch (err) {
+      throw new Error();
+    }
+  }
+  async deleteMine(date: any) {
+    const vote = await this.getVote(date);
+    if (!vote) throw new Error();
+
+    try {
+      vote.participations.forEach((participation: any) => {
+        participation.attendences = participation.attendences.filter(
+          (att: any) => {
+            // 조건을 만족하는 att 객체를 제외하고 새로운 배열 생성
+            return (
+              (att.user as IUser)._id?.toString() !== this.token.id?.toString()
+            );
+          },
+        );
+      });
+      console.log("deleteSuccess");
+      await vote.save();
     } catch (err) {
       throw new Error();
     }

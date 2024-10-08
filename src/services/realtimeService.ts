@@ -2,7 +2,6 @@ import { JWT } from "next-auth/jwt";
 import {
   IRealtime,
   IRealtimeUser,
-  RealtimeAttZodSchema,
   RealtimeModel,
   RealtimeUserZodSchema,
 } from "../db/models/realtime";
@@ -59,6 +58,7 @@ export default class RealtimeService {
   }
 
   // 출석 상태로 변경
+
   async markAttendance(studyData: Partial<IRealtimeUser>, buffers: Buffer[]) {
     const todayData = await this.getTodayData();
 
@@ -70,7 +70,6 @@ export default class RealtimeService {
 
       studyData.image = images;
     }
-
     todayData.userList?.forEach((user) => {
       if (
         (user.user as unknown as String) == this.token.id &&
@@ -79,6 +78,9 @@ export default class RealtimeService {
         user.arrived = new Date();
         user.status = studyData.status || "solo";
         user.image = studyData.image;
+        user.memo = studyData.memo;
+        if (studyData?.time)
+          user.time = JSON.parse(studyData.time as unknown as string);
       }
     });
     await todayData.save();
