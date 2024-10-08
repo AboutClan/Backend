@@ -19,17 +19,28 @@
       <label for="status">Status:</label>
       <input type="text" id="status" name="status" value="solo" /><br /><br />
 
+      <label for="images">Images:</label>
+      <input type="file" id="images" name="images" multiple /><br /><br />
+
       <button type="button" onclick="submitForm()">Submit</button>
     </form>
 
     <script>
       function submitForm() {
         const form = document.getElementById("attendanceForm");
-
         const formData = new FormData();
 
-        formData.append("memo", "hello");
-        formData.append("status", "solo");
+        // 기존 memo 및 status 값 추가
+        formData.append("memo", form.memo.value);
+        formData.append("status", form.status.value);
+
+        // 선택된 모든 이미지 파일을 formData에 추가
+        const imageInput = document.getElementById("images");
+        if (imageInput.files.length > 0) {
+          for (let i = 0; i < imageInput.files.length; i++) {
+            formData.append("images", imageInput.files[i]); // 'images' 이름으로 모든 파일 추가
+          }
+        }
 
         fetch(form.action, {
           method: "POST",

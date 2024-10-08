@@ -375,7 +375,6 @@ class VoteController {
       date,
       body: { memo = "", endHour },
     } = req;
-    console.log("arr", memo, endHour);
     try {
       const result = await this.voteServiceInstance?.patchArrive(
         date,
