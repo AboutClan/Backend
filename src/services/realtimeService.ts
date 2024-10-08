@@ -59,21 +59,17 @@ export default class RealtimeService {
   }
 
   // 출석 상태로 변경
-  async markAttendance(studyData: Partial<IRealtimeUser>) {
-    // 데이터 유효성 검사
-    console.log("study", studyData, studyData.memo);
+  async markAttendance(studyData: Partial<IRealtimeUser>, buffers: Buffer[]) {
+    const todayData = await this.getTodayData();
 
-    if (studyData.image) {
+    if (buffers.length) {
       const images = await this.imageServiceInstance.uploadImgCom(
         "studyAttend",
-        studyData.image as Buffer[],
+        buffers,
       );
 
       studyData.image = images;
     }
-    const validatedStudy = RealtimeAttZodSchema.parse(studyData);
-
-    const todayData = await this.getTodayData();
 
     todayData.userList?.forEach((user) => {
       if (
@@ -91,7 +87,7 @@ export default class RealtimeService {
   }
 
   // 정보를 포함한 직접 출석
-  async directAttendance(studyData: Partial<IRealtime>) {
+  async directAttendance(studyData: Partial<IRealtimeUser>, buffers: Buffer[]) {
     // 데이터 유효성 검사
     const validatedStudy = RealtimeUserZodSchema.parse({
       ...studyData,
@@ -100,6 +96,15 @@ export default class RealtimeService {
     });
 
     const todayData = await this.getTodayData();
+
+    if (buffers.length) {
+      const images = await this.imageServiceInstance.uploadImgCom(
+        "studyAttend",
+        buffers,
+      );
+
+      studyData.image = images;
+    }
 
     const isDuplicate = todayData.userList?.some(
       (item) => item.user == validatedStudy.user,

@@ -29,11 +29,11 @@ class StudyController {
 
     this.router
       .route("/attendance")
-      .post(upload.none(), this.markAttendance.bind(this));
+      .post(upload.array("images", 5), this.markAttendance.bind(this));
 
     this.router
       .route("/directAttendance")
-      .post(upload.none(), this.directAttendance.bind(this));
+      .post(upload.array("images", 5), this.directAttendance.bind(this));
   }
 
   private async createStudyServiceInstance(
@@ -79,9 +79,17 @@ class StudyController {
   ) {
     try {
       const studyData = req.body;
-      console.log(222, studyData);
-      const updatedStudy =
-        await this.realtimeServiceInstance.markAttendance(studyData);
+
+      let buffers: Buffer[] = [];
+
+      if (req.files && Array.isArray(req.files)) {
+        buffers = req.files.map((file: Express.Multer.File) => file.buffer);
+      }
+
+      const updatedStudy = await this.realtimeServiceInstance.markAttendance(
+        studyData,
+        buffers,
+      );
       return res.status(200).json(updatedStudy);
     } catch (err: any) {
       next(err);
@@ -96,8 +104,16 @@ class StudyController {
     try {
       const studyData = req.body;
 
-      const newStudy =
-        await this.realtimeServiceInstance.directAttendance(studyData);
+      let buffers: Buffer[] = [];
+
+      if (req.files && Array.isArray(req.files)) {
+        buffers = req.files.map((file: Express.Multer.File) => file.buffer);
+      }
+
+      const newStudy = await this.realtimeServiceInstance.directAttendance(
+        studyData,
+        buffers,
+      );
       return res.status(201).json(newStudy);
     } catch (err: any) {
       next(err);

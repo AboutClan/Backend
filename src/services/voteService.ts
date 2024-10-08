@@ -328,7 +328,6 @@ export default class VoteService {
           })),
         };
       };
-      console.log(25);
       const data = await RealtimeModel.findOne({ date })
         .populate(["userList.user"])
         .lean();
@@ -336,7 +335,6 @@ export default class VoteService {
       if (!data) {
         await RealtimeModel.create({ date });
       }
-      console.log("data", data);
       const realTime = data
         ? !isBasic && !isTwoDay
           ? data?.userList?.map((props) => ({
@@ -553,7 +551,6 @@ export default class VoteService {
           return participation;
         },
       );
-      console.log("SUC");
       await vote.save();
     } catch (err) {
       throw new Error();
