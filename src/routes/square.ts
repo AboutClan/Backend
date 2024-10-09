@@ -39,6 +39,7 @@ class SquareController {
           .notEmpty()
           .isLength({ min: 1 })
           .withMessage("The min length of content field is 1"),
+        body("isAnonymous").toBoolean(),
         body("type").isIn(["poll", "general"]),
         body("category", "category is empty").notEmpty(),
         body("pollItems")
@@ -156,7 +157,15 @@ class SquareController {
   private async createSquare(req: Request, res: Response, next: NextFunction) {
     const {
       files,
-      body: { category, title, content, type, pollItems, canMultiple },
+      body: {
+        category,
+        title,
+        content,
+        type,
+        pollItems,
+        canMultiple,
+        isAnonymous,
+      },
     } = req;
 
     let buffers: Buffer[] = [];
@@ -170,6 +179,7 @@ class SquareController {
         category,
         title,
         content,
+        isAnonymous,
         type,
         poll: {
           pollItems,

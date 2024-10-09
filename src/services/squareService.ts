@@ -5,14 +5,16 @@ import {
   SecretSquareCategory,
   SecretSquareType,
   SecretSquareZodSchema,
-  subCommentType,
+  SubCommentType,
 } from "../db/models/secretSquare";
 import ImageService from "./imageService";
+import { User } from "../db/models/user";
 
 interface BaseSecretSquareItem {
   category: SecretSquareCategory;
   title: string;
   content: string;
+  isAnonymous: boolean;
   type: SecretSquareType;
   poll?: {
     pollItems: { name: string }[];
@@ -57,7 +59,7 @@ export default class SquareService {
     cursorNum: number | null;
   }) {
     const gap = 12;
-    let start = gap * (cursorNum || 0);
+    const start = gap * (cursorNum || 0);
 
     return await SecretSquare.find(category === "all" ? {} : { category }, {
       category: 1,
@@ -86,6 +88,7 @@ export default class SquareService {
       category,
       title,
       content,
+      isAnonymous,
       type: squareType,
       poll,
       buffers,
@@ -107,6 +110,7 @@ export default class SquareService {
             category,
             title,
             content,
+            isAnonymous,
             author,
             type: squareType,
             poll,
@@ -116,6 +120,7 @@ export default class SquareService {
             category,
             title,
             content,
+            isAnonymous,
             author,
             type: squareType,
             images,
@@ -145,6 +150,7 @@ export default class SquareService {
       content: 1,
       type: 1,
       author: 1,
+      isAnonymous: 1,
       poll: {
         $cond: {
           if: { $eq: ["$type", "general"] },
@@ -194,7 +200,17 @@ export default class SquareService {
       throw new Error("not found");
     }
 
-    return secretSquare;
+    if (secretSquare.isAnonymous) {
+      return secretSquare;
+    }
+    const user = await User.findById(secretSquare.author);
+
+    if (!user) {
+      throw new Error("Author not found");
+    }
+    const { name, profileImage, uid } = user;
+
+    return { ...secretSquare.toObject(), name, profileImage, uid };
   }
 
   async createSquareComment({
@@ -222,23 +238,19 @@ export default class SquareService {
   }
 
   async createSubComment(squareId: string, commentId: string, content: string) {
-    try {
-      const message: subCommentType = {
-        user: this.token.id,
-        comment: content,
-      };
-      await SecretSquare.updateOne(
-        {
-          _id: squareId,
-          "comments._id": commentId,
-        },
-        { $push: { "comments.$.subComments": message } },
-      );
+    const message: SubCommentType = {
+      user: this.token.id,
+      comment: content,
+    };
+    await SecretSquare.updateOne(
+      {
+        _id: squareId,
+        "comments._id": commentId,
+      },
+      { $push: { "comments.$.subComments": message } },
+    );
 
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    return;
   }
 
   async deleteSubComment(
@@ -246,17 +258,13 @@ export default class SquareService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      await SecretSquare.updateOne(
-        {
-          _id: squareId,
-          "comments._id": commentId,
-        },
-        { $pull: { "comments.$.subComments": { _id: subCommentId } } },
-      );
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    await SecretSquare.updateOne(
+      {
+        _id: squareId,
+        "comments._id": commentId,
+      },
+      { $pull: { "comments.$.subComments": { _id: subCommentId } } },
+    );
   }
 
   async updateSubComment(
@@ -265,42 +273,34 @@ export default class SquareService {
     subCommentId: string,
     comment: string,
   ) {
-    try {
-      await SecretSquare.updateOne(
-        {
-          id: squareId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
-        },
-        { $set: { "comments.$[].subComments.$[sub].comment": comment } },
-        {
-          arrayFilters: [{ "sub._id": subCommentId }],
-        },
-      );
-      return;
-    } catch (err: any) {
-      throw new Error(err);
-    }
+    await SecretSquare.updateOne(
+      {
+        id: squareId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      { $set: { "comments.$[].subComments.$[sub].comment": comment } },
+      {
+        arrayFilters: [{ "sub._id": subCommentId }],
+      },
+    );
+    return;
   }
 
   async createCommentLike(squareId: string, commentId: string) {
-    try {
-      const feed = await SecretSquare.findOneAndUpdate(
-        {
-          _id: squareId,
-          "comments._id": commentId,
-        },
-        {
-          $addToSet: { "comments.$.likeList": this.token.id },
-        },
-        { new: true }, // 업데이트된 도큐먼트를 반환
-      );
+    const feed = await SecretSquare.findOneAndUpdate(
+      {
+        _id: squareId,
+        "comments._id": commentId,
+      },
+      {
+        $addToSet: { "comments.$.likeList": this.token.id },
+      },
+      { new: true }, // 업데이트된 도큐먼트를 반환
+    );
 
-      if (!feed) {
-        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!feed) {
+      throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
     }
   }
 
@@ -309,33 +309,29 @@ export default class SquareService {
     commentId: string,
     subCommentId: string,
   ) {
-    try {
-      const square = await SecretSquare.findOneAndUpdate(
-        {
-          _id: squareId,
-          "comments._id": commentId,
-          "comments.subComments._id": subCommentId,
+    const square = await SecretSquare.findOneAndUpdate(
+      {
+        _id: squareId,
+        "comments._id": commentId,
+        "comments.subComments._id": subCommentId,
+      },
+      {
+        $addToSet: {
+          "comments.$[comment].subComments.$[subComment].likeList":
+            this.token.id,
         },
-        {
-          $addToSet: {
-            "comments.$[comment].subComments.$[subComment].likeList":
-              this.token.id,
-          },
-        },
-        {
-          arrayFilters: [
-            { "comment._id": commentId },
-            { "subComment._id": subCommentId },
-          ],
-          new: true, // 업데이트된 도큐먼트를 반환
-        },
-      );
+      },
+      {
+        arrayFilters: [
+          { "comment._id": commentId },
+          { "subComment._id": subCommentId },
+        ],
+        new: true, // 업데이트된 도큐먼트를 반환
+      },
+    );
 
-      if (!square) {
-        throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
-      }
-    } catch (err: any) {
-      throw new Error(err);
+    if (!square) {
+      throw new Error("해당 feedId 또는 commentId를 찾을 수 없습니다.");
     }
   }
   async patchPoll({
@@ -350,6 +346,10 @@ export default class SquareService {
     // TODO 404 NOT FOUND
     if (!secretSquare) {
       throw new Error("not found");
+    }
+
+    if (secretSquare.type === "general") {
+      throw new Error("The type of this square is general");
     }
 
     // HACK Is it correct to write type assertion? Another solution?

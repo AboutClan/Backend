@@ -25,6 +25,7 @@ export const SecretSquareZodSchema = z.object({
   category: z.enum(["일상" , "고민" , "정보" , "같이해요"]),
   title: z.string(),
   content: z.string(),
+  isAnonymous: z.boolean(),
   type: z.enum(["general", "poll"]),
   poll: z.object({
     pollItems: z.array(PollItemZodSchema),
@@ -44,12 +45,12 @@ export type SecretSquareType = "general" | "poll";
 interface Comment {
   user: Types.ObjectId;
   comment: string;
-  subComments?: subCommentType[]; 
+  subComments?: SubCommentType[]; 
   likeList?: string[];
 }
 
 
-export const subCommentSchema: Schema<subCommentType> = new Schema(
+export const subCommentSchema: Schema<SubCommentType> = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -93,7 +94,7 @@ export const commentSchema = new Schema<Comment>(
 );
 
 
-export interface subCommentType{
+export interface SubCommentType{
   user: string | IUser;
   comment: string;
   likeList?: string[];
@@ -102,6 +103,7 @@ interface SecretSquareItem {
   category: SecretSquareCategory;
   title: string;
   content: string;
+  isAnonymous: boolean;
   type: SecretSquareType;
   poll: {
     pollItems: PollItem[];
@@ -163,6 +165,11 @@ export const secretSquareSchema = new Schema<SecretSquareItem>(
       type: String,
       required: true,
       minLength: 1,
+    },
+    isAnonymous: {
+      type: Boolean,
+      required: true,
+      default: true,
     },
     type: {
       type: String,
