@@ -7,7 +7,7 @@ const PlaceSchema = z.object({
   lat: z.number(),
   lon: z.number(),
   text: z.string(),
- 
+ locationDetail:z.string()
 });
 
 const TimeSchema = z.object({
@@ -38,15 +38,13 @@ export interface IPlace{
   lat: number;
   lon: number;
   text: string;
- 
+  locationDetail: string
+  _id?:string
 }
 
 export interface ITime{
   start: string;
   end: string;
-}
-export interface IComment{
-  text:string
 }
 
 export interface IRealtimeUser {
@@ -55,7 +53,7 @@ export interface IRealtimeUser {
   arrived?: Date;
   image?: string[] | Buffer[];
   memo?: string;
-  comment?: IComment;
+  comment?: string;
   status: "pending" | "solo" | "open" | "completed";
   time: ITime;
 }
@@ -69,7 +67,7 @@ const placeSchema: Schema<IPlace> = new Schema({
   lat: { type: Number, required: true },
   lon: { type: Number, required: true },
   text: { type: String, required: true },
-
+  locationDetail: { type: String, required: true },
 });
 
 const timeSchema: Schema<ITime> = new Schema({
@@ -77,11 +75,7 @@ const timeSchema: Schema<ITime> = new Schema({
   end: { type: String, required: true },
 });
 
-const commentSchema: Schema<IComment> = new Schema({
- text:{type:String}
-}, {
-    timestamps: true,
-  });
+
 
 
 const realtimeUserSchema: Schema<IRealtimeUser> = new Schema({
@@ -90,7 +84,7 @@ const realtimeUserSchema: Schema<IRealtimeUser> = new Schema({
   arrived: { type: Date },
   image: { type: [String] },
   memo: { type: String },
-  comment: { type: commentSchema },
+  comment: { type: String },
   status: { type: String, enum: ["pending", "solo", "open", "completed"], required: true },
   time: { type: timeSchema, required: true },
 });

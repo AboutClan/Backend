@@ -9,15 +9,16 @@ export default class CollectionService {
     this.token = token as JWT;
   }
 
-  async setCollectionStamp() {
+  async setCollectionStamp(id: string) {
     const validatedCollection = CollectionZodSchema.parse({
-      user: this.token.id,
+      user: id,
+      type: "alphabet",
+      collects: [],
       collectCnt: 0,
       stamps: 0,
     });
-
     const currentCollection = await Collection.findOne({
-      user: this.token.id,
+      user: id,
     });
     const currentStamps = currentCollection?.stamps ?? 0;
 
@@ -25,18 +26,18 @@ export default class CollectionService {
     let updatedAlphabet = null;
 
     if (currentStamps < 5) {
-      await Collection.findOneAndUpdate(
-        { user: this.token.id },
-        {
-          $inc: { stamps: 1 }, // stamps 값을 1 증가
-          $setOnInsert: {
-            user: validatedCollection.user,
-            collectCnt: validatedCollection.collectCnt,
-            stamps: validatedCollection.stamps,
-          },
-        },
-        { upsert: true, new: true },
-      );
+      if (!currentCollection) {
+        // 문서가 없으면 새로 생성
+        await Collection.create(validatedCollection);
+      } else {
+        // 문서가 있으면 stamps 증가
+        await Collection.findOneAndUpdate(
+          { user: id },
+          { $inc: { stamps: 1 } },
+          { new: true },
+        );
+      }
+
       updatedStamps++;
     }
 
@@ -55,10 +56,11 @@ export default class CollectionService {
       const alphabet = getRandomAlphabet(20);
       // stamps가 4인 경우 1 증가 후 5가 되므로 alphabet을 추가
       await Collection.findOneAndUpdate(
-        { user: this.token.id },
+        { user: id },
         {
           $push: { collects: alphabet }, // alphabet을 collects 배열에 추가
           $inc: { collectCnt: 1 }, // collectCnt 값을 1 증가
+          $set: { stamps: 0 },
         },
         { new: true },
       );

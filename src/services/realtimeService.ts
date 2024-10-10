@@ -5,8 +5,11 @@ import {
   RealtimeModel,
   RealtimeUserZodSchema,
 } from "../db/models/realtime";
+import { IUser } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError"; // 에러 처리 클래스 (커스텀 에러)
+import CollectionService from "./collectionService";
 import ImageService from "./imageService";
+import VoteService from "./voteService";
 
 export default class RealtimeService {
   private token: JWT;
@@ -61,6 +64,8 @@ export default class RealtimeService {
 
   async markAttendance(studyData: Partial<IRealtimeUser>, buffers: Buffer[]) {
     const todayData = await this.getTodayData();
+    const voteService = new VoteService();
+    const isVoting = await voteService.isVoting(this.getToday(), this.token.id);
 
     if (buffers.length) {
       const images = await this.imageServiceInstance.uploadImgCom(
@@ -70,29 +75,56 @@ export default class RealtimeService {
 
       studyData.image = images;
     }
-    todayData.userList?.forEach((user) => {
-      if (
-        (user.user as unknown as String) == this.token.id &&
-        user.status == "pending"
-      ) {
-        user.arrived = new Date();
-        user.status = studyData.status || "solo";
-        user.image = studyData.image;
-        user.memo = studyData.memo;
-        if (studyData?.time)
-          user.time = JSON.parse(studyData.time as unknown as string);
-      }
-    });
-    await todayData.save();
 
-    return todayData;
+    if (isVoting) {
+      const vote = await voteService.getVote(this.getToday());
+      vote.participations = vote.participations.map((participation) => ({
+        ...participation,
+        attendences: participation.attendences?.filter((attandence) => {
+          return (
+            (attandence.user as IUser)?.uid.toString() !==
+            this.token.uid?.toString()
+          );
+        }),
+      }));
+      await vote.save();
+    }
+
+    if (todayData?.userList) {
+      todayData.userList.forEach((user, index) => {
+        if ((user.user as unknown as String) == this.token.id) {
+          if (user.place._id !== studyData.place?._id) {
+            todayData.userList?.splice(index, 1);
+          } else if (user.status === "pending") {
+            user.arrived = new Date();
+            user.status = studyData.status || "solo";
+            user.image = studyData.image;
+            user.memo = studyData.memo;
+            if (studyData?.time)
+              user.time = JSON.parse(studyData.time as unknown as string);
+          }
+        }
+      });
+    }
+    console.log(25, this.token.id);
+    await todayData.save();
+    const collection = new CollectionService();
+    const result = collection.setCollectionStamp(this.token.id);
+
+    return result;
   }
 
   // 정보를 포함한 직접 출석
   async directAttendance(studyData: Partial<IRealtimeUser>, buffers: Buffer[]) {
+    const voteService = new VoteService();
+    const isVoting = await voteService.isVoting(this.getToday(), this.token.id);
+
+    console.log(studyData);
     // 데이터 유효성 검사
     const validatedStudy = RealtimeUserZodSchema.parse({
       ...studyData,
+      time: JSON.parse(studyData.time as unknown as string),
+      place: JSON.parse(studyData.place as unknown as string),
       arrived: new Date(),
       user: this.token.id,
     });
@@ -108,14 +140,35 @@ export default class RealtimeService {
       studyData.image = images;
     }
 
-    const isDuplicate = todayData.userList?.some(
-      (item) => item.user == validatedStudy.user,
-    );
-
-    if (!isDuplicate) {
-      await todayData.userList?.push(validatedStudy);
-      await todayData.save();
+    if (isVoting) {
+      const vote = await voteService.getVote(this.getToday());
+      vote.participations = vote.participations.map((participation) => ({
+        ...participation,
+        attendences: participation.attendences?.filter((attandence) => {
+          return (
+            (attandence.user as IUser)?.uid.toString() !==
+            this.token.uid?.toString()
+          );
+        }),
+      }));
+      await vote.save();
     }
+
+    if (todayData?.userList) {
+      todayData.userList.forEach((user, index) => {
+        if ((user.user as unknown as String) == this.token.id) {
+          if (user.place._id !== studyData.place?._id) {
+            todayData.userList?.splice(index, 1);
+          }
+        }
+      });
+    }
+    console.log(todayData.userList, validatedStudy);
+    await todayData.userList?.push(validatedStudy);
+    await todayData.save();
+    const collection = new CollectionService();
+    const result = collection.setCollectionStamp(this.token.id);
+    return result;
 
     // return todayData;
   }
