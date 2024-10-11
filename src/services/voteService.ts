@@ -11,7 +11,7 @@ import {
   Vote,
 } from "../db/models/vote";
 import { IVoteStudyInfo } from "../types/vote";
-import { convertUserToSummary2 } from "../utils/convertUtils";
+import { convertUserToSummary } from "../utils/convertUtils";
 import { now, strToDate } from "../utils/dateUtils";
 import { findOneVote, findTwoVote } from "../utils/voteUtils";
 import CollectionService from "./collectionService";
@@ -192,20 +192,13 @@ export default class VoteService {
     }
   }
 
-  async getFilteredVote(
-    date: any,
-    location: string,
-    isBasic: boolean,
-    isTwoDay: boolean,
-  ) {
+  async getFilteredVote(date: any, location: string) {
     try {
       const STUDY_RESULT_HOUR = 23;
-      const votes: IVote[] = await this.getTwoVote(date);
-      const filteredVoteOne = votes[0];
-      const filteredVoteTwo = votes[1];
+      const vote: IVote = await this.getVote(date);
 
       const user = await User.findOne({ uid: this.token.uid });
-
+      console.log(24);
       const studyPreference = user?.studyPreference;
 
       const filterStudy = (filteredVote: IVote) => {
@@ -307,63 +300,50 @@ export default class VoteService {
         );
 
         // 기본 모드일 경우 상위 3개만 반환
-        if (isBasic) {
-          filteredVote.participations = filteredVote.participations.slice(0, 3);
-        }
+
         return {
           date: filteredVote.date,
           participations: filteredVote.participations.map((par) => ({
             place: par.place,
-            absences: par.absences,
+            // absences: par.absences,
             status: par.status,
-            attendences:
+            members:
               par.attendences?.map((who) => ({
                 time: who.time,
-                firstChoice: who.firstChoice,
-                memo: who?.memo,
-                arrived: who?.arrived,
-                imageUrl: who?.imageUrl,
-                user: convertUserToSummary2(who.user as IUser),
+                isMainChoice: who.firstChoice,
+                attendanceInfo: {
+                  attendanceImage: who?.imageUrl,
+                  arrived: who?.arrived,
+                  arrivedMessage: who?.memo,
+                },
+                user: convertUserToSummary(who.user as IUser),
                 comment: who?.comment,
+                // absenceInfo
               })) || [], // attendences가 없을 경우 빈 배열로 처리
           })),
         };
       };
-
+      console.log(2423);
       const data = await RealtimeModel.findOne({ date })
         .populate(["userList.user"])
         .lean();
+      console.log(5151);
 
-      if (!data) {
-        await RealtimeModel.create({ date });
-      }
-      const realTime = data
-        ? !isBasic && !isTwoDay
-          ? data?.userList?.map((props) => ({
-              ...props,
-              user: convertUserToSummary2(props.user as IUser),
-            }))
-          : data?.userList
-              ?.filter(
-                (user) =>
-                  (user?.user as IUser)._id === this.token.id.toString(),
-              )
-              ?.map((props) => ({
-                ...props,
-                user: convertUserToSummary2(props.user as IUser),
-              }))
-        : [];
-
-      const result = [{ ...filterStudy(filteredVoteOne), realTime }];
-
-      if (isTwoDay) {
-        result.push({
-          ...filterStudy(filteredVoteTwo as IVote),
-          realTime: undefined,
-        });
-      }
-
-      return result;
+      if (data) {
+        console.log(515123, data?.userList);
+        const realTime =
+          data?.userList?.map((props) => ({
+            ...props,
+            attendanceInfo: {
+              attendanceImage: props?.image,
+              arrived: props?.arrived,
+              arrivedMessage: props?.memo,
+            },
+            user: convertUserToSummary(props.user as IUser),
+          })) || [];
+        console.log(123142141);
+        return { ...filterStudy(vote), realTime };
+      } else return filterStudy(vote);
     } catch (err) {
       // 에러 메시지를 구체적으로 기록
       throw new Error(`Error fetching filtered vote data`);

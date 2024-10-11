@@ -4,10 +4,10 @@ import { IUser } from "./user";
 
 
 const PlaceSchema = z.object({
-  lat: z.number(),
-  lon: z.number(),
-  text: z.string(),
- locationDetail:z.string()
+  latitude: z.number(),
+  longitude: z.number(),
+  name: z.string(),
+ address:z.string()
 });
 
 const TimeSchema = z.object({
@@ -35,10 +35,10 @@ export const RealtimeAttZodSchema = z.object({
 
 
 export interface IPlace{
-  lat: number;
-  lon: number;
-  text: string;
-  locationDetail: string
+  latitude: number;
+  longitude: number;
+  name: string;
+  address: string
   _id?:string
 }
 
@@ -64,10 +64,10 @@ export interface IRealtime extends Document {
   }
 
 const placeSchema: Schema<IPlace> = new Schema({
-  lat: { type: Number, required: true },
-  lon: { type: Number, required: true },
-  text: { type: String, required: true },
-  locationDetail: { type: String, required: true },
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
+  name: { type: String, required: true },
+  address: { type: String, required: true },
 });
 
 const timeSchema: Schema<ITime> = new Schema({

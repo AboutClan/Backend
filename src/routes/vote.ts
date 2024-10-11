@@ -210,22 +210,14 @@ class VoteController {
     next: NextFunction,
   ) => {
     const { date } = req;
-    let {
-      location = "수원",
-      isBasic,
-      isTwoDay,
-    } = req.query as {
+    let { location = "수원" } = req.query as {
       location: string;
-      isBasic: string;
-      isTwoDay: string;
     };
 
     try {
       const filteredVote = await this.voteServiceInstance?.getFilteredVote(
         date,
         location,
-        isBasic === "true",
-        isTwoDay === "true",
       );
 
       return res.status(200).json(filteredVote);
@@ -475,7 +467,7 @@ class VoteController {
   ) => {
     const {
       date,
-      body: {  },
+      body: {},
     } = req;
     try {
       await this.voteServiceInstance?.deleteMine(date);
