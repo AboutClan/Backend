@@ -329,21 +329,19 @@ export default class VoteService {
         .lean();
       console.log(5151);
 
-      if (data) {
-        console.log(515123, data?.userList);
-        const realTime =
-          data?.userList?.map((props) => ({
-            ...props,
-            attendanceInfo: {
-              attendanceImage: props?.image,
-              arrived: props?.arrived,
-              arrivedMessage: props?.memo,
-            },
-            user: convertUserToSummary(props.user as IUser),
-          })) || [];
-        console.log(123142141);
-        return { ...filterStudy(vote), realTime };
-      } else return filterStudy(vote);
+      console.log(515123, data?.userList);
+      const realTime =
+        data?.userList?.map((props) => ({
+          ...props,
+          attendanceInfo: {
+            attendanceImage: props?.image,
+            arrived: props?.arrived,
+            arrivedMessage: props?.memo,
+          },
+          user: convertUserToSummary(props.user as IUser),
+        })) || [];
+      console.log(123142141);
+      return { ...filterStudy(vote), realTime };
     } catch (err) {
       // 에러 메시지를 구체적으로 기록
       throw new Error(`Error fetching filtered vote data`);
