@@ -198,7 +198,7 @@ export default class VoteService {
       const vote: IVote = await this.getVote(date);
 
       const user = await User.findOne({ uid: this.token.uid });
-      console.log(24);
+
       const studyPreference = user?.studyPreference;
 
       const filterStudy = (filteredVote: IVote) => {
@@ -323,14 +323,12 @@ export default class VoteService {
           })),
         };
       };
-      console.log(2423);
+
       const data = await RealtimeModel.findOne({ date })
         .populate(["userList.user"])
         .lean();
-      console.log(5151);
 
       if (data) {
-        console.log(515123, data?.userList);
         const realTime =
           data?.userList?.map((props) => ({
             ...props,
@@ -341,7 +339,7 @@ export default class VoteService {
             },
             user: convertUserToSummary(props.user as IUser),
           })) || [];
-        console.log(123142141);
+
         return { ...filterStudy(vote), realTime };
       } else return filterStudy(vote);
     } catch (err) {
@@ -737,19 +735,20 @@ export default class VoteService {
   async patchComment(date: any, comment: string) {
     const vote = await this.getVote(date);
     if (!vote) throw new Error();
-    console.log(comment);
+
     try {
       vote.participations.forEach((participation: any) => {
         participation.attendences.forEach((att: any) => {
-          console.log(
-            att.user._id?.toString() === this.token.id?.toString(),
-            att?.firstChoice,
-          );
           if (
             (att.user as IUser)._id?.toString() === this.token.id?.toString() &&
             att?.firstChoice
           ) {
-            att.comment = comment;
+            console.log("HERE", att);
+
+            att.comment = att.comment || { text: "" };
+            att.comment.text = comment;
+
+            // att.comment.text = comment;
           }
         });
       });
@@ -784,7 +783,7 @@ export default class VoteService {
       data.userList = data.userList.filter((user: any) => {
         return user.user.toString() !== this.token.id.toString();
       });
-      console.log("deleteSuccess");
+
       await data.save();
     } catch (err) {
       throw new Error();

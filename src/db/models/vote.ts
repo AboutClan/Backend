@@ -103,7 +103,7 @@ export interface IAttendance {
   firstChoice: boolean;
   confirmed: boolean;
   memo?: string;
-  comment?: string;
+  comment?: IComment;
   imageUrl: string;
 }
 
@@ -113,8 +113,21 @@ export interface IAbsence {
   message: string;
 }
 
+export interface IComment{
+  text:string
+}
 
 
+
+const CommentSchema: Schema<IComment> = new Schema(
+  {
+    text: {
+      type: String,
+      required:false
+   }
+  },
+  { _id: false,timestamps: true  }
+);
 
 const ParticipantTimeSchema: Schema<ITimeStartToEnd> = new Schema(
   {
@@ -145,7 +158,7 @@ const AttendanceSchema: Schema<IAttendance> = new Schema(
       default: true,
     },
     memo: String,
-    comment: String,
+    comment: CommentSchema,
     imageUrl: String,
   },
   { _id: false, timestamps: true, strict: false }
