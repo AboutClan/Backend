@@ -743,8 +743,6 @@ export default class VoteService {
             (att.user as IUser)._id?.toString() === this.token.id?.toString() &&
             att?.firstChoice
           ) {
-            console.log("HERE", att);
-
             att.comment = att.comment || { text: "" };
             att.comment.text = comment;
 

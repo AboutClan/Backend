@@ -129,11 +129,11 @@ export default class RealtimeService {
             studyData.place as unknown as string,
           ) as IPlace;
           if (user.place.address !== place.address) {
-            console.log("NO");
+        
             todayData.userList?.splice(index, 1);
           } else {
             hasPrevVote = true;
-            console.log(user, studyData);
+           
             user.arrived = new Date();
             user.status = studyData.status || "solo";
             user.image = studyData.image;
