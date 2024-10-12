@@ -332,9 +332,6 @@ export default class VoteService {
         .populate(["userList.user"])
         .lean();
 
-      if (!data) {
-        await RealtimeModel.create({ date });
-      }
       const realTime = data
         ? !isBasic && !isTwoDay
           ? data?.userList?.map((props) => ({
