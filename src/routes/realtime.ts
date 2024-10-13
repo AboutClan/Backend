@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
+import { body } from "express-validator";
 import multer from "multer";
+import validateCheck from "../middlewares/validator";
 import RealtimeService from "../services/realtimeService";
 
 // multer 설정: 메모리에 파일 저장 (또는 `dest` 옵션을 사용하여 디스크에 저장)
@@ -32,8 +34,20 @@ class StudyController {
       .post(upload.array("images", 5), this.markAttendance.bind(this));
 
     this.router
-      .route("/directAttendance")
-      .post(upload.array("images", 5), this.directAttendance.bind(this));
+      .route("/time")
+      .patch(
+        body("start").notEmpty().withMessage("start 입력 필요."),
+        body("end").notEmpty().withMessage("end 입력 필요."),
+        validateCheck,
+        this.patchVote.bind(this),
+      );
+
+    this.router.route("/cancel").delete(this.deleteVote.bind(this));
+
+    this.router.route("/comment").patch(this.patchComment.bind(this));
+    this.router
+      .route("/status")
+      .patch(body("status"), this.patchStatus.bind(this));
   }
 
   private async createStudyServiceInstance(
@@ -135,6 +149,64 @@ class StudyController {
       next(err);
     }
   }
+
+  private patchVote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { start, end } = req.body;
+
+    try {
+      await this.realtimeServiceInstance?.patchVote(start, end);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private deleteVote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      await this.realtimeServiceInstance?.deleteVote();
+      return res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+  private patchComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { comment = "" },
+    } = req;
+    try {
+      await this.realtimeServiceInstance?.patchComment(comment);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+  private patchStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: { status },
+    } = req;
+    try {
+      const result = await this.realtimeServiceInstance?.patchStatus(status);
+      return res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 const studyController = new StudyController();

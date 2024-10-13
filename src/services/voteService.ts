@@ -328,7 +328,6 @@ export default class VoteService {
         .populate(["userList.user"])
         .lean();
 
-      console.log(515123, data?.userList);
       const realTime =
         data?.userList?.map((props) => ({
           ...props,

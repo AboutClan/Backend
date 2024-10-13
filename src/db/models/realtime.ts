@@ -3,6 +3,7 @@ import { z } from "zod";
 import { IUser } from "./user";
 
 
+
 const PlaceSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
@@ -15,21 +16,22 @@ const TimeSchema = z.object({
   end: z.string(),   // ISO Date String
 });
 
+
+
 export const RealtimeUserZodSchema = z.object({
   user: z.custom<Schema.Types.ObjectId>(),
   place: PlaceSchema,
   arrived: z.date().optional(),  // ISO Date String
   image: z.custom<Buffer[]>().optional(),
   memo: z.string().optional(),
-  comment: z.string().optional(),
-  status: z.enum(["pending", "solo", "open", "completed"]),
+  status: z.enum(["pending", "solo", "open","free", "cancel"]),
   time: TimeSchema,
 });
 
 export const RealtimeAttZodSchema = z.object({
   image: z.custom<Buffer[]>(),
   memo: z.string().optional(),
-  status: z.enum(["pending", "solo", "open", "completed"]),
+  status: z.enum(["pending", "solo", "open","free", "cancel"]),
 
 });
 
@@ -53,15 +55,32 @@ export interface IRealtimeUser {
   arrived?: Date;
   image?: string[] | Buffer[];
   memo?: string;
-  comment?: string;
-  status: "pending" | "solo" | "open" | "completed";
+  comment?:IComment;
+  status: "pending" | "solo"| "open" |"free" | "cancel";
   time: ITime;
 }
+
+export interface IComment{
+  text:string
+}
+
+
 
 export interface IRealtime extends Document {
     date: Date,
     userList?: IRealtimeUser[]
-  }
+}
+  
+const commentSchema: Schema<IComment> = new Schema(
+  {
+    text: {
+      type: String,
+      required:false
+   }
+  },
+  { _id: false,timestamps: true  }
+);
+
 
 const placeSchema: Schema<IPlace> = new Schema({
   latitude: { type: Number, required: true },
@@ -69,6 +88,8 @@ const placeSchema: Schema<IPlace> = new Schema({
   name: { type: String, required: true },
   address: { type: String, required: true },
 });
+
+
 
 const timeSchema: Schema<ITime> = new Schema({
   start: { type: String, required: true },
@@ -84,8 +105,8 @@ const realtimeUserSchema: Schema<IRealtimeUser> = new Schema({
   arrived: { type: Date },
   image: { type: [String] },
   memo: { type: String },
-  comment: { type: String },
-  status: { type: String, enum: ["pending", "solo", "open", "completed"], required: true },
+  comment: commentSchema,
+  status: { type: String, enum: ["pending", "solo", "open","free", "cancel"], required: true },
   time: { type: timeSchema, required: true },
 });
 
