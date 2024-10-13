@@ -43,7 +43,7 @@ export default class RealtimeService {
 
     const voteService = new VoteService();
     const isVoting = await voteService.isVoting(this.getToday(), this.token.id);
-   
+
     if (isVoting) {
       const vote = await voteService.getVote(this.getToday());
       vote.participations = vote.participations.map((participation) => ({
@@ -276,7 +276,6 @@ export default class RealtimeService {
     try {
       todayData.userList?.forEach((userInfo) => {
         if (userInfo.user.toString() === this.token.id) {
-         
           userInfo.status = status;
         }
       });
@@ -291,10 +290,8 @@ export default class RealtimeService {
 
     try {
       todayData.userList?.forEach((userInfo) => {
-        if (
-          userInfo.user.toString() === this.token.id &&
-          userInfo.comment?.text
-        ) {
+        if (userInfo.user.toString() === this.token.id) {
+          userInfo.comment = userInfo.comment || { text: "" };
           userInfo.comment.text = comment;
         }
       });

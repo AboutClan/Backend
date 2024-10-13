@@ -743,8 +743,6 @@ export default class VoteService {
           ) {
             att.comment = att.comment || { text: "" };
             att.comment.text = comment;
-
-            // att.comment.text = comment;
           }
         });
       });
