@@ -40,13 +40,13 @@ sendNoti();
 // });
 
 //투표 결과 발표
-export const voteResult = schedule.scheduleJob("47 23 * * *", async () => {
+export const voteResult = schedule.scheduleJob("0 9 * * *", async () => {
   try {
     const adminVoteServiceInstance = new AdminVoteService();
     const webPushServiceInstance = new WebPushService();
     const fcmServiceInstance = new FcmService();
 
-    const date = dayjs().add(1, "day").format("YYYY-MM-DD");
+    const date = dayjs().format("YYYY-MM-DD");
     await adminVoteServiceInstance.confirm(date);
     await webPushServiceInstance.sendNotificationVoteResult();
     await fcmServiceInstance.sendNotificationVoteResult();
