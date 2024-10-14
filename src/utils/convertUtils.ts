@@ -15,13 +15,15 @@ export interface IUserSummary {
   avatar: avatarType;
   name: string;
   profileImage: string;
+  score: number;
 }
 
 export const convertUsersToSummary = (users: IUser[]): IUserSummary[] => {
   return users?.map((user) => {
-    const { avatar, name, profileImage, uid, _id } = user;
+    const { avatar, name, profileImage, uid, _id, score } = user;
     return {
       avatar,
+      score,
       name,
       profileImage,
       _id,
@@ -30,10 +32,11 @@ export const convertUsersToSummary = (users: IUser[]): IUserSummary[] => {
   });
 };
 export const convertUserToSummary = (user: IUser): IUserSummary => {
-  const { avatar, name, profileImage, uid, _id } = user;
+  const { avatar, name, profileImage, uid, _id, score } = user;
   return {
     avatar,
     name,
+    score,
     profileImage,
     _id,
     uid,
