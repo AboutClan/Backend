@@ -10,6 +10,7 @@ export const CollectionZodSchema = z.object({
   type: z.enum(["alphabet"]).default("alphabet"),
   collects:  z.array(z.string()),
   collectCnt: z.number(),
+  stamps:z.number()
 })
 
 export interface ICollection {
