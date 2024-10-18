@@ -53,7 +53,7 @@ export interface IRealtimeUser {
   user: ObjectId|IUser;
   place: IPlace;
   arrived?: Date;
-  image?: string[] | Buffer[];
+  image?: string | Buffer[];
   memo?: string;
   comment?:IComment;
   status: "pending" | "solo"| "open" |"free" | "cancel";
@@ -103,7 +103,7 @@ const realtimeUserSchema: Schema<IRealtimeUser> = new Schema({
   user: { type: Schema.Types.ObjectId,ref:"User", required: true },
   place: { type: placeSchema, required: true },
   arrived: { type: Date },
-  image: { type: [String] },
+  image: { type: String },
   memo: { type: String },
   comment: commentSchema,
   status: { type: String, enum: ["pending", "solo", "open","free", "cancel"], required: true },

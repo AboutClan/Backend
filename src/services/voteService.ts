@@ -305,7 +305,7 @@ export default class VoteService {
           date: filteredVote.date,
           participations: filteredVote.participations.map((par) => ({
             place: par.place,
-            // absences: par.absences,
+            absences: par.absences,
             status: par.status,
             members:
               par.attendences?.map((who) => ({

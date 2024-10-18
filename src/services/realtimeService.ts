@@ -89,13 +89,13 @@ export default class RealtimeService {
     const voteService = new VoteService();
     const isVoting = await voteService.isVoting(this.getToday(), this.token.id);
 
-    if (buffers.length && studyData?.image) {
+    if (buffers.length) {
       const images = await this.imageServiceInstance.uploadImgCom(
         "studyAttend",
         buffers,
       );
 
-      studyData.image = images;
+      studyData.image = images[0];
     }
 
     const validatedStudy = RealtimeUserZodSchema.parse({
@@ -178,7 +178,7 @@ export default class RealtimeService {
         buffers,
       );
 
-      studyData.image = images;
+      studyData.image = images[0];
     }
 
     if (isVoting) {

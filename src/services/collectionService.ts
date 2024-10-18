@@ -41,19 +41,14 @@ export default class CollectionService {
       updatedStamps++;
     }
 
-    const getRandomAlphabet = (percent: number) => {
-      const randomValue = Math.random();
-
-      if (randomValue <= percent / 100) {
-        const randomIdx = Math.floor(Math.random() * 5);
-        const alphabet = ALPHABET_COLLECTION[randomIdx];
-        return alphabet;
-      }
-      return null;
+    const getRandomAlphabet = () => {
+      const randomIdx = Math.floor(Math.random() * 5);
+      const alphabet = ALPHABET_COLLECTION[randomIdx];
+      return alphabet;
     };
     // stamps가 5인 경우에만 alphabet을 추가합니다
     if (currentCollection?.stamps === 4) {
-      const alphabet = getRandomAlphabet(20);
+      const alphabet = getRandomAlphabet();
       // stamps가 4인 경우 1 증가 후 5가 되므로 alphabet을 추가
       await Collection.findOneAndUpdate(
         { user: id },
@@ -64,6 +59,7 @@ export default class CollectionService {
         },
         { new: true },
       );
+
       updatedAlphabet = alphabet;
       updatedStamps = 0;
     }
