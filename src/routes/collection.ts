@@ -59,8 +59,8 @@ class CollectionController {
       body: {},
     } = req;
     try {
-      const result = await this.collectionServiceInstance?.setCollectionStamp();
-      res.status(200).json(result);
+      // const result = await this.collectionServiceInstance?.setCollectionStamp();
+      res.status(200).end();
     } catch (err: any) {
       next(err);
     }
