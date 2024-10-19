@@ -23,9 +23,10 @@ export default class DailyCheckService {
       uid: this.token.uid,
       name: this.token.name,
     });
+
     await DailyCheck.create(validatedDailyCheck);
 
-    return "출석체크가 왼료되었습니다.";
+    return;
   }
 
   async getLog() {
