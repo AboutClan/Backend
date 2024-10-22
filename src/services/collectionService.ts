@@ -2,7 +2,7 @@ import { JWT } from "next-auth/jwt";
 import { Collection, CollectionZodSchema } from "../db/models/collection";
 import { Request } from "../db/models/request";
 import { User } from "../db/models/user";
-export const ALPHABET_COLLECTION = ["A", "b", "o", "u", "T"];
+export const ALPHABET_COLLECTION = ["A", "B", "O", "U", "T"];
 export default class CollectionService {
   private token: JWT;
   constructor(token?: JWT) {
