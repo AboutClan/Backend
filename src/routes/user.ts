@@ -148,6 +148,10 @@ class UserController {
         this.patchBelong.bind(this),
       );
 
+    this.router
+      .route("/weekStudyTargetHour")
+      .patch(this.patchStudyTargetHour.bind(this));
+
     this.router.route("/test").get(this.test.bind(this));
   }
 
@@ -848,6 +852,21 @@ class UserController {
     } = req;
     try {
       await this.userServiceInstance?.patchBelong(uid, belong);
+      return res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+  private patchStudyTargetHour = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const {
+      body: {hour},
+    } = req;
+    try {
+      await this.userServiceInstance?.patchStudyTargetHour(hour);
       return res.status(200).end();
     } catch (err) {
       next(err);
