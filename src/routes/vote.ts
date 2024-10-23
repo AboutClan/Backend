@@ -232,15 +232,10 @@ class VoteController {
     next: NextFunction,
   ) => {
     const { date } = req;
-    let { id } = req.query as {
-      id: string;
-    };
 
     try {
-      const filteredVote = await this.voteServiceInstance?.getFilteredVoteOne(
-        date,
-        id,
-      );
+      const filteredVote =
+        await this.voteServiceInstance?.getFilteredVoteOne(date);
 
       return res.status(200).json(filteredVote);
     } catch (err) {

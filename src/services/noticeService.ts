@@ -36,8 +36,9 @@ export default class NoticeService {
       });
 
       await Notice.create(validatedNotice);
+    
       await User.findOneAndUpdate({ uid: to }, { $inc: { like: 1, point: 2 } });
-
+     
       logger.logger.info(message, {
         metadata: {
           type: "point",
@@ -45,6 +46,7 @@ export default class NoticeService {
           value: 2,
         },
       });
+    
     } catch (err: any) {
       throw new Error(err);
     }

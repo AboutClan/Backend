@@ -4,7 +4,6 @@ import { JWT } from "next-auth/jwt";
 import { Counter } from "../db/models/counter";
 import { Log } from "../db/models/log";
 import { Notice } from "../db/models/notice";
-import { NotificationSub } from "../db/models/notificationSub";
 import { Place } from "../db/models/place";
 import { Promotion } from "../db/models/promotion";
 import { IUser, restType, User } from "../db/models/user";
@@ -689,6 +688,16 @@ export default class UserService {
 
   async patchBelong(uid: number, belong: string) {
     const updated = await User.updateOne({ uid }, { belong });
+    if (!updated) throw new DatabaseError("update belong failed");
+
+    return;
+  }
+  async patchStudyTargetHour(hour: number) {
+    const updated = await User.updateOne(
+      { uid: this.token.uid },
+      { weekStudyTragetHour: hour },
+    );
+  
     if (!updated) throw new DatabaseError("update belong failed");
 
     return;
