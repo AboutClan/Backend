@@ -1,8 +1,8 @@
 import { JWT } from "next-auth/jwt";
 import { IUser, User } from "../db/models/user";
+import { DatabaseError } from "../errors/DatabaseError";
 import { UserFilterType } from "../routes/admin/user";
 import { convertUserToSummary2 } from "../utils/convertUtils";
-import { DatabaseError } from "../errors/DatabaseError";
 
 const logger = require("../../logger");
 
@@ -11,6 +11,7 @@ type UserQueryProps = {
   location?: string;
   score?: { $gt: number };
   monthScore?: { $gt: number };
+  weekStudyAccumulationMinutes?: { $gt: number };
 };
 export default class AdminUserService {
   private token: JWT;
@@ -33,6 +34,8 @@ export default class AdminUserService {
       case "monthScore":
         query.monthScore = { $gt: 0 };
         break;
+      case "weekStudyAccumulationMinutes":
+        query.weekStudyAccumulationMinutes = { $gt: 0 };
       default:
         break;
     }

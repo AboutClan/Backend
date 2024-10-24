@@ -345,15 +345,73 @@ export default class VoteService {
       throw new Error(`Error fetching filtered vote data`);
     }
   }
-  async getFilteredVoteOne(date: any, id: string) {
-    try {
-      const filteredVoteOne = await this.getVote(date);
 
-      const result = filteredVoteOne?.participations.find(
-        (par) => par.place?._id.toString() === id,
+  async getFilteredVoteOne(date: any) {
+    try {
+      const vote: IVote = await this.getVote(date);
+
+      const myInfo = await User.findOne({ uid: this.token.uid });
+      const users = await User.find({
+        location: this.token.location,
+        weekStudyAccumulationMinutes: { $gt: 0 },
+      }).sort({ weekStudyAccumulationMinutes: -1 });
+      const rankNum = users.findIndex((user) => user.uid === myInfo?.uid) + 1;
+
+      const findMyParticipation = vote?.participations?.find((par) =>
+        par.attendences?.some(
+          (att) => (att.user as IUser)?.id === this.token.id,
+        ),
       );
 
-      return result;
+      if (findMyParticipation) {
+        const data = {
+          place: findMyParticipation.place,
+          absences: findMyParticipation.absences,
+          status: findMyParticipation.status,
+          members: findMyParticipation.attendences?.map((who) => ({
+            time: who.time,
+            isMainChoice: who.firstChoice,
+            attendanceInfo: {
+              attendanceImage: who?.imageUrl,
+              arrived: who?.arrived,
+              arrivedMessage: who?.memo,
+            },
+            user: convertUserToSummary(who.user as IUser),
+            comment: who?.comment,
+          })),
+        };
+        return { data, rankNum };
+      }
+
+      const data = await RealtimeModel.findOne({ date })
+        .populate(["userList.user"])
+        .lean();
+      const findStudy = data?.userList?.find(
+        (user) => (user.user as IUser)._id.toString() === this.token.id,
+      );
+      console.log(1234225);
+
+      if (!findStudy) return;
+
+      const filtered = data?.userList?.filter(
+        (who) => who.place.name === findStudy?.place.name,
+      );
+
+      return {
+        data: filtered?.map((props) => ({
+          ...props,
+          attendanceInfo: {
+            attendanceImage: props?.image,
+            arrived: props?.arrived,
+            arrivedMessage: props?.memo,
+          },
+          user: {
+            ...convertUserToSummary(props.user as IUser),
+            comment: (props.user as IUser).comment,
+          },
+        })),
+        rankNum,
+      };
     } catch (err) {
       // 에러 메시지를 구체적으로 기록
       throw new Error(`Error fetching filtered vote data`);
@@ -700,6 +758,8 @@ export default class VoteService {
 
   async patchArrive(date: any, memo: any, endHour: any) {
     const vote = await this.getVote(date);
+    const userData = await User.findOne({ uid: this.token.uid });
+
     if (!vote) throw new Error();
 
     try {
@@ -712,14 +772,20 @@ export default class VoteService {
             att?.firstChoice
           ) {
             if (endHour) att.time.end = endHour;
-            att.arrived = currentTime.toDate();
+            att.arrived = new Date();
+            if (userData) {
+              userData.weekStudyAccumulationMinutes += dayjs(att.time.end).diff(
+                dayjs(),
+                "m",
+              );
+            }
             //memo가 빈문자열인 경우는 출석이 아닌 개인 스터디 신청에서 사용한 경우
             if (memo) att.memo = memo;
           }
         });
       });
-
       await vote.save();
+      await userData?.save();
 
       const collection = new CollectionService();
       const result = collection.setCollectionStamp(this.token.id);

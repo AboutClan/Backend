@@ -14,7 +14,10 @@ router.use("/", async (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-export type UserFilterType = "score" | "monthScore";
+export type UserFilterType =
+  | "score"
+  | "monthScore"
+  | "weekStudyAccumulationMinutes";
 
 router
   .route("/")

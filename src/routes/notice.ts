@@ -1,8 +1,8 @@
 import express, { NextFunction, Request, Response, Router } from "express";
-import NoticeService from "../services/noticeService";
-import WebPushService from "../services/webPushService";
 import { JWT } from "next-auth/jwt";
 import FcmService from "../services/fcmService";
+import NoticeService from "../services/noticeService";
+import WebPushService from "../services/webPushService";
 
 const router = express.Router();
 
@@ -88,11 +88,13 @@ class NoticeController {
         "좋아요를 받았어요!",
         `${this.decodedToken?.name}님이 좋아요를 보냈어요!`,
       );
-      await this.fcmServiceInstance?.sendNotificationToX(
-        to,
-        "좋아요를 받았어요!",
-        `${this.decodedToken?.name}님이 좋아요를 보냈어요!`,
-      );
+
+      // await this.fcmServiceInstance?.sendNotificationToX(
+      //   to,
+      //   "좋아요를 받았어요!",
+      //   `${this.decodedToken?.name}님이 좋아요를 보냈어요!`,
+      // );
+
       return res.end();
     } catch (err: any) {
       next(err);

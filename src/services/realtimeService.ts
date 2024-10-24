@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { JWT } from "next-auth/jwt";
 import {
   IPlace,
@@ -6,7 +7,7 @@ import {
   RealtimeModel,
   RealtimeUserZodSchema,
 } from "../db/models/realtime";
-import { IUser } from "../db/models/user";
+import { IUser, User } from "../db/models/user";
 import { DatabaseError } from "../errors/DatabaseError"; // 에러 처리 클래스 (커스텀 에러)
 import CollectionService from "./collectionService";
 import ImageService from "./imageService";
@@ -121,6 +122,9 @@ export default class RealtimeService {
     }
 
     let hasPrevVote = false;
+
+    const userData = await User.findOne({ uid: this.token.uid });
+
     if (todayData?.userList) {
       todayData.userList.forEach((user, index) => {
         if (user.user.toString() === this.token.id) {
@@ -131,18 +135,25 @@ export default class RealtimeService {
             todayData.userList?.splice(index, 1);
           } else {
             hasPrevVote = true;
-
+            if (userData) {
+              userData.weekStudyAccumulationMinutes += dayjs(
+                user.time.end,
+              ).diff(dayjs(), "m");
+            }
             user.arrived = new Date();
             user.status = studyData.status || "solo";
             user.image = studyData.image;
             user.memo = studyData.memo;
             user.place = place;
             if (studyData?.time)
-              user.time = JSON.parse(studyData.time as unknown as string);
+              user.time.end = JSON.parse(
+                studyData.time as unknown as string,
+              ).end;
           }
         }
       });
     }
+    await userData?.save();
 
     if (!hasPrevVote) {
       await todayData.userList?.push(validatedStudy);
