@@ -7,6 +7,7 @@ export interface IUserSummary2 extends IUserSummary {
   location: string;
   score: number;
   monthScore: number;
+  weekStudyAccumulationMinutes: number;
 }
 
 export interface IUserSummary {
@@ -56,6 +57,7 @@ export const convertUserToSummary2 = (user: IUser): IUserSummary2 => {
     uid,
     _id,
     monthScore,
+    weekStudyAccumulationMinutes,
   } = user;
 
   return {
@@ -70,5 +72,6 @@ export const convertUserToSummary2 = (user: IUser): IUserSummary2 => {
     _id,
     uid,
     monthScore,
+    weekStudyAccumulationMinutes,
   };
 };

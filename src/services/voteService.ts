@@ -350,8 +350,17 @@ export default class VoteService {
     try {
       const vote: IVote = await this.getVote(date);
 
+      const myInfo = await User.findOne({ uid: this.token.uid });
+      const users = await User.find({
+        location: this.token.location,
+        weekStudyAccumulationMinutes: { $gt: 0 },
+      }).sort({ weekStudyAccumulationMinutes: -1 });
+      const rankNum = users.findIndex((user) => user.uid === myInfo.uid) + 1;
+
       const findMyParticipation = vote?.participations?.find((par) =>
-        par.attendences?.some((att) => att.user?.toString() === this.token.id),
+        par.attendences?.some(
+          (att) => (att.user as IUser)?.id === this.token.id,
+        ),
       );
 
       if (findMyParticipation) {
@@ -371,7 +380,7 @@ export default class VoteService {
             comment: who?.comment,
           })),
         };
-        return data;
+        return { data, rankNum };
       }
 
       const data = await RealtimeModel.findOne({ date })
@@ -380,6 +389,7 @@ export default class VoteService {
       const findStudy = data?.userList?.find(
         (user) => (user.user as IUser)._id.toString() === this.token.id,
       );
+      console.log(1234225);
 
       if (!findStudy) return;
 
@@ -387,18 +397,21 @@ export default class VoteService {
         (who) => who.place.name === findStudy?.place.name,
       );
 
-      return filtered?.map((props) => ({
-        ...props,
-        attendanceInfo: {
-          attendanceImage: props?.image,
-          arrived: props?.arrived,
-          arrivedMessage: props?.memo,
-        },
-        user: {
-          ...convertUserToSummary(props.user as IUser),
-          comment: (props.user as IUser).comment,
-        },
-      }));
+      return {
+        data: filtered?.map((props) => ({
+          ...props,
+          attendanceInfo: {
+            attendanceImage: props?.image,
+            arrived: props?.arrived,
+            arrivedMessage: props?.memo,
+          },
+          user: {
+            ...convertUserToSummary(props.user as IUser),
+            comment: (props.user as IUser).comment,
+          },
+        })),
+        rankNum,
+      };
     } catch (err) {
       // 에러 메시지를 구체적으로 기록
       throw new Error(`Error fetching filtered vote data`);
@@ -759,7 +772,7 @@ export default class VoteService {
             att?.firstChoice
           ) {
             if (endHour) att.time.end = endHour;
-            att.arrived = currentTime.toDate();
+            att.arrived = new Date();
             if (userData) {
               userData.weekStudyAccumulationMinutes += dayjs(att.time.end).diff(
                 dayjs(),
