@@ -355,7 +355,7 @@ export default class VoteService {
         location: this.token.location,
         weekStudyAccumulationMinutes: { $gt: 0 },
       }).sort({ weekStudyAccumulationMinutes: -1 });
-      const rankNum = users.findIndex((user) => user.uid === myInfo.uid) + 1;
+      const rankNum = users.findIndex((user) => user.uid === myInfo?.uid) + 1;
 
       const findMyParticipation = vote?.participations?.find((par) =>
         par.attendences?.some(
