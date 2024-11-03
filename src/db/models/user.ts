@@ -161,7 +161,7 @@ export const preferenceSchema: Schema<preferenceType> = new Schema(
   },
   {
     _id: false,
-    timestamps: false
+    timestamps: true
   }
 );
 export const locationDetailSchema: Schema<locationDetailType> = new Schema(

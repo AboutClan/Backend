@@ -159,6 +159,17 @@ export default class AdminVoteService {
           );
         });
 
+        //유저가 3명 이하에 dismissed이면 free로
+        participations?.forEach((participation) => {
+          if (
+            participation.status === "dismissed" &&
+            participation.attendences &&
+            participation.attendences.length >= 1
+          ) {
+            participation.status = "free";
+          }
+        });
+
         await vote?.save();
       }
     } catch (err) {
