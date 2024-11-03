@@ -695,9 +695,9 @@ export default class UserService {
   async patchStudyTargetHour(hour: number) {
     const updated = await User.updateOne(
       { uid: this.token.uid },
-      { weekStudyTragetHour: hour },
+      { weekStudyTargetHour: hour },
     );
-  
+
     if (!updated) throw new DatabaseError("update belong failed");
 
     return;
