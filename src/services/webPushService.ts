@@ -56,19 +56,14 @@ export default class WebPushService {
   }
 
   async subscribe(subscription: any) {
-    const data = await NotificationSub.findOne({
-      uid: this.token.uid,
-      endpoint: subscription.endpoint,
-    });
-
-    if (!data) {
-      const newSubscription = new NotificationSub({
+    await NotificationSub.findOneAndUpdate(
+      { uid: this.token.uid, endpoint: subscription.endpoint },
+      {
         ...subscription,
-        uid: this.token?.uid,
-      });
-
-      await newSubscription.save();
-    }
+        uid: this.token.uid,
+      },
+      { upsert: true }, // 구독이 없을 경우 새로 생성
+    );
 
     return;
   }
