@@ -66,3 +66,14 @@ export const initMonthScore = schedule.scheduleJob("0 0 1 * *", async () => {
     throw new Error(err);
   }
 });
+
+//매주 월요일 user필드의 targetHour와 accumulateHour를 초기화.
+export const initTargetHour = schedule.scheduleJob("0 0 1 * *", async () => {
+  try {
+    await User.updateMany({}, { weekStudyTragetHour: 0 });
+    await User.updateMany({}, { weekStudyAccumulationMinutes: 0 });
+    console.log("target hour init success");
+  } catch (err: any) {
+    throw new Error(err);
+  }
+});

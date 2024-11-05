@@ -35,9 +35,10 @@ export default class GroupStudyService {
     const gap = 8;
     let start = gap * (cursor || 0);
 
-    const filterQuery = { status: filter, "category.main": category };
-
-    groupStudyData = await GroupStudy.find(filterQuery)
+    groupStudyData = await GroupStudy.find({
+      status: filter,
+      "category.main": category,
+    })
       .skip(start)
       .limit(gap)
       .populate({
