@@ -164,7 +164,7 @@ export default class AdminVoteService {
           if (
             participation.status === "dismissed" &&
             participation.attendences &&
-            participation.attendences.length >= 1
+            participation.attendences.length > 1
           ) {
             participation.status = "free";
           }
